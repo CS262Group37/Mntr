@@ -3,7 +3,6 @@ static
 # Created by https://www.gitignore.io/api/node
 
 .vscode
-PostgresLogin
 
 ### Node ###
 # Logs
