@@ -2,13 +2,13 @@ import time
 from flask import Flask
 from flask_restful import Resource, Api
 from app.database import db_conn
-#from config import config - Use this once we setup config.py
+import config
 
 app = Flask(__name__)
 api = Api(app)
 
-# This config stuff could be useful https://flask.palletsprojects.com/en/2.0.x/config/
-# app.config.from_object(config[config_name]) Use this once we setup config.py 
+# Apply desired config from config.py
+app.config.from_object(config.DevConfig)
 
 # Initialise routes                                                                            
 from . import routes
