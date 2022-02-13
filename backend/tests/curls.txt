@@ -1,0 +1,2 @@
+Register Test:
+curl http://localhost:5000/auth/register -d "email=test@gmail.com" -d "password=sajdfhjsadfh" -d "firstName=" -d "lastName=lastName" -X PUT
