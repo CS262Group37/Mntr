@@ -14,8 +14,9 @@ from app import routes
 
 # Connect to the database
 from . import database
-database.connect()
-database.build()
+with app.app_context():
+    database.create_connection_pool()
+    database.build()
 
 # Register blueprints
 from app.auth import auth_bp
