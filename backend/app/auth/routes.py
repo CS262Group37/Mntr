@@ -40,17 +40,14 @@ register_parser.add_argument('firstName', required=True)
 register_parser.add_argument('lastName', required=True)
 register_parser.add_argument('role', required=True)
 
-# This isn't final, I'm just testing database functionality
 class Register(Resource):
-    def get(self):
-        return auth.get_registered_users()
 
     def post(self):
         args = register_parser.parse_args()
         auth.register_user(args)
+        # TODO: Need registration error handling
+        return {'message': 'Registered user successfully', 'userInfo': args}
 
-    def put(self):
-        auth.delete_users()
 
 login_parser = reqparse.RequestParser()
 login_parser.add_argument('email', required=True)

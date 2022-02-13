@@ -1,0 +1,30 @@
+# @name register
+POST http://localhost:5000/auth/register HTTP/1.1
+content-type: application/json
+
+{
+    "email": "{{$randomInt 0 10000}}@gmail.com",
+    "password": "password",
+    "firstName": "Bob",
+    "lastName": "L",
+    "role": "admin"
+}
+
+###
+
+# @name login
+@email = {{register.request.body.email}}
+POST http://localhost:5000/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "password"
+}
+
+###
+
+# @name viewUsers
+
+@token = {{login.response.body.token}}
+GET http://localhost:5000/auth/users?token={{token}}
