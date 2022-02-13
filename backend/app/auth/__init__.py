@@ -5,4 +5,4 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 auth_api = Api(auth_bp)
 
 # Initialise the routes                                                                            
-from . import routes
+from app.auth import routes
