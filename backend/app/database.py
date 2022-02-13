@@ -16,6 +16,8 @@ def create_connection_pool():
         app.db_pool = pool
     except (Exception, Error) as e:
         print("Error while connecting to database", e)
+    else:
+        print("Connection pool successfully created")
 
 def close_connection_pool():
     print("Closing the database")
@@ -42,12 +44,19 @@ def build():
     print("Finished building")
 
 def execute(sql, data = None):
+    result = None
     with Connection(app.db_pool) as conn:
         with conn.cursor() as curs:
             try:
                 curs.execute(sql, data)
+                try:
+                    result = curs.fetchall()
+                except:
+                    pass
                 conn.commit()
             except Error as e:
                 print(e)
                 conn.rollback()
+    return result
+
                 

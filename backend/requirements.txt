@@ -2,3 +2,4 @@ flask
 python-dotenv
 flask-restful
 psycopg2
+PyJWT
