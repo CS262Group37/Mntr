@@ -1,7 +1,7 @@
 from flask_restful import Resource
-from . import api
+from app import api
 import time
-from app.database import db_close
+from app.database import close
 
 # Resource routing using flask-RESTful https://flask-restful.readthedocs.io/en/latest/quickstart.html
 
@@ -18,7 +18,7 @@ class HelloWorld(Resource):
 
 class CloseDatabase(Resource):
     def get(self):
-        db_close()
+        close()
         return "<H1>Database closed!</H1>"
 
 api.add_resource(Time, '/time')
