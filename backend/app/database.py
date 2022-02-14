@@ -57,6 +57,7 @@ def execute(sql, data = None):
             except Error as e:
                 print(e)
                 conn.rollback()
+                raise # TODO: Test this method of error handling
     return result
 
                 
