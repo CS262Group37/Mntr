@@ -2,6 +2,8 @@ from flask import Flask
 from flask_restful import Api
 import config
 
+# TODO: Eventually switch this to a factory design pattern but this is fine for now
+
 # Create app
 app = Flask(__name__)
 api = Api(app)
