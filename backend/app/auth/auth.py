@@ -9,8 +9,8 @@ from flask import current_app as app
 
 # Registers a user
 def register_user(args):
-    print("Registering user with args", args['email'], args['password'], args['firstName'], args['lastName'], args['role'])
     sql = "INSERT INTO \"user\" (email, \"password\", firstName, lastName, role) VALUES (%s, %s, %s, %s, %s);"
+    # TODO: Figure our error handling here if a key does not exist
     data = (args['email'], args['password'], args['firstName'], args['lastName'], args['role'])
     execute(sql, data)
 

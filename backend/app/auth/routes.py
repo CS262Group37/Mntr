@@ -1,27 +1,30 @@
-from flask_restful import Resource, reqparse, abort
+from flask_restful import Resource 
+from flask import request
+from flask import Response
+from flask import abort
 from functools import wraps
-from jwt import encode
 from app.auth import auth_api
 from app.auth import auth
 
-# Docs for request parsing: https://flask-restful.readthedocs.io/en/latest/reqparse.html
-auth_parser = reqparse.RequestParser()
-auth_parser.add_argument('token', required=True)
-
 # Use this resource for any API call that requires authentication
-def authentication(func):
+def authenticate(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         
-        parsed_args = auth_parser.parse_args()
+        if not 'Authorization' in request.headers:
+            abort(401)
+
+        token = request.headers.get('Authorization')
+        token = token.replace("Bearer ", "")
 
         # Don't do authentication if the roles are not defined
         if not hasattr(func.__self__, 'roles'):
             abort(401)
 
-        if auth.check_token(parsed_args['token'], getattr(func.__self__, 'roles')):
+        if auth.check_token(token, getattr(func.__self__, 'roles')):
             return func(*args, **kwargs)
         else:
+            # TODO: Reply with WWW-Authenticate response header
             abort(401)
         
     return wrapper
@@ -30,45 +33,37 @@ def authentication(func):
 # where the user should be authenticated (most of them).
 # The roles that can use the route must be defined in a rolls list
 class AuthResource(Resource):
+    method_decorators = [authenticate]
 
-    method_decorators = [authentication]
-
-register_parser = reqparse.RequestParser()
-register_parser.add_argument('email', required=True)
-register_parser.add_argument('password', required=True)
-register_parser.add_argument('firstName', required=True)
-register_parser.add_argument('lastName', required=True)
-register_parser.add_argument('role', required=True)
+# Routes
 
 class Register(Resource):
 
     def post(self):
-        args = register_parser.parse_args()
-        auth.register_user(args)
+        
+        auth.register_user(request.json)
         # TODO: Need registration error handling
-        return {'message': 'Registered user successfully', 'userInfo': args}
-
-
-login_parser = reqparse.RequestParser()
-login_parser.add_argument('email', required=True)
-login_parser.add_argument('password', required=True)
+        return {'message': 'Registered user successfully'}, 201
 
 class Login(Resource):
     
     def post(self):
-        args = login_parser.parse_args()
         
-        if not auth.check_email(args['email']):
+        email = request.json.get('email')
+        password = request.json.get('password')
+        #args = login_parser.parse_args(strict=True)
+        
+        if not auth.check_email(email):
             return {'error': 'Email does not exist!'}, 401
 
         # TODO: Do password hashing verification stuff here
         # TODO: Need a way to store the generated auth token in a cookie or local storage
-        return {'token': auth.generate_token(auth.get_userID(args['email']), auth.get_role(args['email']))}
+        return Response(headers={'Authorization': auth.generate_token(auth.get_userID(email), auth.get_role(email))})
 
 # Just for testing authentication. Provide the user's jwt token in the url.
 # They will be able to see a list of users on the system if they are authenticated as an admin
 class PrintUsers(AuthResource):
-
+    
     roles = ['admin']
 
     def get(self):
