@@ -39,13 +39,13 @@ def get_role(email):
     sql = "SELECT role FROM \"user\" WHERE email=%s;"
     return execute(sql, (email, ))[0][0]
 
-def generate_token(userID, role):
+def generate_token(email):
 
     payload = {
         'iat': datetime.utcnow(),
         'exp': datetime.utcnow() + timedelta(minutes=5),
-        'sub': userID,
-        'role': role
+        'sub': get_userID(email),
+        'role': get_role(email)
     }
     
     return jwt.encode(payload, app.config.get('SECRET_KEY'))
