@@ -1,10 +1,11 @@
-from flask_restful import Resource 
+from flask_restful import Resource
 from flask import request
-from flask import Response
+from flask import make_response
 from flask import abort
 from functools import wraps
-from app.auth import auth_api
-from app.auth import auth
+from . import auth_api
+from .parsers import *
+from .auth import *
 
 # Use this resource for any API call that requires authentication
 def authenticate(func):
@@ -21,7 +22,7 @@ def authenticate(func):
         if not hasattr(func.__self__, 'roles'):
             abort(401)
 
-        if auth.check_token(token, getattr(func.__self__, 'roles')):
+        if check_token(token, getattr(func.__self__, 'roles')):
             return func(*args, **kwargs)
         else:
             # TODO: Reply with WWW-Authenticate response header
@@ -40,25 +41,25 @@ class AuthResource(Resource):
 class Register(Resource):
 
     def post(self):
-        
-        auth.register_user(request.json)
+        data = register_parser.parse_args()
+        register_user(data)
         # TODO: Need registration error handling
         return {'message': 'Registered user successfully'}, 201
 
 class Login(Resource):
     
     def post(self):
+        data = login_parser.parse_args()
         
-        email = request.json.get('email')
-        password = request.json.get('password')
-        #args = login_parser.parse_args(strict=True)
-        
-        if not auth.check_email(email):
+        if not check_email(data['email']):
             return {'error': 'Email does not exist!'}, 401
 
         # TODO: Do password hashing verification stuff here
         # TODO: Need a way to store the generated auth token in a cookie or local storage
-        return Response(headers={'Authorization': auth.generate_token(auth.get_userID(email), auth.get_role(email))})
+        response = make_response()
+        response.headers['Authorization'] = generate_token(data['email'])
+        #return Response(headers={'Authorization': generate_token(get_userID(email), get_role(email))})
+        return response
 
 # Just for testing authentication. Provide the user's jwt token in the url.
 # They will be able to see a list of users on the system if they are authenticated as an admin
@@ -67,7 +68,7 @@ class PrintUsers(AuthResource):
     roles = ['admin']
 
     def get(self):
-        return auth.get_registered_users()
+        return get_registered_users()
 
 auth_api.add_resource(Register, '/register')
 auth_api.add_resource(Login, '/login')
