@@ -1,11 +1,12 @@
-from flask_restful import Resource
-from flask import request
-from flask import make_response
-from flask import abort
 from functools import wraps
+
+from flask import abort, make_response, request
+from flask_restful import Resource
+
 from . import auth_api
-from .parsers import *
 from .auth import *
+from .parsers import *
+
 
 # Use this resource for any API call that requires authentication
 def authenticate(func):
@@ -15,18 +16,27 @@ def authenticate(func):
         if not 'Authorization' in request.headers:
             abort(401)
 
+        # Get token from the request header
         token = request.headers.get('Authorization')
-        token = token.replace("Bearer ", "")
+        token = token.replace('Bearer ', '')
+
+        # Create a WWW-Authenticate response header in case there's an error
+        error_response=make_response()
+        error_response.headers['WWW-Authenticate'] = 'Bearer realm=\"\"'
+        error_response.status = 401
 
         # Don't do authentication if the roles are not defined
         if not hasattr(func.__self__, 'roles'):
-            abort(401)
+            abort(error_response)
+        else:
+            roles = getattr(func.__self__, 'roles')
 
-        if check_token(token, getattr(func.__self__, 'roles')):
+        token_check = check_token(token, roles)
+        if token_check[0]:
             return func(*args, **kwargs)
         else:
-            # TODO: Reply with WWW-Authenticate response header
-            abort(401)
+            error_response.headers['WWW-Authenticate'] = 'Bearer realm=\"' + ''.join(roles) + '\", error=\"' + token_check[1] + '\"'
+            abort(error_response)
         
     return wrapper
 
@@ -42,9 +52,11 @@ class Register(Resource):
 
     def post(self):
         data = register_parser.parse_args()
-        register_user(data)
-        # TODO: Need registration error handling
-        return {'message': 'Registered user successfully'}, 201
+
+        if register_user(data):
+            return {'message': 'Registered user successfully'}, 201
+        else:
+            return {'error': 'Registration failed'}, 403
 
 class Login(Resource):
     
@@ -52,13 +64,23 @@ class Login(Resource):
         data = login_parser.parse_args()
         
         if not check_email(data['email']):
-            return {'error': 'Email does not exist!'}, 401
+            return {'error': 'Email does not exist'}, 401
+
+        if not check_password(data['email'], data['password']):
+            return {'error': 'Incorrect password'}, 401
 
         # TODO: Do password hashing verification stuff here
         # TODO: Need a way to store the generated auth token in a cookie or local storage
-        response = make_response()
-        response.headers['Authorization'] = generate_token(data['email'])
-        #return Response(headers={'Authorization': generate_token(get_userID(email), get_role(email))})
+        
+        token = generate_token(data['email'])
+        if not token:
+            return {'error': 'Token generation failed'}, 403
+        
+        response = make_response(
+            {'message': 'Successfully logged in'},
+            200,
+            {'Authorization': token}
+        )
         return response
 
 # Just for testing authentication. Provide the user's jwt token in the url.
