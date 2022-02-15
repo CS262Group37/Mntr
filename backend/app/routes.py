@@ -15,5 +15,5 @@ class HelloWorld(Resource):
     def get(self):
         return "<p>Hello, World!</p>"
 
-api.add_resource(Time, '/time')
-api.add_resource(HelloWorld, '/')
+api.add_resource(Time, '/api/time')
+api.add_resource(HelloWorld, '/api/')
