@@ -72,7 +72,7 @@ def generate_token(email):
 
     payload = {
         'iat': datetime.utcnow(),
-        'exp': datetime.utcnow() + timedelta(seconds=5),
+        'exp': datetime.utcnow() + timedelta(minutes=5),
         'sub': userID,
         'role': role
     }
