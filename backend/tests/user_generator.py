@@ -1,4 +1,5 @@
 from random import randrange
+from sys import platform
 
 import os
 import names
@@ -51,9 +52,9 @@ class Console(object):
 
     def run(self):
         while True:
-            os.system('clear')
+            self.clear_console()
             option = self.optionSelect()
-            os.system('clear')
+            self.clear_console()
             self.options[option]()
             input("\nPress any key to continue...")
 
@@ -61,6 +62,14 @@ class Console(object):
         print("\n1. Add random users")
         print("2. Add specific user")
         return input("\nSelect an option: ")
+
+    def clear_console(self):
+        if platform == "linux" or platform == "linux2":
+            os.system('clear')
+        elif platform == "darwin":
+            os.system('clear')
+        elif platform == "win32":
+            os.system('cls')
 
 if __name__ == "__main__":
 
