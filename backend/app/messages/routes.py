@@ -7,7 +7,7 @@ class GetMessages(AuthResource):
     roles = ['mentee', 'mentor']
 
     def get():
-        
-        return get_messages(userID)
+        pass
+        #return get_messages(userID)
 
 messages_api.add_resource(GetMessages, '/get_messages')
