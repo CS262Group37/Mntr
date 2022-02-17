@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import axios from "axios";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Register from "./Register";
+import Login from "./Login";
 
 function App() {
   const [email, setEmail] = React.useState<string>("");
@@ -26,6 +29,12 @@ function App() {
 
   return (
     <div className="App">
+      <BrowserRouter>
+        <Routes>
+          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />
+        </Routes>
+      </BrowserRouter>
       <button onClick={login}>Login</button>
       <input
         onChange={(e) => {
