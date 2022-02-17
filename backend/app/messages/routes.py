@@ -1,5 +1,6 @@
 from backend.app.auth.routes import AuthResource
-from backend.app.messages.messages import get_messages
+from app.parsers import *
+from .messages import *
 from . import messages_api
 
 class GetMessages(AuthResource):
@@ -7,6 +8,8 @@ class GetMessages(AuthResource):
     roles = ['mentee', 'mentor']
 
     def get():
+
+        userID_parser()
         pass
         #return get_messages(userID)
 
