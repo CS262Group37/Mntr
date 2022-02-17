@@ -9,7 +9,7 @@ content-type: application/json
     "password": "password",
     "firstName": "Bob",
     "lastName": "L",
-    "role": "admin"
+    "role": "mentee"
 }
 
 ###
@@ -27,7 +27,4 @@ content-type: application/json
 ###
 
 # @name viewUsers
-
-@token = {{login.response.headers.Authorization}}
 GET {{hostname}}/api/auth/users
-Authorization: Bearer {{token}}
