@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import axios from "axios";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Register() {
-  return (<h1>Register</h1>)
+  return (
+    <div>
+      <h1>Register</h1>
+      <Link to="/login">Login instead</Link>
+    </div>
+  );
 }
 
 export default Register;
