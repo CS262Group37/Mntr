@@ -7,18 +7,18 @@ from . import auth_api
 from .auth import *
 from .parsers import *
 
+# For cookie token storage stuff I'm basically doing Option 1 from this guys answer: https://stackoverflow.com/a/38470665
 
 # Use this resource for any API call that requires authentication
 def authenticate(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        
-        if not 'Authorization' in request.headers:
-            abort(401)
 
-        # Get token from the request header
-        token = request.headers.get('Authorization')
-        token = token.replace('Bearer ', '')
+        if request.cookies is None or 'JWT_Token' not in request.cookies:
+            abort(make_response({'error': 'Could not find authentication cookie'}, 401))
+        
+        # Get token from cookie
+        token = request.cookies['JWT_Token']
 
         # Create a WWW-Authenticate response header in case there's an error
         error_response = make_response()
@@ -33,6 +33,7 @@ def authenticate(func):
 
         token_check = check_token(token, roles)
         if token_check[0]:
+            func.__self__.userID = token_check[2]
             return func(*args, **kwargs)
         else:
             error_response.headers['WWW-Authenticate'] = 'Bearer realm=\"' + ''.join(roles) + '\", error=\"' + token_check[1] + '\"'
@@ -47,7 +48,6 @@ class AuthResource(Resource):
     method_decorators = [authenticate]
 
 # Routes
-
 class Register(Resource):
 
     def post(self):
@@ -78,9 +78,13 @@ class Login(Resource):
         
         response = make_response(
             {'message': 'Successfully logged in'},
-            200,
-            {'Authorization': token}
+            200
+            #{'Authorization': token}
         )
+
+        # TODO: Apparently it is good practice to check that the cookie has been created? I cba rn
+        response.set_cookie("JWT_Token", token, token_lifetime, httponly=True, samesite='Lax')
+
         return response
 
 # Just for testing authentication. Provide the user's jwt token in the url.
@@ -90,6 +94,7 @@ class PrintUsers(AuthResource):
     roles = ['admin']
 
     def get(self):
+        
         return get_registered_users()
 
 auth_api.add_resource(Register, '/register')

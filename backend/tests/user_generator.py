@@ -9,7 +9,7 @@ roles = ['mentee', 'mentor', 'admin']
 
 def add_user(first_name, last_name, email, password, role):
     print("Adding", first_name, last_name)
-    requests.post('http://localhost:5000/api/auth/register', 
+    requests.post('http://127.0.0.1:5000/api/auth/register', 
         data={
             'email': email,
             'password': password,

@@ -4,9 +4,7 @@ import jwt
 from app.database import DatabaseConnection
 from flask import current_app as app
 
-# TODO: Might want to reconsider database interaction here. Calling execute multiple
-# times is not very efficient because it's creating/destroying connections and cursors
-# for each statement.
+token_lifetime = timedelta(minutes=5)
 
 # Registers a user. Returns True if successful else False.
 def register_user(args):
@@ -72,7 +70,7 @@ def generate_token(email):
 
     payload = {
         'iat': datetime.utcnow(),
-        'exp': datetime.utcnow() + timedelta(minutes=5),
+        'exp': datetime.utcnow() + token_lifetime,
         'sub': userID,
         'role': role
     }
@@ -82,7 +80,7 @@ def generate_token(email):
     except:
         return False
 
-# Returns a tuple that contains (token validity, error message)
+# Returns a tuple that contains (token validity, error message, userID) (userID is only included if token is valid)
 def check_token(token, roles):
     try:
         payload = jwt.decode(token, app.config.get('SECRET_KEY'), ["HS256"])
@@ -91,6 +89,6 @@ def check_token(token, roles):
     else:
         # Check that the role matches
         if payload['role'] in roles:
-             return (True, '')
+             return (True, '', payload['sub'])
         else:
             return (False, 'Realm permission denied')
