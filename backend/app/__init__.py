@@ -23,3 +23,12 @@ with app.app_context():
 # Register blueprints
 from app.auth import auth_bp
 app.register_blueprint(auth_bp)
+
+from app.matching import matching_bp
+app.register_blueprint(matching_bp)
+
+from app.meetings import meetings_bp
+app.register_blueprint(meetings_bp)
+
+from app.messages import messages_bp
+app.register_blueprint(messages_bp)

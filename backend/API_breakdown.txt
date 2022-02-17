@@ -1,0 +1,47 @@
+Frontend:
+
+pages
+- register
+- login
+- browse mentors
+- mentor dash
+- mentee dash
+- profile page
+- account settings
+
+admin
+- get_topics
+- add_topic
+- remove_topic
+- clear_topics
+- view_reports
+- ban_user
+- mark_report_as_read
+- get_skills
+- add_skills
+- remove_skills
+- clear_skills
+
+auth
+- register (need to add mentor preference ratings and business area)
+- login (Done)
+
+matching
+- get_mentor_list(mentee)
+
+meetings
+- create_meeting(mentor, mentee, time, etc...)
+- cancel_meeting(meetingID)
+- accept_meeting(mentor, meetingID)
+- get_meetings(mentor, mentee)
+
+messages
+- (internal) send_message(sender, recipient, message_type)
+- get_inbox(user)
+
+reports
+- send_report
+
+pairings
+- send_email(pairingID, text)
+- rate_mentor_skills(pairingID)

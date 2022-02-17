@@ -3,6 +3,8 @@ static
 # Created by https://www.gitignore.io/api/node
 
 .vscode
+Pipfile
+Pipfile.lock
 
 ### Node ###
 # Logs
