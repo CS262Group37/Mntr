@@ -21,7 +21,7 @@ def authenticate(func):
         token = token.replace('Bearer ', '')
 
         # Create a WWW-Authenticate response header in case there's an error
-        error_response=make_response()
+        error_response = make_response()
         error_response.headers['WWW-Authenticate'] = 'Bearer realm=\"\"'
         error_response.status = 401
 
