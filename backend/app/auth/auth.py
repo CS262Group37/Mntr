@@ -80,7 +80,7 @@ def generate_token(email):
     except:
         return False
 
-# Returns a tuple that contains (token validity, error message)
+# Returns a tuple that contains (token validity, error message, userID) (userID is only included if token is valid)
 def check_token(token, roles):
     try:
         payload = jwt.decode(token, app.config.get('SECRET_KEY'), ["HS256"])
@@ -89,6 +89,6 @@ def check_token(token, roles):
     else:
         # Check that the role matches
         if payload['role'] in roles:
-             return (True, '')
+             return (True, '', payload['sub'])
         else:
             return (False, 'Realm permission denied')

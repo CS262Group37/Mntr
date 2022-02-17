@@ -13,7 +13,7 @@ from .parsers import *
 def authenticate(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        print("yo2")
+
         if request.cookies is None or 'JWT_Token' not in request.cookies:
             abort(make_response({'error': 'Could not find authentication cookie'}, 401))
         
@@ -33,6 +33,7 @@ def authenticate(func):
 
         token_check = check_token(token, roles)
         if token_check[0]:
+            func.__self__.userID = token_check[2]
             return func(*args, **kwargs)
         else:
             error_response.headers['WWW-Authenticate'] = 'Bearer realm=\"' + ''.join(roles) + '\", error=\"' + token_check[1] + '\"'
@@ -47,7 +48,6 @@ class AuthResource(Resource):
     method_decorators = [authenticate]
 
 # Routes
-
 class Register(Resource):
 
     def post(self):
@@ -94,7 +94,7 @@ class PrintUsers(AuthResource):
     roles = ['admin']
 
     def get(self):
-        print("yo")
+        
         return get_registered_users()
 
 auth_api.add_resource(Register, '/register')
