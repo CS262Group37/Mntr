@@ -1,24 +1,21 @@
+from logging import exception
 import os
 from psycopg2 import pool
 from flask import current_app as app
 
 def create_connection_pool():
-    print("Creating connection pool")
-
     try:
         __pool = pool.ThreadedConnectionPool(1, 20, dbname=os.getenv('DB_NAME'),
                                                         user=os.getenv('DB_USER'),
                                                         password=os.getenv('DB_PASSWORD'),
-                                                        host="127.0.0.1",
-                                                        port="5432")
+                                                        host='127.0.0.1',
+                                                        port='5432')
         app.db_pool = __pool
     except Exception as e:
-        print("Error while connecting to database", e)
-    else:
-        print("Connection pool successfully created")
+        raise Exception('Failed to connect to database. Have you started the postgresql service?') from e
 
 def close_connection_pool():
-    print("Closing the database")
+    print('Closing the connection pool')
     app.db_pool.closeall()
 
 # Use this class in a with clause for executing sql on the database. The execute function will return
