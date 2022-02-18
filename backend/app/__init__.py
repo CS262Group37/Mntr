@@ -32,3 +32,6 @@ app.register_blueprint(meetings_bp)
 
 from app.messages import messages_bp
 app.register_blueprint(messages_bp)
+
+from app.relations import relations_bp
+app.register_blueprint(relations_bp)

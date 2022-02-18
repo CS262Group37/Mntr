@@ -1,3 +1,4 @@
+from cgitb import reset
 from functools import wraps
 
 from flask import abort, make_response, request
@@ -9,7 +10,7 @@ from .parsers import *
 
 # For cookie token storage stuff I'm basically doing Option 1 from this guys answer: https://stackoverflow.com/a/38470665
 
-# Use this resource for any API call that requires authentication
+# Decoration for authenticating users with their JTW token
 def authenticate(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -21,7 +22,7 @@ def authenticate(func):
         token = request.cookies['JWT_Token']
 
         # Create a WWW-Authenticate response header in case there's an error
-        error_response=make_response()
+        error_response = make_response()
         error_response.headers['WWW-Authenticate'] = 'Bearer realm=\"\"'
         error_response.status = 401
 
@@ -51,12 +52,14 @@ class AuthResource(Resource):
 class Register(Resource):
 
     def post(self):
+        
         data = register_parser.parse_args()
+        result = register_user(data['email'], data['password'], data['firstName'], data['lastName'], data['role'])
 
-        if register_user(data):
-            return {'message': 'Registered user successfully'}, 201
+        if result[0]:
+            return result[1], 201
         else:
-            return {'error': 'Registration failed'}, 403
+            return result[1], 403
 
 class Login(Resource):
     
@@ -95,7 +98,11 @@ class PrintUsers(AuthResource):
 
     def get(self):
         
-        return get_registered_users()
+        result = get_registered_users()
+        if result[0]:
+            return result[1], 200
+        else:
+            return result[1], 404
 
 auth_api.add_resource(Register, '/register')
 auth_api.add_resource(Login, '/login')
