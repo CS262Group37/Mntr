@@ -8,7 +8,7 @@ import requests
 roles = ['mentee', 'mentor', 'admin']
 
 def add_user(first_name, last_name, email, password, role):
-    print("Adding", first_name, last_name)
+    print('Adding', first_name, last_name)
     requests.post('http://127.0.0.1:5000/api/auth/register', 
         data={
             'email': email,
@@ -43,7 +43,13 @@ def add_specific_user():
 
     add_user(first_name, last_name, email, password, role)
 
-class Console(object):
+# Returns cookies from user login
+def login_user(email, password):
+    global cookie
+    response = requests.post('http://127.0.0.1:5000/api/auth/register', data={'email': email, 'password': password})
+    cookie = response.cookies
+
+class Console():
     
     options = {
         '1' : add_random_users,
