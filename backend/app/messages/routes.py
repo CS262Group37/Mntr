@@ -1,16 +1,19 @@
-from backend.app.auth.routes import AuthResource
 from app.parsers import *
-from .messages import *
+from app.auth.routes import AuthResource
+
 from . import messages_api
+from .messages import *
 
 class GetMessages(AuthResource):
 
     roles = ['mentee', 'mentor']
 
-    def get():
+    def get(self):
+        return get_messages(self.userID)
 
-        userID_parser()
+class CreateMessage(AuthResource):
+
+    def post(self):
         pass
-        #return get_messages(userID)
 
 messages_api.add_resource(GetMessages, '/get_messages')
