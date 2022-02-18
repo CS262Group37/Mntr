@@ -1,6 +1,4 @@
 import os
-import psycopg2
-from psycopg2 import Error
 from psycopg2 import pool
 from flask import current_app as app
 
@@ -8,13 +6,13 @@ def create_connection_pool():
     print("Creating connection pool")
 
     try:
-        pool = psycopg2.pool.ThreadedConnectionPool(1, 20, dbname=os.getenv('DB_NAME'),
+        __pool = pool.ThreadedConnectionPool(1, 20, dbname=os.getenv('DB_NAME'),
                                                         user=os.getenv('DB_USER'),
                                                         password=os.getenv('DB_PASSWORD'),
                                                         host="127.0.0.1",
                                                         port="5432")
-        app.db_pool = pool
-    except (Exception, Error) as e:
+        app.db_pool = __pool
+    except Exception as e:
         print("Error while connecting to database", e)
     else:
         print("Connection pool successfully created")
@@ -27,24 +25,27 @@ def close_connection_pool():
 # the result of the SQL query in a data structure. NOTE: When using this class make sure to check
 # the value of self.error at the end of the with clause. It will be true if an SQL error occurs in the
 # class's lifetime. SQL errors are otherwised suppressed to keep things simple (I might change this eventually)
-class DatabaseConnection(object):
+class DatabaseConnection():
 
     def __init__(self):
         self.conn = app.db_pool.getconn()
         self.curs = self.conn.cursor()
         self.error = False
+        self.error_message = None
+        self.constraint_violated = None
 
     def __enter__(self):
         return self
 
     # Closes the cursor and connection
     def __exit__(self, type, value, traceback):
+        if not self.error:
+            self.conn.commit()
+        else:
+            self.conn.rollback()
         self.curs.close()
         app.db_pool.putconn(self.conn)
-
-    # Use this for manually closing the connection when not using a context manager
-    def close(self):
-        self.__exit__()
+        return True
     
     # Pass sql in the form of a string data in the form of a tuple. NOTE: If you are passing in a
     # single variable, it needs to have a comma after for some reason e.g. (variable, )
@@ -56,12 +57,32 @@ class DatabaseConnection(object):
                 fetch = self.curs.fetchall()
             except:
                 pass
-            self.conn.commit()
-        except Error as e:
-            print(e)
-            self.conn.rollback()
+        except Exception as error:
+            print(error.pgerror)
+            print('Code:', error.pgcode)
             self.error = True
+            self.error_message = error.pgerror
+            self.constraint_violated = self.get_constraint_name(error.pgerror)
+            raise
+                
         return fetch
+    
+    # Extracts the constraint name from an error message
+    def get_constraint_name(self, message):
+        
+        index = message.find('constraint ')
+        if index == -1:
+            return None
+
+        index += 12
+        constraint_name = ''
+        while message[index] != "\"":
+            constraint_name = constraint_name + message[index]
+            index = index + 1
+            if index == len(message):
+                return None
+            
+        return constraint_name
 
 # Executes schema.sql on the database
 def load_schema():
