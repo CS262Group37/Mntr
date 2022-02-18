@@ -9,7 +9,7 @@ pages
 - profile page
 - account settings
 
-admin
+admin (James)
 - get_topics
 - add_topic
 - remove_topic
@@ -35,13 +35,13 @@ meetings
 - accept_meeting(mentor, meetingID)
 - get_meetings(mentor, mentee)
 
-messages
+messages (Joshua)
 - (internal) send_message(sender, recipient, message_type)
 - get_inbox(user)
 
 reports
 - send_report
 
-pairings
+relations
 - send_email(pairingID, text)
 - rate_mentor_skills(pairingID)
