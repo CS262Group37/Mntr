@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from distutils.util import execute
 
 import jwt
 from app.database import DatabaseConnection
@@ -8,29 +9,36 @@ token_lifetime = timedelta(minutes=5)
 
 # All functions used for responses should return a tuple containing (status, object containing message or data)
 
-# Registers a user. Returns tuple (status, dict of json objects).
-def register_user(email, password, firstName, lastName, role):
+# Registers an account. Returns type(status, dict, accountID)
+def register_account(email, password, firstName, lastName):
 
     conn = DatabaseConnection()
     with conn:
-        # First create the account
-        sql = 'INSERT INTO account (email, "password", firstName, lastName) VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING;'
+        # Create the account
+        sql = 'INSERT INTO account (email, "password", firstName, lastName) VALUES (%s, %s, %s, %s) RETURNING accountID;'
         data = (email, password, firstName, lastName)
-        conn.execute(sql, data)
-
-        # Get accountID
-        sql = "SELECT (accountID) FROM account WHERE email=%s"
-        data = (email, )
         accountID = conn.execute(sql, data)
 
-        # Now create user
+    if conn.error:
+        error = conn.error_message
+        if conn.constraint_violated == 'unique_email':
+            error = 'Account with that email already exists'
+        return (False, {'message': 'Account registration failed', 'error': error})
+    return (True, {'message': 'Account successfully created'}, accountID[0][0])
+
+# Registers a user for a given account. Returns tuple (status, dict).
+def register_user(accountID, role):
+
+    conn = DatabaseConnection()
+    with conn:
+        # Create the user
         sql = 'INSERT INTO "user" (accountID, "role") VALUES (%s, %s);'
-        data = (accountID[0][0], role)
+        data = (accountID, role)
         conn.execute(sql, data)
     
     if conn.error:
-        return (False, {'message': 'Registration failed', 'error': conn.error_message, 'constraint': conn.constraint_violated})
-    return (True, {'message': 'Registered user successfully.'})
+        return (False, {'message': 'Registration failed', 'error': conn.error_message})
+    return (True, {'message': 'Registered user successfully'})
 
 # Gets all users
 def get_registered_users():
@@ -48,7 +56,7 @@ def get_registered_users():
 # Checks if an email exists. This is a utility function so the return value doesn't need to be
 # a tuple.
 def check_email(email):
-    sql = 'SELECT EXISTS (SELECT 1 FROM "user" WHERE email=%s);'
+    sql = 'SELECT EXISTS (SELECT 1 FROM account WHERE email=%s);'
     
     conn = DatabaseConnection()
     with conn:
@@ -63,7 +71,7 @@ def check_email(email):
 
 def check_password(email, password):
     
-    sql = 'SELECT password FROM "user" WHERE email=%s;'
+    sql = 'SELECT password FROM account WHERE email=%s;'
 
     conn = DatabaseConnection()
     with conn:
@@ -74,38 +82,49 @@ def check_password(email, password):
     if password == db_password[0][0]:
         return True
 
-# Attempts to generate a token for a given user. Returns False if generation fails.
-def generate_token(email):
+# Attempts to generate a token for a given email. Returns tuple (status, token or dict).
+def encode_token(email, role = None):
 
-    # Get the userID and role from the database
+    # Get user's accountID and userID from DB
     conn = DatabaseConnection()
     with conn:
-        userID = conn.execute('SELECT userID FROM "user" WHERE email=%s;', (email, ))[0][0]
-        role = conn.execute('SELECT role FROM "user" WHERE email=%s;', (email, ))[0][0]
-    if conn.error:
-        return False
+        sql = 'SELECT accountID FROM account WHERE email=%s'
+        data = (email, )
+        accountID = conn.execute(sql, data)
+
+        sql = 'SELECT userID FROM "user" WHERE role=%s AND accountID=%s'
+        data = (role, accountID[0][0])
+        userID = conn.execute(sql, data)
+    
+    if not accountID:
+        return (False, {'message': 'Token generation failed', 'error': 'Account does not exist'})
+    elif role is not None and not userID:
+        return (False, {'message': 'Token generation failed', 'error': 'User with that role does not exist'})
+
+    if accountID:
+        accountID = accountID[0][0]
+
+    if userID:
+        userID = userID[0][0]
 
     payload = {
         'iat': datetime.utcnow(),
         'exp': datetime.utcnow() + token_lifetime,
-        'sub': userID,
+        'accountID': accountID,
+        'userID': userID,
         'role': role
     }
     
     try:
-        return jwt.encode(payload, app.config.get('SECRET_KEY'))
-    except:
-        return False
+        return (True, jwt.encode(payload, app.config.get('SECRET_KEY')))
+    except Exception as e:
+        return (False, {'message': 'Token generation failed', 'error': str(e)})
 
-# Returns a tuple that contains (token validity, error message, userID) (userID is only included if token is valid)
-def check_token(token, roles):
+# Returns a tuple that contains (token validity, error message or payload) (userID is only included if token is valid)
+def decode_token(token):
     try:
         payload = jwt.decode(token, app.config.get('SECRET_KEY'), ["HS256"])
-    except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError) as e:
+    except Exception as e:
         return (False, str(e))
     else:
-        # Check that the role matches
-        if payload['role'] in roles:
-             return (True, '', payload['sub'])
-        else:
-            return (False, 'Realm permission denied')
+        return (True, payload)

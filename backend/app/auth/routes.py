@@ -21,24 +21,20 @@ def authenticate(func):
         # Get token from cookie
         token = request.cookies['JWT_Token']
 
-        # Create a WWW-Authenticate response header in case there's an error
-        error_response = make_response()
-        error_response.headers['WWW-Authenticate'] = 'Bearer realm=\"\"'
-        error_response.status = 401
-
-        # Don't do authentication if the roles are not defined
-        if not hasattr(func.__self__, 'roles'):
-            abort(error_response)
-        else:
-            roles = getattr(func.__self__, 'roles')
-
-        token_check = check_token(token, roles)
-        if token_check[0]:
-            func.__self__.userID = token_check[2]
+        token_decode = decode_token(token)
+        if token_decode:
+            payload = token_decode[1]
+            
+            # Check role if role restrictions are defined
+            if hasattr(func.__self__, 'roles'):
+                roles = getattr(func.__self__, 'roles')
+                if payload['role'] not in roles:
+                    abort(make_response({'error': 'Your do not have access to this resource'}, 401))
+        
+            func.__self__.payload = payload
             return func(*args, **kwargs)
         else:
-            error_response.headers['WWW-Authenticate'] = 'Bearer realm=\"' + ''.join(roles) + '\", error=\"' + token_check[1] + '\"'
-            abort(error_response)
+            abort(make_response({'error': token_decode[1]}, 401))
         
     return wrapper
 
@@ -49,12 +45,32 @@ class AuthResource(Resource):
     method_decorators = [authenticate]
 
 # Routes
-class Register(Resource):
+class RegisterAccount(Resource):
 
     def post(self):
         
-        data = register_parser.parse_args()
-        result = register_user(data['email'], data['password'], data['firstName'], data['lastName'], data['role'])
+        data = register_account_parser.parse_args()
+        result = register_account(data['email'], data['password'], data['firstName'], data['lastName'])
+
+        if result[0]:
+
+            # Generate an account token
+            token = encode_token(data['email'])
+            if not token[0]:
+                return token[1], 403
+            
+            response = make_response(result[1], 201)
+            response.set_cookie("JWT_Token", token[1], httponly=True, samesite='Lax')
+            return response
+        else:
+            return result[1], 403
+
+class RegisterUser(AuthResource):
+
+    def post(self):
+        
+        data = register_user_parser.parse_args()
+        result = register_user(self.payload['accountID'], data['role'])
 
         if result[0]:
             return result[1], 201
@@ -75,18 +91,14 @@ class Login(Resource):
         # TODO: Do password hashing verification stuff here
         # TODO: Need a way to store the generated auth token in a cookie or local storage
         
-        token = generate_token(data['email'])
-        if not token:
-            return {'error': 'Token generation failed'}, 403
-        
-        response = make_response(
-            {'message': 'Successfully logged in'},
-            200
-            #{'Authorization': token}
-        )
+        token_result = encode_token(data['email'], data['role'])
+        if not token_result[0]:
+            return token_result[1], 403
 
+        response = make_response({'message': 'Successfully logged in'}, 200)
+        
         # TODO: Apparently it is good practice to check that the cookie has been created? I cba rn
-        response.set_cookie("JWT_Token", token, token_lifetime, httponly=True, samesite='Lax')
+        response.set_cookie("JWT_Token", token_result[1], httponly=True, samesite='Lax')
 
         return response
 
@@ -97,6 +109,7 @@ class PrintUsers(AuthResource):
     roles = ['admin']
 
     def get(self):
+        print(self.payload['userID'])
         
         result = get_registered_users()
         if result[0]:
@@ -104,6 +117,7 @@ class PrintUsers(AuthResource):
         else:
             return result[1], 404
 
-auth_api.add_resource(Register, '/register')
+auth_api.add_resource(RegisterAccount, '/register-account')
+auth_api.add_resource(RegisterUser, '/register-user')
 auth_api.add_resource(Login, '/login')
 auth_api.add_resource(PrintUsers, '/users')
