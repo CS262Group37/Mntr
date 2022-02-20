@@ -18,7 +18,7 @@ POST {{hostname}}/api/auth/register-user HTTP/1.1
 Content-Type: application/json
 
 {
-    "role": "admin"
+    "role": "mentee"
 }
 
 ###
@@ -40,3 +40,20 @@ Content-Type: application/json
 
 # @name view_users
 GET {{hostname}}/api/auth/users
+
+###
+
+# @name create_relation
+# You must be logged in as a mentee for this to work
+# SELECT * FROM "user" WHERE ("role"='mentor');
+POST {{hostname}}/api/relations/create-relation
+Content-Type: application/json
+
+{
+    "mentorID": 1
+}
+
+###
+
+# @name get_relation
+GET {{hostname}}/api/relations/get-relations
