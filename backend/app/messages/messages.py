@@ -2,7 +2,7 @@ from app.database import DatabaseConnection
 
 def get_messages(userID):
     sql = 'SELECT * FROM messages WHERE messageType = %s'
-    data = (userID, )
+    data = (userID,)
 
     with DatabaseConnection() as conn:
         result = conn.execute(sql, data)

@@ -1,24 +1,21 @@
+from logging import exception
 import os
 from psycopg2 import pool
 from flask import current_app as app
 
 def create_connection_pool():
-    print("Creating connection pool")
-
     try:
         __pool = pool.ThreadedConnectionPool(1, 20, dbname=os.getenv('DB_NAME'),
                                                         user=os.getenv('DB_USER'),
                                                         password=os.getenv('DB_PASSWORD'),
-                                                        host="127.0.0.1",
-                                                        port="5432")
+                                                        host='127.0.0.1',
+                                                        port='5432')
         app.db_pool = __pool
     except Exception as e:
-        print("Error while connecting to database", e)
-    else:
-        print("Connection pool successfully created")
+        raise Exception('Failed to connect to database. Have you started the postgresql service?') from e
 
 def close_connection_pool():
-    print("Closing the database")
+    print('Closing the connection pool')
     app.db_pool.closeall()
 
 # Use this class in a with clause for executing sql on the database. The execute function will return
@@ -48,7 +45,7 @@ class DatabaseConnection():
         return True
     
     # Pass sql in the form of a string data in the form of a tuple. NOTE: If you are passing in a
-    # single variable, it needs to have a comma after for some reason e.g. (variable, )
+    # single variable it needs to have a comma after because it must be a tuple e.g. (variable,)
     def execute(self, sql, data = None):
         fetch = None
         try:
@@ -72,7 +69,7 @@ class DatabaseConnection():
         
         index = message.find('constraint ')
         if index == -1:
-            return None
+            return ''
 
         index += 12
         constraint_name = ''
@@ -80,7 +77,7 @@ class DatabaseConnection():
             constraint_name = constraint_name + message[index]
             index = index + 1
             if index == len(message):
-                return None
+                return ''
             
         return constraint_name
 
