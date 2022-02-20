@@ -9,7 +9,7 @@ token_lifetime = timedelta(minutes=5)
 
 # All functions used for responses should return a tuple containing (status, object containing message or data)
 
-# Registers an account. Returns type(status, dict, accountID)
+# Registers an account. Returns type(status, dict)
 def register_account(email, password, firstName, lastName):
 
     conn = DatabaseConnection()
@@ -24,7 +24,7 @@ def register_account(email, password, firstName, lastName):
         if conn.constraint_violated == 'unique_email':
             error = 'Account with that email already exists'
         return (False, {'message': 'Account registration failed', 'error': error})
-    return (True, {'message': 'Account successfully created'}, accountID[0][0])
+    return (True, {'message': 'Account successfully created', 'accountID': accountID[0][0]})
 
 # Registers a user for a given account. Returns tuple (status, dict).
 def register_user(accountID, role):
@@ -32,13 +32,13 @@ def register_user(accountID, role):
     conn = DatabaseConnection()
     with conn:
         # Create the user
-        sql = 'INSERT INTO "user" (accountID, "role") VALUES (%s, %s);'
+        sql = 'INSERT INTO "user" (accountID, "role") VALUES (%s, %s) RETURNING userID;'
         data = (accountID, role)
-        conn.execute(sql, data)
+        userID = conn.execute(sql, data)
     
     if conn.error:
         return (False, {'message': 'Registration failed', 'error': conn.error_message})
-    return (True, {'message': 'Registered user successfully'})
+    return (True, {'message': 'Registered user successfully', 'userID': userID[0][0]})
 
 # Gets all users
 def get_registered_users():
@@ -50,8 +50,8 @@ def get_registered_users():
         users = conn.execute(sql)
     
     if conn.error:
-        return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
-    return (True, users[0])
+        return (False, {'error': conn.error_message})
+    return (True, users[0] if users else [])
 
 # Checks if an email exists. This is a utility function so the return value doesn't need to be
 # a tuple.
@@ -60,7 +60,7 @@ def check_email(email):
     
     conn = DatabaseConnection()
     with conn:
-        exists = conn.execute(sql, (email, ))
+        exists = conn.execute(sql, (email,))
     
     if conn.error:
         return False
@@ -75,7 +75,7 @@ def check_password(email, password):
 
     conn = DatabaseConnection()
     with conn:
-        db_password = conn.execute(sql, (email, ))
+        db_password = conn.execute(sql, (email,))
     if conn.error:
         return False
     
@@ -89,7 +89,7 @@ def encode_token(email, role = None):
     conn = DatabaseConnection()
     with conn:
         sql = 'SELECT accountID FROM account WHERE email=%s'
-        data = (email, )
+        data = (email,)
         accountID = conn.execute(sql, data)
 
         sql = 'SELECT userID FROM "user" WHERE role=%s AND accountID=%s'
