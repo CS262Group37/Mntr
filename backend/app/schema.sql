@@ -40,9 +40,30 @@ CREATE TABLE relation (
     CONSTRAINT unique_relation UNIQUE (mentorID, menteeID)
 );
 
+CREATE TABLE system_business_area (
+    businessAreaID SERIAL PRIMARY KEY,
+    "name" VARCHAR NOT NULL CONSTRAINT unique_area_name UNIQUE
+);
+
+CREATE TABLE system_topic (
+    topicID SERIAL PRIMARY KEY,
+    "name" VARCHAR NOT NULL CONSTRAINT unique_topic UNIQUE
+);
+
+CREATE TABLE system_skill (
+    skillID SERIAL PRIMARY KEY,
+    "name" VARCHAR NOT NULL CONSTRAINT unique_skill UNIQUE
+);
+
+-- Contains user's ratings for skills
+CREATE TABLE rating (
+    userID NOT NULL REFERENCES "user"(userID),
+    skillID NOT NULL REFERENCES system_skill(skillID),
+    rating INTEGER NOT NULL CONSTRAINT valid_rating CHECK (rating >= 0 AND rating <= 10)
+);
+
 -------------------- Relation Trigger --------------------
 
--- Note: This trigger only runs once on INSERT or UPDATE. It doesn't run on every row.
 CREATE OR REPLACE FUNCTION add_relation_contraints()
 RETURNS TRIGGER AS
 $$
@@ -52,13 +73,9 @@ DECLARE
     menteeRole VARCHAR;
     mentorRole VARCHAR;
 BEGIN
-    -- Get account IDs
-    SELECT accountID INTO menteeAccountID FROM "user" WHERE userID = new.menteeID;
-    SELECT accountID INTO mentorAccountID FROM "user" WHERE userID = new.mentorID;
-
-    -- Get roles
-    SELECT "role" INTO menteeRole FROM "user" WHERE userID = new.menteeID;
-    SELECT "role" INTO menteeRole FROM "user" WHERE userID = new.menteeID;
+    -- Get account IDs and roles
+    SELECT accountID, "role" INTO menteeAccountID, menteeRole FROM "user" WHERE userID = new.menteeID;
+    SELECT accountID, "role" INTO mentorAccountID, mentorRole FROM "user" WHERE userID = new.mentorID;
 
     IF menteeAccountID = mentorAccountID THEN
         RAISE EXCEPTION 'Cannot add relation. Mentor and mentee have the same account';
