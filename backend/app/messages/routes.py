@@ -11,9 +11,4 @@ class GetMessages(AuthResource):
     def get(self):
         return get_messages(self.userID)
 
-class CreateMessage(AuthResource):
-
-    def post(self):
-        pass
-
 messages_api.add_resource(GetMessages, '/get_messages')
