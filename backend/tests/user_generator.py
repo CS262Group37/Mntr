@@ -34,6 +34,9 @@ def create_account(first_name, last_name, email, password):
             }
         )
     data = json.loads(response.content)
+    if 'error' in data:
+        print("Returning false")
+        return False
     global active_cookie
     active_cookie = response.cookies
     accounts[email] = Account(data['accountID'], first_name, last_name)
@@ -154,6 +157,10 @@ def create_random_relations():
 
 def random_login():
 
+    if len(accounts) == 0:
+        print("Cannot login, there are no users on the system")
+        return
+    
     random_email = random.choice(list(accounts.keys()))
     if random_email in mentors and random_email in mentees:
         r = random.randrange(2)
