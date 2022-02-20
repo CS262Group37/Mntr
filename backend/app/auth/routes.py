@@ -17,12 +17,12 @@ def authenticate(func):
 
         if request.cookies is None or 'JWT_Token' not in request.cookies:
             abort(make_response({'error': 'Could not find authentication cookie'}, 401))
-        
+
         # Get token from cookie
         token = request.cookies['JWT_Token']
-
         token_decode = decode_token(token)
-        if token_decode:
+
+        if token_decode[0]:
             payload = token_decode[1]
             
             # Check role if role restrictions are defined
@@ -109,9 +109,9 @@ class PrintUsers(AuthResource):
     roles = ['admin']
 
     def get(self):
-        print(self.payload['userID'])
         
         result = get_registered_users()
+        
         if result[0]:
             return result[1], 200
         else:
