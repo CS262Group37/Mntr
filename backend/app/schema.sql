@@ -1,7 +1,11 @@
-DROP TABLE IF EXISTS "account" CASCADE;
+DROP TABLE IF EXISTS account CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 DROP TABLE IF EXISTS "message" CASCADE;
-DROP TABLE IF EXISTS "relation" CASCADE;
+DROP TABLE IF EXISTS relation CASCADE;
+DROP TABLE IF EXISTS system_business_area CASCADE;
+DROP TABLE IF EXISTS system_topic CASCADE;
+DROP TABLE IF EXISTS system_skill CASCADE;
+DROP TABLE IF EXISTS rating CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS add_relation_contraints;
@@ -57,8 +61,8 @@ CREATE TABLE system_skill (
 
 -- Contains user's ratings for skills
 CREATE TABLE rating (
-    userID NOT NULL REFERENCES "user"(userID),
-    skillID NOT NULL REFERENCES system_skill(skillID),
+    userID INTEGER NOT NULL REFERENCES "user"(userID),
+    skillID INTEGER NOT NULL REFERENCES system_skill(skillID),
     rating INTEGER NOT NULL CONSTRAINT valid_rating CHECK (rating >= 0 AND rating <= 10)
 );
 
