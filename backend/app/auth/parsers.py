@@ -1,4 +1,3 @@
-from random import choices
 from flask_restx import reqparse
 
 register_account_parser = reqparse.RequestParser(bundle_errors=True)

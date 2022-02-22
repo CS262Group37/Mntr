@@ -11,7 +11,6 @@ token_lifetime = timedelta(minutes=5)
 
 # Registers an account. Returns type(status, dict)
 def register_account(email, password, firstName, lastName):
-
     conn = DatabaseConnection()
     with conn:
         # Create the account
@@ -28,7 +27,6 @@ def register_account(email, password, firstName, lastName):
 
 # Registers a user for a given account. Returns tuple (status, dict).
 def register_user(accountID, role):
-
     conn = DatabaseConnection()
     with conn:
         # Create the user
@@ -42,7 +40,6 @@ def register_user(accountID, role):
 
 # Gets all users
 def get_registered_users():
-
     sql = 'SELECT * FROM "user";'
 
     conn = DatabaseConnection()
@@ -51,7 +48,7 @@ def get_registered_users():
     
     if conn.error:
         return (False, {'error': conn.error_message})
-    return (True, users[0] if users else [])
+    return (True, users)
 
 # Checks if an email exists. This is a utility function so the return value doesn't need to be
 # a tuple.
@@ -70,7 +67,6 @@ def check_email(email):
 
 
 def check_password(email, password):
-    
     sql = 'SELECT password FROM account WHERE email=%s;'
 
     conn = DatabaseConnection()
@@ -84,7 +80,6 @@ def check_password(email, password):
 
 # Attempts to generate a token for a given email. Returns tuple (status, token or dict).
 def encode_token(email, role = None):
-
     # Get user's accountID and userID from DB
     conn = DatabaseConnection()
     with conn:
