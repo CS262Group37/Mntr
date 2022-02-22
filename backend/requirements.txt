@@ -4,4 +4,5 @@ flask-restful
 psycopg2
 PyJWT
 requests
-names
+faker
+rich
