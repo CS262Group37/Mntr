@@ -11,7 +11,7 @@ authorizations = {
 class DevConfig:
     SECRET_KEY = 'dev'
     RESTX_VALIDATE = True
-    SERVER_NAME = os.getenv('HOSTNAME')[7:]
+    #SERVER_NAME = os.getenv('HOSTNAME')[7:]
     SWAGGER_UI_REQUEST_DURATION = True
     SWAGGER_UI_DOC_EXPANSION = 'list'
 
