@@ -23,7 +23,7 @@ def create_relation(menteeID, mentorID):
     if not authentication.login_user(mentee_data[0]['email'], mentee_data[0]['password'], mentee_data[0]['role']):
         return False
 
-    response = requests.post(f'{hostname}/relations/create-relation', 
+    response = requests.post(f'{hostname}/api/relations/create-relation', 
         data={
             'mentorID': mentorID
             },

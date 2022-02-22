@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 console = Console()
 load_dotenv()
-hostname = os.getenv('API_HOSTNAME')
+hostname = os.getenv('HOSTNAME')
 
 options = {}
 

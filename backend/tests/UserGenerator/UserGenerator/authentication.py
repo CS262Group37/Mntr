@@ -22,7 +22,7 @@ options = {
 }
 
 def login_user(email, password, role):
-    response = requests.post(f'{hostname}/auth/login', data={'email': email, 'password': password, 'role': role}, timeout=10)
+    response = requests.post(f'{hostname}/api/auth/login', data={'email': email, 'password': password, 'role': role}, timeout=10)
     global active_cookie
     active_cookie = response.cookies
 

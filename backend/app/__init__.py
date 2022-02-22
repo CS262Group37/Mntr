@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, url_for, make_response
+from flask_restx import Api, apidoc
 
 import config
 import app.auth as auth
@@ -13,7 +14,7 @@ from . import database as db
 def create_app():
     """Initialise the application."""
     app = Flask(__name__)
-    
+    api = Api(app, authorizations=config.authorizations, doc='/docs/')
     app.config.from_object(config.DevConfig)
 
     # Initialise database
@@ -21,11 +22,11 @@ def create_app():
         db.init_db()
         db.load_schema()
     
-    # Register blueprints
-    app.register_blueprint(auth.auth_bp, url_prefix='/auth', subdomain='api')
-    app.register_blueprint(matching.matching_bp, url_prefix='/matching', subdomain='api')
-    app.register_blueprint(meetings.meetings_bp, url_prefix='/meetings', subdomain='api')
-    app.register_blueprint(messages.messages_bp, url_prefix='/messages', subdomain='api')
-    app.register_blueprint(relations.relations_bp, url_prefix='/relations', subdomain='api')
+        # Register blueprints
+        app.register_blueprint(auth.auth_bp, url_prefix='/api/auth')
+        app.register_blueprint(matching.matching_bp, url_prefix='/api/matching')
+        app.register_blueprint(meetings.meetings_bp, url_prefix='/api/meetings')
+        app.register_blueprint(messages.messages_bp, url_prefix='/api/messages')
+        app.register_blueprint(relations.relations_bp, url_prefix='/api/relations')
 
     return app

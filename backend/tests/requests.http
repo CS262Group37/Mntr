@@ -1,7 +1,7 @@
-@hostname = http://api.mydomain.com:5000
+@hostname = http://mydomain.com:5000
 
 # @name register_account
-POST {{hostname}}/auth/register-account HTTP/1.1
+POST {{hostname}}/api/auth/register-account HTTP/1.1
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 ###
 
 # @name register_user
-POST {{hostname}}/auth/register-user HTTP/1.1
+POST {{hostname}}/api/auth/register-user HTTP/1.1
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ Content-Type: application/json
 @email = {{register_account.request.body.email}}
 @password = {{register_account.request.body.password}}
 @role = {{register_user.request.body.role}}
-POST {{hostname}}/auth/login HTTP/1.1
+POST {{hostname}}/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
@@ -39,14 +39,14 @@ Content-Type: application/json
 ###
 
 # @name view_users
-GET {{hostname}}/auth/users
+GET {{hostname}}/api/auth/users
 
 ###
 
 # @name create_relation
 # You must be logged in as a mentee for this to work
 # SELECT * FROM "user" WHERE ("role"='mentor');
-POST {{hostname}}/relations/create-relation
+POST {{hostname}}/api/relations/create-relation
 Content-Type: application/json
 
 {
@@ -56,4 +56,4 @@ Content-Type: application/json
 ###
 
 # @name get_relation
-GET {{hostname}}/relations/get-relations
+GET {{hostname}}/api/relations/get-relations

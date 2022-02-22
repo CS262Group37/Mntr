@@ -13,7 +13,7 @@ from .console import add_option, console, hostname
 from .fake_data import fake
 
 def create_account(first_name, last_name, email, password):
-    response = requests.post(f'{hostname}/auth/register-account', 
+    response = requests.post(f'{hostname}/api/auth/register-account', 
         data={
             'email': email,
             'password': password,
@@ -49,7 +49,7 @@ def print_all_accounts():
         console.print(table, justify='center')
 
 def create_user(role):
-    response = requests.post(f'{hostname}/auth/register-user', 
+    response = requests.post(f'{hostname}/api/auth/register-user', 
         data={
             'role': role
             },
