@@ -43,9 +43,8 @@ def authenticate(func):
 class AuthResource(Resource):
     method_decorators = [authenticate]
 
-# Routes
 class RegisterAccount(Resource):
-
+    @auth_api.expect(parsers.register_account_parser)
     def post(self):
         
         data = parsers.register_account_parser.parse_args()
@@ -65,7 +64,7 @@ class RegisterAccount(Resource):
             return result[1], 403
 
 class RegisterUser(AuthResource):
-
+    @auth_api.expect(parsers.register_user_parser)
     def post(self):
         
         data = parsers.register_user_parser.parse_args()
@@ -77,7 +76,7 @@ class RegisterUser(AuthResource):
             return result[1], 403
 
 class Login(Resource):
-    
+    @auth_api.expect(parsers.login_parser)
     def post(self):
         data = parsers.login_parser.parse_args()
         
@@ -104,9 +103,9 @@ class Login(Resource):
 # Just for testing authentication. Provide the user's jwt token in the url.
 # They will be able to see a list of users on the system if they are authenticated as an admin
 class PrintUsers(AuthResource):
-    
     roles = ['admin']
 
+    @auth_api.doc(security='apiKey')
     def get(self):
         
         result = auth.get_registered_users()

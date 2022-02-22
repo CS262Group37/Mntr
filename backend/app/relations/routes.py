@@ -5,9 +5,10 @@ from . import parsers
 from . import relations
 
 class CreateRelation(AuthResource):
-
     roles = ['mentee']
 
+    @relations_api.doc(security='apiKey')
+    @relations_api.expect(parsers.create_relation_parser)
     def post(self):
         
         data = parsers.create_relation_parser.parse_args()
@@ -19,9 +20,9 @@ class CreateRelation(AuthResource):
 
 # Returns a list of relations the logged in user has
 class GetRelations(AuthResource):
-
     roles = ['mentor', 'mentee']
 
+    @relations_api.doc(security='apiKey')
     def get(self):
 
         result = relations.get_relations(self.payload['userID'], self.payload['role'])
@@ -31,10 +32,11 @@ class GetRelations(AuthResource):
             return result[1], 404
 
 class SendEmail(AuthResource):
-
     roles = ['mentor', 'mentee']
 
     # Check if the user is allowed to send this email
+    @relations_api.doc(security='apiKey')
+    @relations_api.expect(parsers.send_email_parser)
     def post(self):
 
         data = parsers.send_email_parser.parse_args()
