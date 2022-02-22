@@ -1,6 +1,6 @@
 flask
 python-dotenv
-flask-restful
+flask-restx
 psycopg2
 PyJWT
 requests
