@@ -1,9 +1,8 @@
 from app.auth.routes import AuthResource
 from app.messages.messages import send_message
-
 from . import relations_api
-from .parsers import *
-from .relations import *
+from . import parsers
+from . import relations
 
 class CreateRelation(AuthResource):
 
@@ -11,8 +10,8 @@ class CreateRelation(AuthResource):
 
     def post(self):
         
-        data = create_relation_parser.parse_args()
-        result = create_relation(self.payload['userID'], data['mentorID'])
+        data = parsers.create_relation_parser.parse_args()
+        result = relations.create_relation(self.payload['userID'], data['mentorID'])
         if result[0]:
             return result[1], 201
         else:
@@ -25,7 +24,7 @@ class GetRelations(AuthResource):
 
     def get(self):
 
-        result = get_relations(self.payload['userID'], self.payload['role'])
+        result = relations.get_relations(self.payload['userID'], self.payload['role'])
         if result[0]:
             return result[1], 200
         else:
@@ -38,9 +37,9 @@ class SendEmail(AuthResource):
     # Check if the user is allowed to send this email
     def post(self):
 
-        data = send_email_parser.parse_args()
+        data = parsers.send_email_parser.parse_args()
 
-        if not email_allowed(self.userID, data['recipientID'], data['senderID']):
+        if not relations.email_allowed(self.userID, data['recipientID'], data['senderID']):
             return {'error': 'You are not authorised to send this email.'}, 401
 
         result = send_message(data['recipientID'], data['senderID'], 'email', data['contents'])

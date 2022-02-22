@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
-from distutils.util import execute
 
 import jwt
-from app.database import DatabaseConnection
 from flask import current_app as app
+
+from app.database import DatabaseConnection
 
 token_lifetime = timedelta(minutes=5)
 
