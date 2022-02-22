@@ -9,11 +9,11 @@ from rich.prompt import IntPrompt
 from rich.table import Table
 
 from . import authentication, database
-from .console import add_option, console
+from .console import add_option, console, hostname
 from .fake_data import fake
 
 def create_account(first_name, last_name, email, password):
-    response = requests.post('http://127.0.0.1:5000/api/auth/register-account', 
+    response = requests.post(f'{hostname}/api/auth/register-account', 
         data={
             'email': email,
             'password': password,
@@ -49,7 +49,7 @@ def print_all_accounts():
         console.print(table, justify='center')
 
 def create_user(role):
-    response = requests.post('http://127.0.0.1:5000/api/auth/register-user', 
+    response = requests.post(f'{hostname}/api/auth/register-user', 
         data={
             'role': role
             },

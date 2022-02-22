@@ -1,12 +1,11 @@
-from cgitb import reset
 from functools import wraps
 
-from flask import abort, make_response, request
-from flask_restful import Resource
+from flask import make_response, request
+from flask_restx import Resource
 
 from . import auth_api
-from .auth import *
-from .parsers import *
+from . import auth
+from . import parsers
 
 # For cookie token storage stuff I'm basically doing Option 1 from this guys answer: https://stackoverflow.com/a/38470665
 
@@ -16,11 +15,11 @@ def authenticate(func):
     def wrapper(*args, **kwargs):
 
         if request.cookies is None or 'JWT_Token' not in request.cookies:
-            abort(make_response({'error': 'Could not find authentication cookie'}, 401))
+            return make_response({'error': 'Could not find authentication cookie'}, 401)
 
         # Get token from cookie
         token = request.cookies['JWT_Token']
-        token_decode = decode_token(token)
+        token_decode = auth.decode_token(token)
 
         if token_decode[0]:
             payload = token_decode[1]
@@ -29,12 +28,12 @@ def authenticate(func):
             if hasattr(func.__self__, 'roles'):
                 roles = getattr(func.__self__, 'roles')
                 if payload['role'] not in roles:
-                    abort(make_response({'error': 'Your do not have access to this resource'}, 401))
+                    return make_response({'error': 'Your do not have access to this resource'}, 401)
         
             func.__self__.payload = payload
             return func(*args, **kwargs)
         else:
-            abort(make_response({'error': token_decode[1]}, 401))
+            return make_response({'error': token_decode[1]}, 401)
         
     return wrapper
 
@@ -44,18 +43,17 @@ def authenticate(func):
 class AuthResource(Resource):
     method_decorators = [authenticate]
 
-# Routes
 class RegisterAccount(Resource):
-
+    @auth_api.expect(parsers.register_account_parser)
     def post(self):
         
-        data = register_account_parser.parse_args()
-        result = register_account(data['email'], data['password'], data['firstName'], data['lastName'])
+        data = parsers.register_account_parser.parse_args()
+        result = auth.register_account(data['email'], data['password'], data['firstName'], data['lastName'])
 
         if result[0]:
 
             # Generate an account token
-            token = encode_token(data['email'])
+            token = auth.encode_token(data['email'])
             if not token[0]:
                 return token[1], 403
             
@@ -66,11 +64,11 @@ class RegisterAccount(Resource):
             return result[1], 403
 
 class RegisterUser(AuthResource):
-
+    @auth_api.expect(parsers.register_user_parser)
     def post(self):
         
-        data = register_user_parser.parse_args()
-        result = register_user(self.payload['accountID'], data['role'])
+        data = parsers.register_user_parser.parse_args()
+        result = auth.register_user(self.payload['accountID'], data['role'])
 
         if result[0]:
             return result[1], 201
@@ -78,20 +76,20 @@ class RegisterUser(AuthResource):
             return result[1], 403
 
 class Login(Resource):
-    
+    @auth_api.expect(parsers.login_parser)
     def post(self):
-        data = login_parser.parse_args()
+        data = parsers.login_parser.parse_args()
         
-        if not check_email(data['email']):
+        if not auth.check_email(data['email']):
             return {'error': 'Email does not exist'}, 401
 
-        if not check_password(data['email'], data['password']):
+        if not auth.check_password(data['email'], data['password']):
             return {'error': 'Incorrect password'}, 401
 
         # TODO: Do password hashing verification stuff here
         # TODO: Need a way to store the generated auth token in a cookie or local storage
         
-        token_result = encode_token(data['email'], data['role'])
+        token_result = auth.encode_token(data['email'], data['role'])
         if not token_result[0]:
             return token_result[1], 403
 
@@ -105,12 +103,12 @@ class Login(Resource):
 # Just for testing authentication. Provide the user's jwt token in the url.
 # They will be able to see a list of users on the system if they are authenticated as an admin
 class PrintUsers(AuthResource):
-    
     roles = ['admin']
 
+    @auth_api.doc(security='apiKey')
     def get(self):
         
-        result = get_registered_users()
+        result = auth.get_registered_users()
         
         if result[0]:
             return result[1], 200

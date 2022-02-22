@@ -9,20 +9,21 @@ from rich.prompt import IntPrompt
 from rich.table import Table
 
 from . import authentication
-from .console import add_option, console
+from .console import add_option, console, hostname
 from .database import get_data
 
 
 def create_relation(menteeID, mentorID):
     # Get mentee data
-    mentee_data = get_data('SELECT * FROM account INNER JOIN "user" ON (account.accountID = "user".accountID) WHERE account.accountID=%s', (menteeID,))
+    mentee_data = get_data('SELECT * FROM "user" INNER JOIN account ON ("user".accountID = account.accountID) WHERE "user".userID=%s', (menteeID,))
     if not mentee_data:
         return False
 
     # Login as the mentee
-    authentication.login_user(mentee_data[0]['email'], mentee_data[0]['password'], mentee_data[0]['role'])
+    if not authentication.login_user(mentee_data[0]['email'], mentee_data[0]['password'], mentee_data[0]['role']):
+        return False
 
-    response = requests.post('http://127.0.0.1:5000/api/relations/create-relation', 
+    response = requests.post(f'{hostname}/api/relations/create-relation', 
         data={
             'mentorID': mentorID
             },
@@ -38,7 +39,6 @@ def create_relation(menteeID, mentorID):
 
 def add_random_relations():
     relation_count = IntPrompt.ask('Enter the number of relations to add')
-    created_relations = 0
     console.line()
 
     # Get mentees in the database

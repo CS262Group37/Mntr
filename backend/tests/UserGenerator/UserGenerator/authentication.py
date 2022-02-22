@@ -5,7 +5,7 @@ import requests
 from rich import box
 from rich.table import Table
 
-from .console import add_option, console, select_option
+from .console import add_option, console, select_option, hostname
 from .database import get_data
 from .relations import print_relations
 
@@ -22,7 +22,7 @@ options = {
 }
 
 def login_user(email, password, role):
-    response = requests.post('http://127.0.0.1:5000/api/auth/login', data={'email': email, 'password': password, 'role': role}, timeout=10)
+    response = requests.post(f'{hostname}/api/auth/login', data={'email': email, 'password': password, 'role': role}, timeout=10)
     global active_cookie
     active_cookie = response.cookies
 

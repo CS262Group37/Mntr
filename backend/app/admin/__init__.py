@@ -1,8 +1,8 @@
 from flask import Blueprint                            
-from flask_restful import Api
+from flask_restx import Api
                                                        
-admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin') 
-admin_api = Api(admin_bp)
+admin_bp = Blueprint('admin', __name__) 
+admin_api = Api(admin_bp, doc='/docs/')
 
 # Initialise the routes                                                                         
 from . import routes

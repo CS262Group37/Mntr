@@ -1,8 +1,8 @@
 from flask import Blueprint                            
-from flask_restful import Api
+from flask_restx import Api
                                                        
-messages_bp = Blueprint('messages', __name__, url_prefix='/api/messages') 
-messages_api = Api(messages_bp)
+messages_bp = Blueprint('messages', __name__) 
+messages_api = Api(messages_bp, doc = '/docs/')
 
 # Initialise the routes                                                                         
 from . import routes

@@ -1,4 +1,4 @@
-@hostname = http://localhost:5000
+@hostname = http://mydomain.com:5000
 
 # @name register_account
 POST {{hostname}}/api/auth/register-account HTTP/1.1

@@ -1,7 +1,6 @@
 from app.database import DatabaseConnection
 
 def create_relation(menteeID, mentorID):
-
     # Check mentorID is actually a mentor (don't need to check mentee cause checked with token)
     conn = DatabaseConnection()
     with conn:
@@ -15,7 +14,6 @@ def create_relation(menteeID, mentorID):
     return (True, {'message': 'Relation successfully created'})
 
 def get_relations(userID, role):
-    
     if role == 'mentor':
         sql = 'SELECT * FROM relation WHERE mentorID=%s'
     else:
@@ -32,7 +30,6 @@ def get_relations(userID, role):
 
 # Returns true if the user is allowed to send the email
 def email_allowed(userID, recipientID, senderID):
-    
     # Check if the user is sending the email as themselves
     if userID != senderID:
         return False

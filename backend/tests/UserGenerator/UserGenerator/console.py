@@ -1,11 +1,14 @@
+import os
+
 from rich import box
 from rich.console import Console
 from rich.prompt import IntPrompt
 from rich.table import Table
-
-from . import database
+from dotenv import load_dotenv
 
 console = Console()
+load_dotenv()
+hostname = os.getenv('HOSTNAME')
 
 options = {}
 
