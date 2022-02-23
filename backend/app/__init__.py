@@ -7,6 +7,7 @@ import app.matching as matching
 import app.meetings as meetings
 import app.messages as messages
 import app.relations as relations
+import app.admin as admin
 from . import database as db
 
 # Good description of the pattern I'm trying to implement: http://exploreflask.com/en/latest/blueprints.html
@@ -24,6 +25,7 @@ def create_app():
     
         # Register blueprints
         app.register_blueprint(auth.auth_bp, url_prefix='/api/auth')
+        app.register_blueprint(admin.admin_bp, url_prefix='/api/admin')
         app.register_blueprint(matching.matching_bp, url_prefix='/api/matching')
         app.register_blueprint(meetings.meetings_bp, url_prefix='/api/meetings')
         app.register_blueprint(messages.messages_bp, url_prefix='/api/messages')
