@@ -1,7 +1,9 @@
 import React from "react";
 import "./App.css";
 import axios from "axios";
+import { Route, Link } from "react-router-dom"
 import { BiUser, BiLockAlt } from "react-icons/bi";
+import LeftPanel from "./components/LeftPanel";
 
 function Login() {
   const [email, setEmail] = React.useState<string>("");
@@ -36,23 +38,7 @@ function Login() {
     <div className="fixed h-full w-full">
       {/* Main flexbox */}
       <div className="flex flex-row items-stretch h-full align-middle font-display">
-        {/* Blue half */}
-        <div className="flex h-full bg-blueBg bg-cover w-2/5 flex-col">
-            <h1 className="mt-40 ml-16 mr-20 text-cultured font-bold text-8xl leading-tight">Website Name</h1>
-            <div className="ml-16 mb-28 mt-auto text-imperialRed text-5xl">
-              <ul className="flex flex-col content-between space-y-4">
-                <li>
-                  LEARN
-                </li>
-                <li>
-                  TEACH
-                </li>
-                <li>
-                  EXPERIENCE
-                </li>
-              </ul>
-            </div>
-          </div>
+        <LeftPanel />
 
         {/* White half */}
         <div className="bg-cultured h-full w-3/5 m-auto flex text-prussianBlue">
@@ -95,7 +81,7 @@ function Login() {
               onClick={login}
             >Login</button>
 
-            <p className="text-2xl m-auto">Don't have an account yet? <span className="font-bold underline text-imperialRed">Register now!</span></p>
+            <p className="text-2xl m-auto">Don't have an account yet? <span className="font-bold underline text-imperialRed"><Link to="/register">Register now!</Link></span></p>
           </div>
         </div>
       </div>
