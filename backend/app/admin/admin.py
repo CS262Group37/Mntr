@@ -59,7 +59,6 @@ def ban_account(accountID):
     pass
 
 def remove_user(userID):
-    # Not sure
     sql = "INSERT INTO banned_users () VALUES (%s)"
     # TODO: Implement proper user removal here
     data = (userID)
@@ -114,7 +113,7 @@ def remove_skill(skillName):
     return (True, {'message': "Successfully removed skill"})
 
 def clear_skills():
-    sql = 'TRUNCATE system_skills;'
+    sql = 'TRUNCATE system_skill CASCADE;'
     conn = DatabaseConnection()
     with conn:
         conn.execute(sql)
