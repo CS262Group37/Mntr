@@ -3,8 +3,6 @@ import os
 import psycopg2
 import psycopg2.extras
 
-from . import console
-
 conn = None
 
 def create_connection():

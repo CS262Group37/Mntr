@@ -5,9 +5,11 @@ import requests
 from rich import box
 from rich.table import Table
 
-from .console import add_option, console, select_option, hostname
-from .database import get_data
-from .relations import print_relations
+from . import console
+from . import database
+from . import relations
+from . import accounts
+from . import admin
 
 active_cookie = None
 logout_flag = False
@@ -16,13 +18,19 @@ def logout(*args):
     global logout_flag
     logout_flag = True
 
-options = {
-    'View relations': print_relations,
-    'Logout': logout
+login_options = {
+    ('relations', 'View relations'): relations.print_relations,
+    ('logout', 'Logout'): logout
+}
+
+admin_options = {
+    ('skills', 'Add random skills to the system'): admin.add_random_skills,
+    ('topics', 'Add random topics to the system'): admin.add_random_topics,
+    ('logout', 'Logout'): logout
 }
 
 def login_user(email, password, role):
-    response = requests.post(f'{hostname}/api/auth/login', data={'email': email, 'password': password, 'role': role}, timeout=10)
+    response = requests.post(f'{console.hostname}/api/auth/login', data={'email': email, 'password': password, 'role': role}, timeout=10)
     global active_cookie
     active_cookie = response.cookies
 
@@ -31,27 +39,47 @@ def login_user(email, password, role):
         return False
     return True
 
+def admin_login():
+    global logout_flag
+    logout_flag = False
+
+    # Register an admin account and user then login
+    accounts.create_account('admin', 'admin', 'admin@admin.com', 'admin')
+    accounts.create_user('admin')
+    if login_user('admin@admin.com', 'admin', 'admin'):
+
+        while not logout_flag:
+            option = console.select_option(admin_options)
+            console.console.line()
+            admin_options[option]()
+            if not logout_flag:
+                console.console.line()
+    else:
+        console.print("[red]Admin login failed for an unknown reason[/]")
+
+    
+
 def random_login():
     global logout_flag
     logout_flag = False
     # Select a random account
-    accounts = get_data('SELECT * FROM account')
+    accounts = database.get_data('SELECT * FROM account')
     if not accounts:
-        console.print("[red]There are no accounts on the system[/]")
+        console.console.print("[red]There are no accounts on the system[/]")
         return
     
     random_account = choice(accounts)
     
     # Select a random user from that account
-    users = get_data('SELECT * FROM "user" WHERE accountID=%s', (random_account['accountid'],))
+    users = database.get_data('SELECT * FROM "user" WHERE accountID=%s', (random_account['accountid'],))
     random_user = choice(users)
     if not random_user:
-        console.print("[red]The selected account does not have any users[/]")
+        console.console.print("[red]The selected account does not have any users[/]")
         return
 
     if login_user(random_account['email'], random_account['password'], random_user['role']):
         
-        user_data = get_data('SELECT * FROM account INNER JOIN "user" ON (account.accountID = "user".accountID) WHERE account.accountID=%s', (random_account['accountid'],))
+        user_data = database.get_data('SELECT * FROM account INNER JOIN "user" ON (account.accountID = "user".accountID) WHERE account.accountID=%s', (random_account['accountid'],))
 
         table = Table(title='User Data', box=box.ROUNDED)
         table.add_column('Category', justify='center', style='green')
@@ -64,17 +92,18 @@ def random_login():
         table.add_row('Email', str(user_data[0]['email']))
         table.add_row('Password', str(user_data[0]['password']))
 
-        console.print(table, justify="center")
-        console.line()
-        console.print(f"[green]Successfully logged in as [bold]{random_account['firstname']} {random_account['lastname']}[/]")
+        console.console.print(table, justify="center")
+        console.console.line()
+        console.console.print(f"[green]Successfully logged in as [bold]{random_account['firstname']} {random_account['lastname']}[/]")
         
         while not logout_flag:
             
-            option = select_option(options)
-            console.line()
-            options[option](user_data)
+            option = console.select_option(login_options)
+            console.console.line()
+            login_options[option](user_data)
             if not logout_flag:
-                console.line()
+                console.console.line()
 
 def add_options():
-    add_option("Login as random user", random_login)
+    console.add_option('login', 'Login as a random user', random_login)
+    console.add_option('admin', 'Login as an admin', admin_login)

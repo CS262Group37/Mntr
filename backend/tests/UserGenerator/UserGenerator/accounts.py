@@ -110,6 +110,6 @@ def create_random_accounts_and_users():
     console.print(f'\n[green]Successfully added {created_accounts} accounts with {created_users} users in {stop - start} seconds[/]')
 
 def add_options():
-    add_option('Add random accounts and users', create_random_accounts_and_users)
-    add_option('View users', print_all_users)
-    add_option('View accounts', print_all_accounts)
+    add_option('add', 'Add random accounts and users', create_random_accounts_and_users)
+    add_option('users', 'View users in a table', print_all_users)
+    add_option('accounts', 'View accounts in a table', print_all_accounts)

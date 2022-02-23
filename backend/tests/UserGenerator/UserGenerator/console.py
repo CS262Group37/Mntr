@@ -2,7 +2,7 @@ import os
 
 from rich import box
 from rich.console import Console
-from rich.prompt import IntPrompt
+from rich.prompt import PromptBase
 from rich.table import Table
 from dotenv import load_dotenv
 
@@ -12,29 +12,35 @@ hostname = os.getenv('HOSTNAME')
 
 options = {}
 
-def add_option(name, function):
-    print("Adding", name)
-    options[name] = function
+class OptionPrompt(PromptBase[str]):
+    response_type = str
+    illegal_choice_message = (
+        "[prompt.invalid.choice]Please enter one of the available commands"
+    )
+
+def add_option(command, description, function):
+    options[(command, description)] = function
 
 def select_option(options):
     # Print options
     table = Table(title='Options', box=box.ROUNDED)
-    table.add_column('Number', justify='center', style='green')
-    table.add_column('Name', justify='center', style='cyan')
+    table.add_column('Command', justify='center', style='green')
+    table.add_column('Description', justify='center', style='cyan')
 
-    i = 0
     optionsList = list(options.keys())
     choices = []
     for option in optionsList:
-        i += 1
-        table.add_row(str(i), option)
-        choices.append(str(i))
+        table.add_row(option[0], option[1])
+        choices.append(option[0])
     console.print(table, justify='center')
 
     # Option input
-    option = IntPrompt.ask('\n[orange]Select an option[/]', choices=choices, show_choices=False)
-
-    return optionsList[option - 1]
+    option = OptionPrompt.ask('\n[orange]Enter a command[/]', choices=choices, show_choices=False)
+    for o in optionsList:
+        if o[0] == option:
+            option = o
+            break
+    return option
 
 def execute_option(option):
     console.line(2)

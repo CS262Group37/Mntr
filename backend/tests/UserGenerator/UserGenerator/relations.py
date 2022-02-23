@@ -103,5 +103,5 @@ def print_relations(user_data):
     console.print(table, justify='center')
 
 def add_options():
-    add_option('Add random relations', add_random_relations)
-    add_option('View relations', print_all_relations)
+    add_option('addr', 'Add random relations', add_random_relations)
+    add_option('relations', 'View relations in a table', print_all_relations)
