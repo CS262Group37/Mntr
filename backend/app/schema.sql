@@ -31,7 +31,7 @@ CREATE TABLE "message" (
     messageID SERIAL PRIMARY KEY,
     recipientID INTEGER NOT NULL REFERENCES "user"(userID),
     senderID INTEGER NOT NULL REFERENCES "user"(userID),
-    messageType VARCHAR CHECK (messageType IN ('email', 'feedback', 'report')) NOT NULL,
+    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('email', 'feedback', 'report')),
     sentTime TIMESTAMP NOT NULL, 
     CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
 );
@@ -68,10 +68,10 @@ CREATE TABLE rating (
 );
 
 CREATE TABLE report (
-    reportID INTEGER PRIMARY KEY,
+    reportID SERIAL PRIMARY KEY,
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     content VARCHAR NOT NULL,
-    status VARCHAR CHECK (status IN ('read', 'unread')) NOT NULL
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
 );
 
 -------------------- Relation Trigger --------------------
