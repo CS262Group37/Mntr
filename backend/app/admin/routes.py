@@ -105,8 +105,8 @@ class ClearSkills(AuthResource):
         return result[1]
 
 admin_api.add_resource(GetTopics, '/get-topics')
-admin_api.add_resource(AddTopic, '/add-topics')
-admin_api.add_resource(RemoveTopic, '/remove-topics')
+admin_api.add_resource(AddTopic, '/add-topic')
+admin_api.add_resource(RemoveTopic, '/remove-topic')
 admin_api.add_resource(ClearTopics, '/clear-topics')
 admin_api.add_resource(ViewReports, '/view-reports')
 admin_api.add_resource(RemoveUser, '/remove-user')
