@@ -1,31 +1,20 @@
 import React from "react";
 import "./App.css";
 import axios from "axios";
-import { Route, Link } from "react-router-dom"
+import { Route, Link } from "react-router-dom";
 import { BiUser, BiLockAlt } from "react-icons/bi";
 import LeftPanel from "./components/LeftPanel";
+import TextInput from "./components/TextInput";
+import LoginButton from "./components/LoginButton";
 
 function Login() {
   const [email, setEmail] = React.useState<string>("");
   const [psword, setPsword] = React.useState<string>("");
-  const [firstName, setFirstName] = React.useState<string>("");
-  const [lastName, setLastName] = React.useState<string>("");
-  const [role, setRole] = React.useState<string>("");
 
   const login = async () => {
     const res = await axios.post("/api/auth/login", {
       email: email,
       password: psword,
-    });
-  };
-
-  const register = async () => {
-    const res = await axios.post("/api/auth/register", {
-      email: email,
-      password: psword,
-      firstName: firstName,
-      lastName: lastName,
-      role: role
     });
   };
 
@@ -41,47 +30,59 @@ function Login() {
         <LeftPanel />
 
         {/* White half */}
-        <div className="bg-cultured h-full w-3/5 m-auto flex text-prussianBlue">
+        <div className="bg-cultured h-full w-3/5 m-auto flex text-prussianBlue overflow-scroll overflow-x-auto">
           {/* Main center flexbox */}
-          <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-between space-y-10">
-            <h2 className="text-4xl">Welcome to <span className="font-bold text-firebrick">Website Name</span></h2>
-            <p className="text-2xl">Here's where you can learn a new skill or share your knowledge</p>
+          <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
+            <h2 className="text-4xl pt-[10%]">
+              Welcome to{" "}
+              <span className="font-bold text-firebrick">Website Name</span>
+            </h2>
+            <p className="text-2xl">
+              Here's where you can learn a new skill or share your knowledge
+            </p>
 
-            {/* E-mail address input */}
-            <div className="flex flex-row bg-cultured text-2xl text-prussianBlue w-full border-b-2 border-imperialRed">
-              <BiUser className="text-4xl m-4 mr-0" />
-              <input
-                className="bg-cultured bg-opacity-0 text-2xl p-4 pl-3 text-prussianBlue w-full"
-                placeholder="E-mail address"
-                onChange={(e) => {
+            {/* Inputs */}
+            <div className="flex flex-col space-y-8 pt-[8%]">
+              {/* E-mail address input */}
+              <TextInput
+                type="text"
+                value={email}
+                onChange={(e: any) => {
                   setEmail(e.target.value);
                 }}
-              ></input>
-            </div>
+                placeholder="E-mail address"
+                icon={<BiUser className="text-4xl m-4 mr-0" />}
+              />
 
-            {/* Password input */}
-            <div>
-              <div className="flex flex-row bg-cultured text-2xl text-prussianBlue w-full border-b-2 border-imperialRed">
-                <BiLockAlt className="text-4xl m-4 mr-0" />
-                <input
-                  className="bg-cultured bg-opacity-0 text-2xl p-4 pl-3 text-prussianBlue w-full"
-                  placeholder="Password"
+              {/* Password input */}
+              <div>
+                <TextInput
                   type="password"
-                  onChange={(e) => {
+                  value={psword}
+                  onChange={(e: any) => {
                     setPsword(e.target.value);
                   }}
-                ></input>
+                  placeholder="Password"
+                  icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+                />
+                <p className="text-right text-lg pt-1 underline">
+                  Forgot password?
+                </p>
               </div>
-              <p className="text-right text-lg pt-1 underline">Forgot password?</p>
             </div>
-            
-            {/* Login button */}
-            <button
-              className="bg-firebrick text-cultured text-2xl w-48 p-4 m-auto rounded-full shadow-md"
-              onClick={login}
-            >Login</button>
 
-            <p className="text-2xl m-auto">Don't have an account yet? <span className="font-bold underline text-imperialRed"><Link to="/register">Register now!</Link></span></p>
+            <LoginButton 
+              value="Login"
+              onClick={login}
+            />
+
+            {/* Registration link */}
+            <p className="text-2xl m-auto pt-[10%]">
+              Don't have an account yet?{" "}
+              <span className="font-bold underline text-imperialRed">
+                <Link to="/register">Register now!</Link>
+              </span>
+            </p>
           </div>
         </div>
       </div>

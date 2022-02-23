@@ -1,23 +1,21 @@
 import React from "react";
 import "./App.css";
 import axios from "axios";
-import { BiUser, BiLockAlt } from "react-icons/bi";
+import { BiUser, BiLockAlt, BiEnvelope } from "react-icons/bi";
 import LeftPanel from "./components/LeftPanel";
+import TextInput from "./components/TextInput";
 import { Link } from "react-router-dom";
+import LoginButton from "./components/LoginButton";
+
+// TODO password confirmation
 
 function Register() {
   const [email, setEmail] = React.useState<string>("");
   const [psword, setPsword] = React.useState<string>("");
+  const [pswordConf, setPswordConf] = React.useState<string>("");
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
   const [role, setRole] = React.useState<string>("");
-
-  const login = async () => {
-    const res = await axios.post("/api/auth/login", {
-      email: email,
-      password: psword,
-    });
-  };
 
   const register = async () => {
     const res = await axios.post("/api/auth/register", {
@@ -29,6 +27,7 @@ function Register() {
     });
   };
 
+  // Not sure what this is for
   const getUsers = async () => {
     const res = await axios.get("/api/auth/users");
     console.log(res);
@@ -41,47 +40,86 @@ function Register() {
         <LeftPanel />
 
         {/* White half */}
-        <div className="bg-cultured h-full w-3/5 m-auto flex text-prussianBlue">
+        <div className="bg-cultured h-full w-3/5 m-auto pt-[5%] pb-[5%] flex text-prussianBlue overflow-scroll overflow-x-auto">
           {/* Main center flexbox */}
-          <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-between space-y-10">
-            <h2 className="text-4xl">Register to <span className="font-bold text-firebrick">Website Name</span></h2>
-            <p className="text-2xl">Here's where you can learn a new skill or share your knowledge</p>
+          <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
+            <h2 className="text-4xl">
+              Register to {" "}
+              <span className="font-bold text-firebrick">Website Name</span>
+            </h2>
+            <p className="text-2xl">
+              Here's where you can learn a new skill or share your knowledge
+            </p>
 
-            {/* E-mail address input */}
-            <div className="flex flex-row bg-cultured text-2xl text-prussianBlue w-full border-b-2 border-imperialRed">
-              <BiUser className="text-4xl m-4 mr-0" />
-              <input
-                className="bg-cultured bg-opacity-0 text-2xl p-4 pl-3 text-prussianBlue w-full"
-                placeholder="E-mail address"
-                onChange={(e) => {
+            {/* Inputs */}
+            <div className="flex flex-col space-y-8 pt-[8%]">
+              {/* E-mail address input */}
+              <TextInput
+                type="text"
+                value={email}
+                onChange={(e: any) => {
                   setEmail(e.target.value);
                 }}
-              ></input>
+                placeholder="E-mail address"
+                icon={<BiEnvelope className="text-4xl m-4 mr-0" />}
+              />
+
+              {/* First name input */}
+              <TextInput
+                type="text"
+                value={firstName}
+                onChange={(e: any) => {
+                  setFirstName(e.target.value);
+                }}
+                placeholder="First name"
+                icon={<BiUser className="text-4xl m-4 mr-0" />}
+              />
+
+              {/* Last name input */}
+              <TextInput
+                type="text"
+                value={lastName}
+                onChange={(e: any) => {
+                  setLastName(e.target.value);
+                }}
+                placeholder="Last name"
+                icon={<BiUser className="text-4xl m-4 mr-0" />}
+              />
+
+              {/* Password input */}
+              <TextInput
+                type="password"
+                value={psword}
+                onChange={(e: any) => {
+                  setPsword(e.target.value);
+                }}
+                placeholder="Password"
+                icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+              />
+
+              {/* Password confirmation */}
+              <TextInput
+                type="password"
+                value={pswordConf}
+                onChange={(e: any) => {
+                  setPswordConf(e.target.value);
+                }}
+                placeholder="Password confirmation"
+                icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+              />
             </div>
 
-            {/* Password input */}
-            <div>
-              <div className="flex flex-row bg-cultured text-2xl text-prussianBlue w-full border-b-2 border-imperialRed">
-                <BiLockAlt className="text-4xl m-4 mr-0" />
-                <input
-                  className="bg-cultured bg-opacity-0 text-2xl p-4 pl-3 text-prussianBlue w-full"
-                  placeholder="Password"
-                  type="password"
-                  onChange={(e) => {
-                    setPsword(e.target.value);
-                  }}
-                ></input>
-              </div>
-              <p className="text-right text-lg pt-1 underline">Forgot password?</p>
+            <div className="pt-[32px]">
+              <LoginButton 
+                value="Register"
+                onClick={register}
+              />
             </div>
-            
-            {/* Login button */}
-            <button
-              className="bg-firebrick text-cultured text-2xl w-48 p-4 m-auto rounded-full shadow-md"
-              onClick={login}
-            >Login</button>
 
-            <p className="text-2xl m-auto">Don't have an account yet? <span className="font-bold underline text-imperialRed"><Link to="/register">Register now!</Link></span></p>
+            {/* Registration link */}
+            <p className="text-2xl underline m-auto pt-[10%]">
+              <Link to="/">Back to login</Link>
+            </p>
           </div>
         </div>
       </div>
