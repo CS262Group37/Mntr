@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS system_business_area CASCADE;
 DROP TABLE IF EXISTS system_topic CASCADE;
 DROP TABLE IF EXISTS system_skill CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
+DROP TABLE IF EXISTS report CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS add_relation_contraints;
@@ -64,6 +65,13 @@ CREATE TABLE rating (
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     skillID INTEGER NOT NULL REFERENCES system_skill(skillID),
     rating INTEGER NOT NULL CONSTRAINT valid_rating CHECK (rating >= 0 AND rating <= 10)
+);
+
+CREATE TABLE report (
+    reportID INTEGER PRIMARY KEY,
+    userID INTEGER NOT NULL REFERENCES "user"(userID),
+    content VARCHAR NOT NULL,
+    status VARCHAR CHECK (status IN ('read', 'unread')) NOT NULL
 );
 
 -------------------- Relation Trigger --------------------
