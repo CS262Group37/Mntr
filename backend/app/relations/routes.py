@@ -42,7 +42,7 @@ class SendEmail(AuthResource):
         data = parsers.send_email_parser.parse_args()
 
         if not relations.email_allowed(self.userID, data['recipientID'], data['senderID']):
-            return {'error': 'You are not authorised to send this email.'}, 401
+            return {'error': 'You are not allowed to send this email.'}, 401
 
         result = send_message(data['recipientID'], data['senderID'], 'email', data['contents'])
         if result[0]:
