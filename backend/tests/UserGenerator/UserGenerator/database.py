@@ -12,7 +12,7 @@ def create_connection():
     try:
         conn = psycopg2.connect(dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host='127.0.0.1', port='5432')
     except Exception as e:
-        console.print("[red]Failed to create database connection. Is the database running?[/]")
+        print("\nFailed to create database connection. Is the database running?")
         exit()
 
 def get_data(sql, data = None):
