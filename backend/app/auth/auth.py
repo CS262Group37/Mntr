@@ -103,8 +103,9 @@ def encode_token(email, role = None):
         userID = userID[0][0]
 
     payload = {
-        'iat': datetime.utcnow(),
-        'exp': datetime.utcnow() + token_lifetime,
+        # TODO: Re-enable token lifetime before deployment
+        #'iat': datetime.utcnow(),
+        #'exp': datetime.utcnow() + token_lifetime,
         'accountID': accountID,
         'userID': userID,
         'role': role
