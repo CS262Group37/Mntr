@@ -11,7 +11,8 @@ authorizations = {
 class DevConfig:
     SECRET_KEY = 'dev'
     RESTX_VALIDATE = True
-    SERVER_NAME = os.getenv('HOSTNAME')[7:]
+    if os.getenv('HOSTNAME')[7:] != '127.0.0.1:5000' and os.getenv('HOSTNAME')[7:] != 'localhost':
+        SERVER_NAME = os.getenv('HOSTNAME')[7:]
     SWAGGER_UI_REQUEST_DURATION = True
     SWAGGER_UI_DOC_EXPANSION = 'list'
 

@@ -90,7 +90,7 @@ def create_random_accounts_and_users():
         for i in range(account_count):
 
             # Create an account
-            if create_account(fake.first_name(), fake.last_name(), fake.email(domain='gmail.com'), fake.sha256()):
+            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()):
 
                 created_accounts += 1
 
@@ -100,7 +100,6 @@ def create_random_accounts_and_users():
                     if create_user('mentee') : created_users += 1
                 elif random_role < 10:
                     if create_user('mentor') : created_users += 1
-                    
                 else:
                     if create_user('mentee') : created_users += 1
                     if create_user('mentor') : created_users += 1

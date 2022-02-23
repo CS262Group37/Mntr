@@ -1,4 +1,4 @@
-from flask import Flask, url_for, make_response
+from flask import Flask
 from flask_restx import Api, apidoc
 
 import config
@@ -28,5 +28,10 @@ def create_app():
         app.register_blueprint(meetings.meetings_bp, url_prefix='/api/meetings')
         app.register_blueprint(messages.messages_bp, url_prefix='/api/messages')
         app.register_blueprint(relations.relations_bp, url_prefix='/api/relations')
+
+    # Put login doc on the front page for convenience
+    @api.documentation
+    def front_page():
+        return apidoc.ui_for(auth.auth_api)
 
     return app
