@@ -1,4 +1,3 @@
-from importlib.metadata import requires
 from flask_restx import reqparse
 
 topics_parser = reqparse.RequestParser(bundle_errors=True)
