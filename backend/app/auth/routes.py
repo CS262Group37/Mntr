@@ -48,10 +48,9 @@ class RegisterAccount(Resource):
     def post(self):
         
         data = parsers.register_account_parser.parse_args()
-        result = auth.register_account(data['email'], data['password'], data['firstName'], data['lastName'])
+        result = auth.register_account(data['email'], data['password'], data['firstName'], data['lastName'], data['businessArea'])
 
         if result[0]:
-
             # Generate an account token
             token = auth.encode_token(data['email'])
             if not token[0]:

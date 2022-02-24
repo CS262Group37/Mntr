@@ -10,18 +10,20 @@ token_lifetime = timedelta(minutes=5)
 # All functions used for responses should return a tuple containing (status, object containing message or data)
 
 # Registers an account. Returns type(status, dict)
-def register_account(email, password, firstName, lastName):
+def register_account(email, password, firstName, lastName, businessArea):
     conn = DatabaseConnection()
     with conn:
         # Create the account
-        sql = 'INSERT INTO account (email, "password", firstName, lastName) VALUES (%s, %s, %s, %s) RETURNING accountID;'
-        data = (email, password, firstName, lastName)
+        sql = 'INSERT INTO account (email, "password", firstName, lastName, businessArea) VALUES (%s, %s, %s, %s, %s) RETURNING accountID;'
+        data = (email, password, firstName, lastName, businessArea)
         accountID = conn.execute(sql, data)
 
     if conn.error:
         error = conn.error_message
         if conn.constraint_violated == 'unique_email':
             error = 'Account with that email already exists'
+        elif conn.constraint_violated == 'valid_business_area':
+            error = 'Business area does not exist'
         return (False, {'message': 'Account registration failed', 'error': error})
     return (True, {'message': 'Account successfully created', 'accountID': accountID[0][0]})
 
@@ -64,7 +66,6 @@ def check_email(email):
 
     # TODO: Might want to perform validity checks on the email here
     return exists[0][0]
-
 
 def check_password(email, password):
     sql = 'SELECT password FROM account WHERE email=%s;'

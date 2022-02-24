@@ -12,12 +12,18 @@ DROP TABLE IF EXISTS report CASCADE;
 DROP FUNCTION IF EXISTS add_relation_contraints;
 DROP TRIGGER IF EXISTS add_relation_contraints ON relation;
 
+CREATE TABLE system_business_area (
+    businessAreaID SERIAL PRIMARY KEY,
+    "name" VARCHAR NOT NULL CONSTRAINT unique_area_name UNIQUE
+);
+
 CREATE TABLE account (
     accountID SERIAL PRIMARY KEY,
     email VARCHAR NOT NULL CONSTRAINT unique_email UNIQUE,
     "password" VARCHAR NOT NULL,
     firstName VARCHAR NOT NULL,
-    lastName VARCHAR NOT NULL
+    lastName VARCHAR NOT NULL,
+    businessArea VARCHAR NOT NULL CONSTRAINT valid_business_area REFERENCES system_business_area("name")
 );
 
 CREATE TABLE "user" (
@@ -43,11 +49,6 @@ CREATE TABLE relation (
     menteeID INTEGER NOT NULL REFERENCES "user"(userID),
     mentorID INTEGER NOT NULL REFERENCES "user"(userID),
     CONSTRAINT unique_relation UNIQUE (mentorID, menteeID)
-);
-
-CREATE TABLE system_business_area (
-    businessAreaID SERIAL PRIMARY KEY,
-    "name" VARCHAR NOT NULL CONSTRAINT unique_area_name UNIQUE
 );
 
 CREATE TABLE system_topic (
