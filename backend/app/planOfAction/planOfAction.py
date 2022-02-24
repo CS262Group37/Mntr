@@ -1,6 +1,16 @@
 from app.database import DatabaseConnection
 
-def create_plan_of_action(title, description):
+def create_plan_of_action(realtionID, title, description):
+    sql = 'INSERT INTO plan_of_action (planID, relationID, title, description, creationDate, "status") VALUES (NULL, %s, %s, %s, %s, %s);'
+    # time = 
+    data = (realtionID, title, description, time, "incomplete") # Need to get the time at which the function called
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully added skill'})
 
 def get_plan_of_actions(relationID):
     sql = 'SELECT * FROM plan_of_action WHERE relationID = "%s";'
@@ -36,7 +46,7 @@ def remove_plan_of_action(planID):
 def add_milestone(planID, title, description):
     sql = 'INSERT INTO milestone (milestoneID, planID, title, description, creationDate, "status") VALUES (NULL, %s, %s, %s, %s, %s);'
     # time = 
-    data = (planID, title, description, time, "complete") # Need to get the time at which the function called
+    data = (planID, title, description, time, "incomplete") # Need to get the time at which the function called
     conn = DatabaseConnection()
     with conn:
         conn.execute(sql, data)
