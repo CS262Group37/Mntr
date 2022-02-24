@@ -18,8 +18,8 @@ def add_topic(topicName):
         conn.execute(sql, data)
 
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully added topic'})
+        return {'error': conn.error_message}
+    return {'message': 'Successfully added topic'}
 
 # Removes the topics with the name passed as the argument
 def remove_topic(topicName):
@@ -30,8 +30,8 @@ def remove_topic(topicName):
         conn.execute(sql, data)
     
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully removed topic'})
+        return {'error': conn.error_message}
+    return {'message': 'Successfully removed topic'}
 
 # Removes all topics from the table
 def clear_topics():
@@ -41,8 +41,8 @@ def clear_topics():
         conn.execute(sql)
     
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully cleared topics'})
+        return {'error': conn.error_message}
+    return {'message': 'Successfully cleared topics'}
 
     
 def view_reports():
@@ -67,8 +67,8 @@ def remove_user(userID):
         conn.execute(sql, data)
     
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully cleared topics'})
+        return {'error': conn.error_message}
+    return {'message': 'Successfully cleared topics'}
 
 # Changes the status of the reprt with the given ID to read
 def mark_report_as_read(reportID):
@@ -79,8 +79,8 @@ def mark_report_as_read(reportID):
     with conn:
         conn.execute(sql, data)
     if conn.error:
-        return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
-    return (True, {'message': 'Successfully marked report as read'})
+        return {'error': conn.error_message, 'constraint': conn.constraint_violated}
+    return {'message': 'Successfully marked report as read'}
 
 
 def get_skills():
@@ -98,8 +98,8 @@ def add_skill(skillName):
         conn.execute(sql, data)
 
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully added skill'})
+        return {'error': conn.error_message}
+    return {'message': 'Successfully added skill'}
 
 def remove_skill(skillName):
     sql = 'DELETE FROM system_skill WHERE "name"=%s;'
@@ -109,8 +109,8 @@ def remove_skill(skillName):
         conn.execute(sql, data)
     
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': "Successfully removed skill"})
+        return {'error': conn.error_message}
+    return {'message': "Successfully removed skill"}
 
 def clear_skills():
     sql = 'TRUNCATE system_skill CASCADE;'
@@ -119,5 +119,36 @@ def clear_skills():
         conn.execute(sql)
     
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': "Successfully cleared skills"})
+        return {'error': conn.error_message}
+    return {'message': "Successfully cleared skills"}
+
+def add_business_area(businessAreaName):
+    sql = 'INSERT INTO system_business_area ("name") VALUES (%s);'
+    data = (businessAreaName,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return {'error': conn.error_message}
+    return {'message': 'Successfully added business area'}
+
+def remove_business_area(businessAreaName):
+    sql = 'DELETE FROM system_business_area WHERE "name"=%s;'
+    data = (businessAreaName,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    
+    if conn.error:
+        return {'error': conn.error_message}
+    return {'message': "Successfully removed business area"}
+
+def clear_business_areas():
+    sql = 'TRUNCATE system_business_area CASCADE;'
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql)
+    
+    if conn.error:
+        return {'error': conn.error_message}
+    return {'message': "Successfully cleared business areas"}
