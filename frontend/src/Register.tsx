@@ -15,7 +15,6 @@ function Register() {
   const [pswordConf, setPswordConf] = React.useState<string>("");
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
-  const [role, setRole] = React.useState<string>("");
 
   const register = async () => {
     const res = await axios.post("/api/auth/register-account", {
@@ -38,7 +37,7 @@ function Register() {
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
             <h2 className="text-4xl">
               Register to {" "}
-              <span className="font-bold text-firebrick">Website Name</span>
+              <span className="font-bold text-firebrick">Mntr</span>
             </h2>
             <p className="text-2xl">
               Here's where you can learn a new skill or share your knowledge

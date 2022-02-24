@@ -32,7 +32,7 @@ function Login() {
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
             <h2 className="text-4xl pt-[10%]">
               Welcome to{" "}
-              <span className="font-bold text-firebrick">Website Name</span>
+              <span className="font-bold text-firebrick">Mntr</span>
             </h2>
             <p className="text-2xl">
               Here's where you can learn a new skill or share your knowledge
