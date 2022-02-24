@@ -11,11 +11,13 @@ import Dropdown from "./components/Dropdown";
 function Login() {
   const [email, setEmail] = React.useState<string>("");
   const [psword, setPsword] = React.useState<string>("");
+  const [role, setRole] = React.useState<string>("");
 
   const login = async () => {
     const res = await axios.post("/api/auth/login", {
       email: email,
       password: psword,
+      role: role //TODO: Add role dropdown
     });
   };
 
