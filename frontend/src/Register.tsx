@@ -18,19 +18,12 @@ function Register() {
   const [role, setRole] = React.useState<string>("");
 
   const register = async () => {
-    const res = await axios.post("/api/auth/register", {
+    const res = await axios.post("/api/auth/register-account", {
       email: email, 
       password: psword,
       firstName: firstName,
-      lastName: lastName,
-      role: role
+      lastName: lastName
     });
-  };
-
-  // Not sure what this is for
-  const getUsers = async () => {
-    const res = await axios.get("/api/auth/users");
-    console.log(res);
   };
 
   return(
