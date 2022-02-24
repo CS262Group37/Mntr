@@ -7,7 +7,7 @@ class GetTopics(AuthResource):
     roles = ['admin']
     @admin_api.doc(security='apiKey')
     def get(self):
-        return admin.get_topics()
+        return admin.get_topics(), 200
 
 class AddTopic(AuthResource):
     roles = ['admin']
@@ -15,7 +15,10 @@ class AddTopic(AuthResource):
     @admin_api.doc(security='apiKey')
     def post(self):
         data = parsers.topics_parser.parse_args()
-        return admin.add_topic(data['topicName'])
+        result = admin.add_topic(data['topicName'])
+        if result[0]:
+            return result[1], 201
+        return result[1], 400
 
 class RemoveTopic(AuthResource):
     roles = ['admin']
@@ -23,19 +26,25 @@ class RemoveTopic(AuthResource):
     @admin_api.doc(security='apiKey')
     def post(self):
         data = parsers.topics_parser.parse_args()
-        return admin.remove_topic(data['topicName'])
+        result = admin.remove_topic(data['topicName'])
+        if result[0]:
+            return result[1], 201
+        return result[1], 400
 
 class ClearTopics(AuthResource):
     roles = ['admin']
     @admin_api.doc(security='apiKey')
     def delete(self):
-        return admin.clear_topics()
+        result = admin.clear_topics()
+        if result[0]:
+            return result[1], 201
+        return result[1], 400
 
 class ViewReports(AuthResource):
     roles = ['admin']
     @admin_api.doc(security='apiKey')
     def get(self):
-        return admin.get_reports()
+        return admin.get_reports(), 200
 
 class RemoveUser(AuthResource):
     roles = ['admin']
@@ -43,14 +52,20 @@ class RemoveUser(AuthResource):
     @admin_api.doc(security='apiKey')
     def post(self):
         data = parsers.user_parser.parse_args()
-        return admin.remove_user(data['userID'])
+        result = admin.remove_user(data['userID'])
+        if result[0]:
+            return result[1], 201
+        return result[1], 400
 
 class MarkReportAsRead(AuthResource):
     roles = ['admin']
     @admin_api.doc(security='apiKey')
     def post(self):
         data = parsers.report_parser.parse_args()
-        return admin.mark_report_as_read(data['reportID'])
+        result = admin.mark_report_as_read(data['reportID'])
+        if result[0]:
+            return result[1]
+        return result[1]
 
 class GetSkills(AuthResource):
     roles = ['admin']
@@ -64,7 +79,10 @@ class AddSkill(AuthResource):
     @admin_api.expect(parsers.skill_parser)
     def post(self):
         data = parsers.skill_parser.parse_args()
-        return admin.add_skill(data['skillName'])
+        result = admin.add_skill(data['skillName'])
+        if result[0]:
+            return result[1]
+        return result[1]
 
 class RemoveSkill(AuthResource):
     roles = ['admin']
@@ -72,13 +90,19 @@ class RemoveSkill(AuthResource):
     @admin_api.expect(parsers.skill_parser)
     def post(self):
         data = parsers.skill_parser.parse_args()
-        return admin.remove_skill(data['skillName'])
+        result = admin.remove_skill(data['skillName'])
+        if result[0]:
+            return result[1]
+        return result[1]
 
 class ClearSkills(AuthResource):
     roles = ['admin']
     @admin_api.doc(security='apiKey')
     def delete(self):
-        return admin.clear_skills()
+        result = admin.clear_skills()
+        if result[0]:
+            return result[1]
+        return result[1]
 
 class AddBusinessArea(AuthResource):
     roles = ['admin']
@@ -86,7 +110,11 @@ class AddBusinessArea(AuthResource):
     @admin_api.expect(parsers.business_area_parser)
     def post(self):
         data = parsers.business_area_parser.parse_args()
-        return admin.add_business_area(data['businessAreaName'])
+        result = add_business_area(data['name'])
+        if result[0]:
+            return result[1]
+        else:
+            return result[1]
 
 class RemoveBusinessArea(AuthResource):
     roles = ['admin']
