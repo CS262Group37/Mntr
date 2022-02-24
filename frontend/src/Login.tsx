@@ -10,17 +10,14 @@ import LoginButton from "./components/LoginButton";
 function Login() {
   const [email, setEmail] = React.useState<string>("");
   const [psword, setPsword] = React.useState<string>("");
+  const [role, setRole] = React.useState<string>("");
 
   const login = async () => {
     const res = await axios.post("/api/auth/login", {
       email: email,
       password: psword,
+      role: role //TODO: Add role dropdown
     });
-  };
-
-  const getUsers = async () => {
-    const res = await axios.get("/api/auth/users");
-    console.log(res);
   };
 
   return (
