@@ -45,7 +45,7 @@ def clear_topics():
     return (True, {'message': 'Successfully cleared topics'})
 
     
-def view_reports():
+def get_reports():
     sql = 'SELECT * FROM report;'
     conn = DatabaseConnection()
     with conn:
@@ -140,8 +140,8 @@ def remove_business_area(businessAreaName):
         conn.execute(sql, data)
     
     if conn.error:
-        return (True, {'error': conn.error_message})
-    return (False, {'message': "Successfully removed business area"})
+        return (False, {'error': conn.error_message})
+    return (True, {'message': "Successfully removed business area"})
 
 def clear_business_areas():
     sql = 'TRUNCATE system_business_area CASCADE;'
@@ -150,5 +150,13 @@ def clear_business_areas():
         conn.execute(sql)
     
     if conn.error:
-        return (True, {'error': conn.error_message})
-    return (False, {'message': "Successfully cleared business areas"})
+        return (False, {'error': conn.error_message})
+    return (True, {'message': "Successfully cleared business areas"})
+
+def get_business_areas():
+    sql = 'SELECT * FROM system_business_area;'
+    conn = DatabaseConnection()
+    with conn:
+        businessAreas = conn.execute(sql)
+    
+    return businessAreas
