@@ -2,14 +2,13 @@ import React from "react";
 import "./App.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import LeftPanel from "./components/LeftPanel";
 import NavBar from "./components/NavBar";
 import PlanOfAction from "./components/PlanOfAction";
 
-function DashboardMentee() {
+function BrowseMentors() {
   return(
     <div className="fixed h-full w-full">
-      <NavBar activeStr="My mentors" />
+      <NavBar activeStr="Browse mentors" />
 
       {/* Main flexbox */}
       <div className="flex flex-row items-stretch h-full align-middle font-display">
@@ -41,4 +40,4 @@ function DashboardMentee() {
   );
 }
 
-export default DashboardMentee;
+export default BrowseMentors;
