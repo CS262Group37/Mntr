@@ -70,9 +70,8 @@ function Login() {
                 </p>
                 <Dropdown
                 values={["mentor", "mentee", "admin"]}
-                placeholder="Select Role"
                 onChange={(e: any) => {
-                  setEmail(e.target.value);
+                  setRole(e.target.value);
                 }}
                 icon={<BiUser className="text-4xl m-4 mr-0" />}
               />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import axios from "axios";
 import { BiUser, BiLockAlt, BiEnvelope } from "react-icons/bi";
@@ -6,23 +6,32 @@ import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
 import { Link } from "react-router-dom";
 import LoginButton from "./components/LoginButton";
+import {useNavigate} from 'react-router-dom';
 
 // TODO password confirmation
 
 function Register() {
-  const [email, setEmail] = React.useState<string>("");
-  const [psword, setPsword] = React.useState<string>("");
-  const [pswordConf, setPswordConf] = React.useState<string>("");
-  const [firstName, setFirstName] = React.useState<string>("");
-  const [lastName, setLastName] = React.useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [psword, setPsword] = useState<string>("");
+  const [pswordConf, setPswordConf] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const register = async () => {
-    const res = await axios.post("/api/auth/register-account", {
-      email: email, 
-      password: psword,
-      firstName: firstName,
-      lastName: lastName
-    });
+    if (psword === pswordConf) {
+      const res = await axios.post("/api/auth/register-account", {
+        email: email, 
+        password: psword,
+        firstName: firstName,
+        lastName: lastName
+      });
+      navigate("/dbmentor")
+    } else {
+      console.log(`1: ${psword}, 2: ${pswordConf}`)
+    }
+    
   };
 
   return(

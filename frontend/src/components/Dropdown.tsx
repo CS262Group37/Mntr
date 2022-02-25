@@ -2,7 +2,6 @@ import React from "react";
 
 interface DropdwonProps {
   onChange: any,
-  placeholder: string
   values: string[],
   icon: JSX.Element
 }
@@ -13,12 +12,25 @@ const Dropdown = (props:DropdwonProps) => {
     <div className="flex flex-row bg-cultured text-2xl text-prussianBlue w-full border-b-2 border-imperialRed">
       {props.icon}
       <select
-        className="bg-cultured text-2xl p-4 pl-3 text-prussianBlue w-full form-select border-none rounded appearance-none focus:border-none "
+        className="form-select appearance-none
+        block
+        w-full
+        px-3
+        py-1.5
+        font-normal
+        text-gray-700
+        bg-cultured bg-clip-padding bg-no-repeat
+        text-2xl
+        rounded
+        transition
+        ease-in-out
+        m-0
+        focus:text-gray-700 focus:outline-none focus:bg-cultured"
         onChange={props.onChange}
       >
-        <option className="bg-cultured text" value="" disabled selected hidden>{props.placeholder}</option>
+        
        {props.values.map(value => (
-         <option className="bg-cultured" value={value}>{value}</option>
+         <option className="bg-cultured hover:bg-cultured" value={value}>{value}</option>
        ))}
       </select>
     </div>

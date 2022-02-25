@@ -4,6 +4,8 @@ import "./App.css";
 import Login from "./Login";
 import Register from "./Register";
 import { Routes, Route } from "react-router-dom";
+import DashboardMentee from "./DashboardMentee";
+import DashboardMentor from "./DashboardMentor";
 
 function App() {
   return (
@@ -11,6 +13,8 @@ function App() {
       <Routes>
         <Route path="/" element={ <Login /> } />
         <Route path="/register" element={ <Register /> } />
+        <Route path="/dbmentee" element={ <DashboardMentee /> } />
+        <Route path="/dbmentor" element={ <DashboardMentor /> } />
       </Routes>
     </div>
   );
