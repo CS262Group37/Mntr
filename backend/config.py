@@ -19,8 +19,10 @@ class DevConfig:
     #     SERVER_NAME = os.getenv('HOSTNAME')[7:]
     SWAGGER_UI_REQUEST_DURATION = True
     SWAGGER_UI_DOC_EXPANSION = 'list'
+    BUNDLE_ERRORS = True
 
 class ProdConfig:
     #SERVER_NAME = 'mydomain.com:5000'
     SECRET_KEY = 'dev' # TODO: Make this a crazy random string for actual deployment
+    BUNDLE_ERRORS = True
     
