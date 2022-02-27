@@ -46,7 +46,7 @@ def remove_plan_of_action(planID):
 def add_milestone(planID, title, description):
     sql = 'INSERT INTO milestone (milestoneID, planID, title, description, creationDate, "status") VALUES (NULL, %s, %s, %s, %s, %s);'
     # time = 
-    data = (planID, title, description, time, "incomplete") # Need to get the time at which the function called
+    data = (planID, title, description, time, "complete") # Need to get the time at which the function called
     conn = DatabaseConnection()
     with conn:
         conn.execute(sql, data)
