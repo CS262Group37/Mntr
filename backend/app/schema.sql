@@ -47,15 +47,15 @@ CREATE TABLE "user" (
 
 CREATE TABLE user_topic (
     userID INTEGER NOT NULL REFERENCES "user"(userID),
-    topicID INTEGER NOT NULL CONSTRAINT valid_topic REFERENCES system_topic(topicID),
-    PRIMARY KEY (userID, topicID)
+    topic VARCHAR NOT NULL CONSTRAINT valid_topic REFERENCES system_topic("name"),
+    PRIMARY KEY (userID, topic)
 );
 
 CREATE TABLE user_rating (
     userID INTEGER NOT NULL REFERENCES "user"(userID),
-    skillID INTEGER NOT NULL CONSTRAINT valid_skill REFERENCES system_skill(skillID),
+    skill VARCHAR NOT NULL CONSTRAINT valid_skill REFERENCES system_skill("name"),
     rating INTEGER NOT NULL CONSTRAINT valid_rating CHECK (rating >= 0 AND rating <= 10),
-    PRIMARY KEY (userID, skillID)
+    PRIMARY KEY (userID, skill)
 );
 
 CREATE TABLE "message" (
