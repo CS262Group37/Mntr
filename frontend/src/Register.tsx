@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import axios from "axios";
 import { BiUser, BiLockAlt, BiEnvelope } from "react-icons/bi";
@@ -7,8 +7,6 @@ import TextInput from "./components/TextInput";
 import { Link } from "react-router-dom";
 import LoginButton from "./components/LoginButton";
 import {useNavigate} from 'react-router-dom';
-
-// TODO password confirmation
 
 function Register() {
   const [email, setEmail] = useState<string>("");
@@ -27,7 +25,7 @@ function Register() {
         firstName: firstName,
         lastName: lastName
       });
-      navigate("/dbmentor")
+      navigate("/register-user")
     } else {
       console.log(`1: ${psword}, 2: ${pswordConf}`)
     }

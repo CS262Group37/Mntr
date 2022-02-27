@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import axios from "axios";
-import { Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BiUser, BiLockAlt } from "react-icons/bi";
 import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
@@ -17,7 +17,7 @@ function Login() {
     const res = await axios.post("/api/auth/login", {
       email: email,
       password: psword,
-      role: role //TODO: Add role dropdown
+      role: role 
     });
   };
 
@@ -70,6 +70,7 @@ function Login() {
                 </p>
                 <Dropdown
                 values={["mentor", "mentee", "admin"]}
+                labels={["Mentor", "Mentee", "Admin"]}
                 onChange={(e: any) => {
                   setRole(e.target.value);
                 }}
