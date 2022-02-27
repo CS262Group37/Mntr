@@ -22,14 +22,14 @@ CREATE TABLE account (
     email VARCHAR NOT NULL CONSTRAINT unique_email UNIQUE,
     "password" VARCHAR NOT NULL,
     firstName VARCHAR NOT NULL,
-    lastName VARCHAR NOT NULL,
-    businessArea VARCHAR NOT NULL CONSTRAINT valid_business_area REFERENCES system_business_area("name")
+    lastName VARCHAR NOT NULL
 );
 
 CREATE TABLE "user" (
     userID SERIAL PRIMARY KEY,
     accountID INTEGER REFERENCES account(accountID),
     "role" VARCHAR NOT NULL CONSTRAINT invalid_role CHECK ("role" IN ('mentee', 'mentor', 'admin')),
+    businessArea VARCHAR NOT NULL CONSTRAINT valid_business_area REFERENCES system_business_area("name"),
     CONSTRAINT one_role_per_account UNIQUE (accountID, "role")
 );
 
