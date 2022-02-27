@@ -70,15 +70,11 @@ def create_user(role, businessArea = None, topics = None, skills = None, ratings
             'ratings': ratings,
         }
 
-    response = requests.post(f'{hostname}/api/auth/register-user', 
-        data={
-            'role': role
-            },
-        cookies = authentication.active_cookie, timeout=10
-        )
+    response = requests.post(f'{hostname}/api/auth/register-user', data, cookies = authentication.active_cookie, timeout=10)
     data = json.loads(response.content)
     
     if 'error' in data:
+        console.print(data['error'])
         return False
     return True
 
