@@ -9,10 +9,6 @@ interface LinkProps {
 }
 
 const NavBarLink: React.FC<LinkProps> = (props) => {
-  console.log(props.text);
-  console.log(props.activeStr);
-  console.log(props.text === props.activeStr);
-
   return (
     <Link
       to={props.path}
@@ -30,11 +26,11 @@ function NavBar(props: any) {
   const { activeStr } = props;
 
   return (
-    <div className="text-cultured font-display flex flex-col">
+    <div className="text-cultured font-display">
       {/* Blue main navbar */}
       <div className="bg-blueBgWide h-20 bg-cover flex flex-row text-2xl">
-        {/* Website name */}
-        <h1 className="text-5xl m-auto ml-8 font-bold">Mntr</h1>
+        {/* Website name - dashboard link */}
+        <Link to="/dashboard-mentee" className="text-5xl m-auto ml-8 font-bold">Mntr</Link>
 
         {/* Navigation */}
         <div className="flex flex-row mr-8 h-[100%]">
