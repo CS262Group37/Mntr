@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import jwt
 from flask import current_app as app
@@ -27,7 +27,6 @@ def register_account(email, password, firstName, lastName):
 
 # Registers a user for a given account. Returns tuple (status, dict).
 def register_user(accountID, data):
-
     conn = DatabaseConnection()
     with conn:
         if data['role'] == 'admin':
@@ -69,16 +68,24 @@ def register_user(accountID, data):
 
                 # Get all skills on the system to make sure a skill has been provided for all of them
                 system_skills = conn.execute('SELECT * FROM system_skill')
-                for row in system_skills:
-                    if row['name'] not in skills:
+                for skill in system_skills:
+                    if skill['name'] not in skills:
                         conn.error = True
-                        return (False, {'message': 'Registration failed', 'error': f'A rating for skill {row["name"]} has not been provided'})
+                        return (False, {'message': 'Registration failed', 'error': f'A rating for skill {skill["name"]} has not been provided'})
 
                 sql = 'INSERT INTO user_rating (userID, skillID, rating) VALUES (%s, %s, %s);'
                 for i in range(len(skills)):
                     data = (userID, skills[i], ratings[i])
                     conn.execute(sql, data)
-    
+            else:
+                # Give mentors a default rating a 5 for all skills
+                # TODO: Might want to change this to start at 0
+                system_skills = conn.execute('SELECT * FROM system_skill')
+                sql = 'INSERT INTO user_rating (userID, skillID, rating) VALUES (%s, %s, 5)'
+                for skill in system_skills:
+                    data = (userID, skill['name'])
+                    conn.execute(sql, data)
+
     if conn.error:
         error = conn.error_message
         if conn.constraint_violated == 'valid_topic':
