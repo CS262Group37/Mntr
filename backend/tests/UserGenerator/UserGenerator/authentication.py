@@ -45,7 +45,7 @@ def admin_login():
 
     # Register an admin account and user then login
     accounts.create_account('admin', 'admin', 'admin@admin.com', 'admin')
-    accounts.create_user('admin')
+    accounts.create_user('admin', adminPassword = 'admin')
     if login_user('admin@admin.com', 'admin', 'admin'):
 
         while not logout_flag:

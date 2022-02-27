@@ -12,14 +12,13 @@ from . import authentication, database
 from .console import add_option, console, hostname
 from .fake_data import fake
 
-def create_account(first_name, last_name, email, password, business_area):
+def create_account(first_name, last_name, email, password):
     response = requests.post(f'{hostname}/api/auth/register-account', 
         data={
             'email': email,
             'password': password,
             'firstName': first_name,
-            'lastName': last_name,
-            'businessArea': business_area
+            'lastName': last_name
             }, timeout=10
         )
     
@@ -49,7 +48,28 @@ def print_all_accounts():
     with console.pager():
         console.print(table, justify='center')
 
-def create_user(role):
+def create_user(role, businessArea = None, topics = None, skills = None, ratings = None, adminPassword = None):
+
+    if role == 'admin':
+        data = {
+            'role': role,
+            'adminPassword': adminPassword
+        }
+    elif role == 'mentor':
+        data = {
+            'role': role,
+            'businessArea': businessArea,
+            'topics': topics,
+        }
+    else:
+        data = {
+            'role': role,
+            'businessArea': businessArea,
+            'topics': topics,
+            'skills': skills,
+            'ratings': ratings,
+        }
+
     response = requests.post(f'{hostname}/api/auth/register-user', 
         data={
             'role': role
@@ -91,7 +111,7 @@ def create_random_accounts_and_users():
         for i in range(account_count):
 
             # Create an account
-            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256(), fake.street_address()):
+            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()):
 
                 created_accounts += 1
 

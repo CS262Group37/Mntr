@@ -67,7 +67,7 @@ class RegisterUser(AuthResource):
     def post(self):
         
         data = parsers.register_user_parser.parse_args()
-        result = auth.register_user(self.payload['accountID'], data['role'])
+        result = auth.register_user(self.payload['accountID'], data)
 
         if result[0]:
             return result[1], 201
