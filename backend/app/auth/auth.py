@@ -26,43 +26,42 @@ def register_account(email, password, firstName, lastName):
     return (True, {'message': 'Account successfully created', 'accountID': accountID[0][0]})
 
 # Registers a user for a given account. Returns tuple (status, dict).
-def register_user(accountID, data):
-
+def register_user(accountID, userData):
     conn = DatabaseConnection()
     with conn:
-        if data['role'] == 'admin':
+        if userData['role'] == 'admin':
             # Check admin password
-            adminPassword = data.get('adminPassword')
+            adminPassword = userData.get('adminPassword')
             if adminPassword is None or adminPassword != 'admin':
                 return (False, {'message': 'Registration failed', 'error': 'Admin password incorrect'})
 
             sql = 'INSERT INTO "user" (accountID, "role", businessArea) VALUES (%s, %s, NULL) RETURNING userID;'
-            data = (accountID, data['role'])
-            userID = conn.execute(sql, data)
+            data = (accountID, userData['role'])
+            userID = conn.execute(sql, data)[0][0]
         else:
             # Check if business area has been provided
-            businessArea = data.get('businessArea')
+            businessArea = userData.get('businessArea')
             if businessArea is None:
                 return (False, {'message': 'Registration failed', 'error': 'Business area was not provided'})
             sql = 'INSERT INTO "user" (accountID, "role", businessArea) VALUES (%s, %s, %s) RETURNING userID;'
-            data = (accountID, data['role'], businessArea)
-            userID = conn.execute(sql, data)
+            data = (accountID, userData['role'], businessArea)
+            userID = conn.execute(sql, data)[0][0]
 
             # Insert topics
-            topics = data.get('topics')
+            topics = userData.get('topics')
             if topics is None:
                 # Set error to true to force a rollback
                 conn.error = True
                 return (False, {'message': 'Registration failed', 'error': 'Topics were not provided'})
-            sql = 'INSERT INTO user_topic (userID, topicID) VALUES (%s, %s);'
+            sql = 'INSERT INTO user_topic (userID, topic) VALUES (%s, %s);'
             for topic in topics:
                 data = (userID, topic)
                 conn.execute(sql, data)
             
             # Insert skill ratings for mentees
-            if data['role'] == 'mentee':
-                skills = data.get('skills')
-                ratings = data.get('ratings')
+            if userData['role'] == 'mentee':
+                skills = userData.get('skills')
+                ratings = userData.get('ratings')
                 if skills is None or ratings is None or len(skills) != len(ratings):
                     conn.error = True
                     return (False, {'message': 'Registration failed', 'error': 'Invalid skill ratings provided'})
@@ -74,7 +73,7 @@ def register_user(accountID, data):
                         conn.error = True
                         return (False, {'message': 'Registration failed', 'error': f'A rating for skill {row["name"]} has not been provided'})
 
-                sql = 'INSERT INTO user_rating (userID, skillID, rating) VALUES (%s, %s, %s);'
+                sql = 'INSERT INTO user_rating (userID, skill, rating) VALUES (%s, %s, %s);'
                 for i in range(len(skills)):
                     data = (userID, skills[i], ratings[i])
                     conn.execute(sql, data)
@@ -93,7 +92,7 @@ def register_user(accountID, data):
             error = 'You have already registered a user with that role'
 
         return (False, {'message': 'Registration failed', 'error': error})
-    return (True, {'message': 'Registered user successfully', 'userID': userID[0][0]})
+    return (True, {'message': 'Registered user successfully', 'userID': userID})
 
 # Gets all users
 def get_registered_users():
