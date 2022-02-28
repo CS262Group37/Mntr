@@ -82,7 +82,7 @@ def add_random_areas():
         for i in range(area_count):
             area = fake.street_address()
             # Create an account
-            if add_topic(area):
+            if add_area(area):
                 add_areas += 1
             
             progress.update(area_progress, advance=1)

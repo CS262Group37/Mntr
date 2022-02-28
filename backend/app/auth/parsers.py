@@ -21,3 +21,6 @@ login_parser = reqparse.RequestParser()
 login_parser.add_argument('email', required=True)
 login_parser.add_argument('password', required=True)
 login_parser.add_argument('role', choices=('admin', 'mentor', 'mentee'), required=True)
+
+role_parser = reqparse.RequestParser()
+role_parser.add_argument('role', choices=('admin', 'mentor', 'mentee'), required=True)
