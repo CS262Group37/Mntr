@@ -62,3 +62,29 @@ def add_random_topics():
             progress.update(topic_progress, advance=1)
     stop = perf_counter()
     console.print(f'\n[green]Successfully added {added_topics} topics in {stop - start} seconds[/]')
+
+def add_area(area_name):
+
+    response = requests.post(f'{hostname}/api/admin/add-business-area', data={'businessAreaName': area_name}, timeout=10, cookies=authentication.active_cookie)
+    data = json.loads(response.content)
+
+    if 'error' in data:
+        return False
+    return True
+
+def add_random_areas():
+    area_count = IntPrompt.ask('Enter the number of random business areas to add')
+    add_areas = 0
+    start = perf_counter()
+    with Progress() as progress:
+        area_progress = progress.add_task('[cyan]Adding business areas...[/]', total=area_count)
+
+        for i in range(area_count):
+            area = fake.street_address()
+            # Create an account
+            if add_area(area):
+                add_areas += 1
+            
+            progress.update(area_progress, advance=1)
+    stop = perf_counter()
+    console.print(f'\n[green]Successfully added {add_areas} business areas in {stop - start} seconds[/]')

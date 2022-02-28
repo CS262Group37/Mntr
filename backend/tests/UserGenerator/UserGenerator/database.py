@@ -14,7 +14,6 @@ def create_connection():
         exit()
 
 def get_data(sql, data = None):
-
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(sql, data)
     data = cur.fetchall()

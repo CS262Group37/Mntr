@@ -26,6 +26,7 @@ login_options = {
 admin_options = {
     ('skills', 'Add random skills to the system'): admin.add_random_skills,
     ('topics', 'Add random topics to the system'): admin.add_random_topics,
+    ('areas', 'Add random business areas to the system'): admin.add_random_areas,
     ('logout', 'Logout'): logout
 }
 
@@ -45,7 +46,7 @@ def admin_login():
 
     # Register an admin account and user then login
     accounts.create_account('admin', 'admin', 'admin@admin.com', 'admin')
-    accounts.create_user('admin')
+    accounts.create_user('admin', adminPassword = 'admin')
     if login_user('admin@admin.com', 'admin', 'admin'):
 
         while not logout_flag:
@@ -55,7 +56,7 @@ def admin_login():
             if not logout_flag:
                 console.console.line()
     else:
-        console.print("[red]Admin login failed for an unknown reason[/]")
+        console.console.print("[red]Admin login failed for an unknown reason[/]")
 
     
 

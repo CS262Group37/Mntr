@@ -1,5 +1,5 @@
 import json
-from random import randrange
+from random import randrange, choice, sample
 from time import perf_counter
 
 import requests
@@ -48,16 +48,32 @@ def print_all_accounts():
     with console.pager():
         console.print(table, justify='center')
 
-def create_user(role):
-    response = requests.post(f'{hostname}/api/auth/register-user', 
-        data={
-            'role': role
-            },
-        cookies = authentication.active_cookie, timeout=10
-        )
+def create_user(role, businessArea = None, topics = None, skills = None, ratings = None, adminPassword = None):
+
+    if role == 'admin':
+        data = {
+            'role': role,
+            'adminPassword': adminPassword
+        }
+    elif role == 'mentor':
+        data = {
+            'role': role,
+            'businessArea': businessArea,
+            'topics': topics,
+        }
+    else:
+        data = {
+            'role': role,
+            'businessArea': businessArea,
+            'topics': topics,
+            'skills': skills,
+            'ratings': ratings,
+        }
+
+    response = requests.post(f'{hostname}/api/auth/register-user', data, cookies = authentication.active_cookie, timeout=10)
     data = json.loads(response.content)
-    
     if 'error' in data:
+        console.print(data['error'])
         return False
     return True
 
@@ -84,25 +100,46 @@ def create_random_accounts_and_users():
     console.line()
     start = perf_counter()
 
+    def remove_tuples(list):
+        newList = []
+        for item in list:
+            newList.append(item[0])
+        return newList
+
+    def random_ratings(skills):
+        ratings = []
+        for i in range(len(skills)):
+            ratings.append(randrange(11))
+        return ratings
+
+    # Get data on the system
+    businessAreas = remove_tuples(database.get_data('SELECT "name" FROM system_business_area'))
+    skills = remove_tuples(database.get_data('SELECT "name" FROM system_skill'))
+    topics = remove_tuples(database.get_data('SELECT "name" FROM system_topic'))
+
+    if not businessAreas or not skills or not topics:
+        console.print('[red]System is missing either business areas, skills or topics[/]')
+        return
+
     with Progress() as progress:
         account_progress = progress.add_task('[cyan]Adding random accounts and users...[/]', total=account_count)
 
         for i in range(account_count):
 
             # Create an account
-            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()):
+            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[10:]):
 
                 created_accounts += 1
 
                 # Create random user(s)
                 random_role = randrange(11)
                 if random_role < 5:
-                    if create_user('mentee') : created_users += 1
+                    if create_user('mentee', businessArea=choice(businessAreas), topics=sample(topics, k=randrange(1, len(topics))), skills=skills, ratings=random_ratings(skills)) : created_users += 1
                 elif random_role < 10:
-                    if create_user('mentor') : created_users += 1
+                    if create_user('mentor', businessArea=choice(businessAreas), topics=sample(topics, k=randrange(1, len(topics)))) : created_users += 1
                 else:
-                    if create_user('mentee') : created_users += 1
-                    if create_user('mentor') : created_users += 1
+                    if create_user('mentee', businessArea=choice(businessAreas), topics=sample(topics, k=randrange(1, len(topics))), skills=skills, ratings=random_ratings(skills)) : created_users += 1
+                    if create_user('mentor', businessArea=choice(businessAreas), topics=sample(topics, k=randrange(1, len(topics)))) : created_users += 1
             
             progress.update(account_progress, advance=1)
 
