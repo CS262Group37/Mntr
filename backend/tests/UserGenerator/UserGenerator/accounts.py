@@ -1,4 +1,5 @@
 import json
+import os
 from random import randrange, choice, sample
 from time import perf_counter
 
@@ -8,7 +9,7 @@ from rich.progress import Progress
 from rich.prompt import IntPrompt
 from rich.table import Table
 
-from . import authentication, database
+from . import authentication, database, admin
 from .console import add_option, console, hostname
 from .fake_data import fake
 
@@ -93,11 +94,12 @@ def print_all_users():
     with console.pager():
         console.print(table, justify='center')
 
-def create_random_accounts_and_users():
-    account_count = IntPrompt.ask('Enter the number of random accounts to add')
+def create_random_accounts_and_users(account_count = None):
+    if account_count is None:
+        account_count = IntPrompt.ask('Enter the number of random accounts to add')
+        console.line()
     created_accounts = 0
     created_users = 0
-    console.line()
     start = perf_counter()
 
     def remove_tuples(list):
@@ -127,7 +129,7 @@ def create_random_accounts_and_users():
         for i in range(account_count):
 
             # Create an account
-            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[10:]):
+            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[0:10]):
 
                 created_accounts += 1
 
@@ -146,7 +148,27 @@ def create_random_accounts_and_users():
     stop = perf_counter()
     console.print(f'\n[green]Successfully added {created_accounts} accounts with {created_users} users in {stop - start} seconds[/]')
 
+def load_preset():
+    # Load json preset file
+    preset_dir = os.path.join(os.getcwd(), 'preset.json')
+    with open(preset_dir) as json_file:
+        preset = json.load(json_file)
+
+    authentication.simple_admin_login()
+    # Add topics
+    admin.add_random_topics(preset['topics'])
+    console.line()
+    # Add skills
+    admin.add_random_skills(preset['skills'])
+    console.line()
+    # Add areas
+    admin.add_random_areas(preset['businessAreas'])
+    console.line()
+
+    create_random_accounts_and_users(preset['accounts'])
+
 def add_options():
     add_option('add', 'Add random accounts and users', create_random_accounts_and_users)
     add_option('users', 'View users in a table', print_all_users)
     add_option('accounts', 'View accounts in a table', print_all_accounts)
+    add_option('preset', 'Configures system using preset.json', load_preset)

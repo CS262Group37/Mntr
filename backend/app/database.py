@@ -1,4 +1,5 @@
 import os
+import traceback as tb
 
 from psycopg2 import pool
 from psycopg2.extras import DictCursor
@@ -28,13 +29,17 @@ class DatabaseConnection():
         return self
 
     # Closes the cursor and connection
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exception_type, exception_value, traceback):
         if not self.error:
             self.conn.commit()
         else:
             self.conn.rollback()
         self.curs.close()
         app.db_pool.putconn(self.conn)
+
+        # Print non-database exceptions
+        if not self.error and exception_value is not None and exception_type is not None and traceback is not None:
+            tb.print_exception(exception_type, exception_value, traceback)
         return True
     
     # Pass sql in the form of a string data in the form of a tuple. NOTE: If you are passing in a
