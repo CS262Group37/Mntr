@@ -163,6 +163,7 @@ def encode_token(email, role = None):
         #'iat': datetime.utcnow(),
         #'exp': datetime.utcnow() + token_lifetime,
         'accountID': accountID,
+        'email': email,
         'userID': userID,
         'role': role
     }
