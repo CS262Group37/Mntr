@@ -6,7 +6,9 @@ import Register from "./Register";
 import { Routes, Route } from "react-router-dom";
 import DashboardMentee from "./DashboardMentee";
 import DashboardMentor from "./DashboardMentor";
-import RegisterUser from "./RegisterUser";
+import BrowseMentors from "./BrowseMentors";
+import Workshops from "./Workshops";
+import RegisterUser from "./RegisterUser"
 
 function App() {
   return (
@@ -14,9 +16,11 @@ function App() {
       <Routes>
         <Route path="/" element={ <Login /> } />
         <Route path="/register" element={ <Register /> } />
+        <Route path="/dashboard-mentee" element={ <DashboardMentee /> } />
+        <Route path="/browse-mentors" element={ <BrowseMentors /> } />
+        <Route path="/workshops" element={ <Workshops /> } />
+        <Route path="/dashboard-mentor" element={ <DashboardMentor /> } />
         <Route path="/register-user" element={ <RegisterUser /> } />
-        <Route path="/dbmentee" element={ <DashboardMentee /> } />
-        <Route path="/dbmentor" element={ <DashboardMentor /> } />
       </Routes>
     </div>
   );
