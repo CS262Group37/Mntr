@@ -111,7 +111,7 @@ class AddBusinessArea(AuthResource):
     @admin_api.expect(parsers.business_area_parser)
     def post(self):
         data = parsers.business_area_parser.parse_args()
-        result = admin.add_business_area(data['name'])
+        result = admin.add_business_area(data['businessAreaName'])
         if result[0]:
             return result[1], 201
         else:

@@ -8,6 +8,8 @@ DROP TABLE IF EXISTS user_rating CASCADE;
 DROP TABLE IF EXISTS "message" CASCADE;
 DROP TABLE IF EXISTS relation CASCADE;
 DROP TABLE IF EXISTS report CASCADE;
+DROP TABLE IF EXISTS plan_of_action CASCADE;
+DROP TABLE IF EXISTS milestone CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS add_relation_contraints;
@@ -81,6 +83,24 @@ CREATE TABLE report (
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     content VARCHAR NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+);
+
+CREATE TABLE plan_of_action (
+    planID SERIAL PRIMARY KEY,
+    relationID INTEGER NOT NULL REFERENCES relation(relationID),
+    title VARCHAR NOT NULL,
+    "description" VARCHAR NOT NULL,
+    creationDate TIMESTAMP NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
+);
+
+CREATE TABLE milestone (
+    milestoneID SERIAL PRIMARY KEY,
+    planID INTEGER NOT NULL REFERENCES plan_of_action(planID),
+    title VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    creationDate TIMESTAMP NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
 );
 
 -------------------- Relation Trigger --------------------
