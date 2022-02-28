@@ -19,9 +19,10 @@ def add_skill(skill_name):
         return False
     return True
 
-def add_random_skills():
-    skill_count = IntPrompt.ask('Enter the number of random skills to add')
-
+def add_random_skills(skill_count = None):
+    if skill_count is None:
+        skill_count = IntPrompt.ask('Enter the number of random skills to add')
+        console.line()
     added_skills = 0
     start = perf_counter()
     with Progress() as progress:
@@ -46,12 +47,14 @@ def add_topic(topic_name):
         return False
     return True
 
-def add_random_topics():
-    topic_count = IntPrompt.ask('Enter the number of random topics to add')
+def add_random_topics(topic_count = None):
+    if topic_count is None:
+        topic_count = IntPrompt.ask('Enter the number of random topics to add')
+        console.line()
     added_topics = 0
     start = perf_counter()
     with Progress() as progress:
-        topic_progress = progress.add_task('[cyan]Adding skills...[/]', total=topic_count)
+        topic_progress = progress.add_task('[cyan]Adding topics...[/]', total=topic_count)
 
         for i in range(topic_count):
             topic = fake.job()
@@ -72,8 +75,10 @@ def add_area(area_name):
         return False
     return True
 
-def add_random_areas():
-    area_count = IntPrompt.ask('Enter the number of random business areas to add')
+def add_random_areas(area_count = None):
+    if area_count is None:
+        area_count = IntPrompt.ask('Enter the number of random business areas to add')
+        console.line()
     add_areas = 0
     start = perf_counter()
     with Progress() as progress:
