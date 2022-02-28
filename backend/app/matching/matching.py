@@ -2,7 +2,7 @@ from app.database import DatabaseConnection
 
 def calculate_compatibility(menteeUser, mentorUser, menteeRatings, mentorRatings, menteeTopics, mentorTopics):
     # Check if business areas match
-    if menteeUser['businessArea'] != mentorUser['businessArea']:
+    if menteeUser[0]['businessarea'] != mentorUser[0]['businessarea']:
         return 0
 
     # Calculate topic area factor
@@ -14,7 +14,7 @@ def calculate_compatibility(menteeUser, mentorUser, menteeRatings, mentorRatings
                 break
     if match_count == 0:
         return 0
-    topic_factor = match_count / len(menteeTopic)
+    topic_factor = match_count / len(menteeTopics)
 
     # Calculate feedback factor
     feedback_factor = 0
@@ -23,18 +23,18 @@ def calculate_compatibility(menteeUser, mentorUser, menteeRatings, mentorRatings
             if mentorRating['skill'] == menteeRating['skill']:
                 feedback_factor += menteeRating['rating'] * mentorRating['rating']
                 break
-    feedback_factor = feedback_factor / (100 * len(menteeRating))
-    
+    feedback_factor = feedback_factor / (100 * len(menteeRatings))
+
     return (topic_factor + feedback_factor) / 2
 
 def get_recommended_mentors(menteeID):
-    mentors = {}
+    recommended_mentors = {}
     conn = DatabaseConnection()
     with conn:
         # First get a all mentors on the system
-        sql = 'SELECT * FROM "user" WHERE role = mentor'
+        sql = 'SELECT * FROM "user" WHERE role = \'mentor\''
         mentors = conn.execute(sql)
-
+        
         # Get mentee data structs from db
         menteeUser = conn.execute('SELECT * FROM "user" WHERE userID = %s', (menteeID,))
         menteeRatings = conn.execute('SELECT * FROM user_rating WHERE userID = %s', (menteeID,))
@@ -42,13 +42,13 @@ def get_recommended_mentors(menteeID):
 
         for mentor in mentors:
             # TODO: Write this better if performance is bad
-            mentorUser = conn.execute('SELECT * FROM "user" WHERE userID = %s', (mentor['userID'],))
-            mentorRatings = conn.execute('SELECT * FROM user_rating WHERE userID = %s', (mentor['userID'],))
-            mentorTopics = conn.execute('SELECT * FROM user_topic WHERE userID = %s', (mentor['userID'],))
+            mentorUser = conn.execute('SELECT * FROM "user" WHERE userID = %s', (mentor['userid'],))
+            mentorRatings = conn.execute('SELECT * FROM user_rating WHERE userID = %s', (mentor['userid'],))
+            mentorTopics = conn.execute('SELECT * FROM user_topic WHERE userID = %s', (mentor['userid'],))
             compatibility = calculate_compatibility(menteeUser, mentorUser, menteeRatings, mentorRatings, menteeTopics, mentorTopics)
             if compatibility != 0:
-                mentors[mentor['userID']] = compatibility
-    
+                recommended_mentors[mentor['userid']] = compatibility
+
     if conn.error:
         return (False, {'message': 'Failed to get recommended mentors', 'error': conn.error_message})
-    return (True, mentors)
+    return (True, recommended_mentors)

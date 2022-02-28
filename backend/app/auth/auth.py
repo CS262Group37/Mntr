@@ -81,7 +81,7 @@ def register_user(accountID, userData):
                 # Give mentors a default rating a 5 for all skills
                 # TODO: Might want to change this to start at 0
                 system_skills = conn.execute('SELECT * FROM system_skill')
-                sql = 'INSERT INTO user_rating (userID, skillID, rating) VALUES (%s, %s, 5)'
+                sql = 'INSERT INTO user_rating (userID, skill, rating) VALUES (%s, %s, 5)'
                 for skill in system_skills:
                     data = (userID, skill['name'])
                     conn.execute(sql, data)
