@@ -6,6 +6,7 @@ import { BiUser, BiLockAlt } from "react-icons/bi";
 import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
 import LoginButton from "./components/LoginButton";
+import Dropdown from "./components/Dropdown";
 
 function Login() {
   const [email, setEmail] = React.useState<string>("");
@@ -16,7 +17,7 @@ function Login() {
     const res = await axios.post("/api/auth/login", {
       email: email,
       password: psword,
-      role: role //TODO: Add role dropdown
+      role: role 
     });
   };
 
@@ -62,9 +63,19 @@ function Login() {
                   placeholder="Password"
                   icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
                 />
+
+                
                 <p className="text-right text-lg pt-1 underline">
                   Forgot password?
                 </p>
+                <Dropdown
+                values={["mentor", "mentee", "admin"]}
+                labels={["Mentor", "Mentee", "Admin"]}
+                onChange={(e: any) => {
+                  setRole(e.target.value);
+                }}
+                icon={<BiUser className="text-4xl m-4 mr-0" />}
+              />
               </div>
             </div>
 

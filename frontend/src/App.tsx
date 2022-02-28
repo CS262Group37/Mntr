@@ -8,6 +8,7 @@ import DashboardMentee from "./DashboardMentee";
 import DashboardMentor from "./DashboardMentor";
 import BrowseMentors from "./BrowseMentors";
 import Workshops from "./Workshops";
+import RegisterUser from "./RegisterUser"
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/browse-mentors" element={ <BrowseMentors /> } />
         <Route path="/workshops" element={ <Workshops /> } />
         <Route path="/dashboard-mentor" element={ <DashboardMentor /> } />
+        <Route path="/register-user" element={ <RegisterUser /> } />
       </Routes>
     </div>
   );
