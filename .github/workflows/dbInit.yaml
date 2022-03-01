@@ -27,9 +27,9 @@ jobs:
     
     steps:
       - name: Log in to server with postgres user
-        run: $ sudo -u postgres psql
+        run: sudo -u postgres psql
       - name: Create user for postgres
-        run: $ createuser testuser
+        run: createuser testuser
       - name: Create database
-        run: $ createdb testdb
+        run: createdb testdb
        
