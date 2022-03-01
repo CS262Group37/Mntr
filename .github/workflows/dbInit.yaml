@@ -7,7 +7,7 @@ jobs:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
     # Docker Hub image that `container-job` executes in
-    container: node:10.18-jessie
+    container: python
 
     # Service containers to run with `container-job`
     services:
@@ -18,7 +18,11 @@ jobs:
         # Provide the password for postgres
         env:
           POSTGRES_USER: postgres
+          POSTGRES_DB: postgres_db
           POSTGRES_PASSWORD: postgres
+        ports:
+          # maps tcp port 5432 on service container to the host
+          - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -27,9 +31,14 @@ jobs:
           --health-retries 5
     
     steps:
-      - name: Log in to server with postgres user
-        run: docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
-      - name: Create user for postgres
-        run: createuser testuser
-      - name: Create database
-        run: createdb testdb
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+      # - name: Log in to server with postgres user
+      #   run: docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+      # - name: Create user for postgres
+      #   run: createuser testuser
+      # - name: Create database
+      #   run: createdb testdb
