@@ -54,6 +54,7 @@ jobs:
           echo DB_HOST=postgres >> .env
           echo DB_NAME=postgres_db >> .env
           echo DB_PASSWORD=postgres_password >> .env
+          echo DB_DSN=postgres://postgres_user:postgres_password@postgres:5432/postgres_db >> .env
           echo HOSTNAME=http://localhost:5000 >> .env
           cat .env
       - name: Install dependencies
