@@ -1,9 +1,8 @@
-
 from . import plan_api
 from . import planOfAction
 from . import parsers
 
-def CreatePlan(AuthResource):
+def CreatePlan():
     @plan_api.expect(parsers.plan_parser)
     def post(self):
         data = parser.plan_parser.parse_args()
@@ -71,15 +70,6 @@ def ViewMilestone():
         if result[0]:
             return result[1]
         return result[1]
-
-
-
-
-
-
-
-
-
 
 
 plan_api.add_resource(CreatePlan, '/create-plan')
