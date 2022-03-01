@@ -26,8 +26,10 @@ jobs:
           --health-retries 5
     
     steps:
-      - name: Connect to PostgreSQL
-        run: node client.js
-        env:
-          POSTGRES_HOST: 127.0.0.1
-          POSTGRES_PORT: 5432
+      - name: Log in to server with postgres user
+        run: su - postgres
+      - name: Create user for postgres
+        run: $ createuser testuser
+      - name: Create database
+        run: $ createdb testdb
+       
