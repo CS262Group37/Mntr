@@ -78,7 +78,7 @@ CREATE TABLE report (
 
 CREATE TABLE plan_of_action (
     planID SERIAL PRIMARY KEY,
-    relationID INTEGER NOT NULL REFERENCES relation(relationID),
+    relationID INTEGER NOT NULL, --REFERENCES relation(relationID),
     title VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
     creationDate TIMESTAMP NOT NULL,

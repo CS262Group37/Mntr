@@ -16,10 +16,11 @@ class GetPlan(AuthResource):
     @plan_api.expect(parsers.relationID_parser)
     def get(self):
         data = parsers.relationID_parser.parse_args()
-        result =  plan.get_plan_of_actions(data['relationID'])
-        if result[0]:
-            return result[1]
-        return result[1]
+        return plan.get_plan_of_actions(data['relationID'])
+
+class GetAllPlans(AuthResource):
+    def get(self):
+        return plan.get_all_plan_of_actions()
 
 class MarkPlanComplete(AuthResource):
     def post(self):
@@ -65,9 +66,10 @@ class RemoveMilestone(AuthResource):
         return result[1]
 
 class ViewMilestone(AuthResource):
+    @plan_api.expect(parsers.milestoneID_parser)
     def post(self):
         data = parsers.milestoneID_parser.parse_args()
-        result = plan.mark_milestone_of_action_completed(data['milestoneID'])
+        result = plan.mark_milestone_as_completed(data['milestoneID'])
         if result[0]:
             return result[1]
         return result[1]
@@ -76,7 +78,8 @@ plan_api.add_resource(CreatePlan, '/create-plan')
 plan_api.add_resource(AddMilestone, '/add-milestone')
 plan_api.add_resource(MarkPlanComplete, '/set-plan-complete')
 plan_api.add_resource(RemovePlan, '/remove-plan')
-plan_api.add_resource(AddMilestone, '/add-milestone')
+plan_api.add_resource(GetPlan, '/get-plan')
+plan_api.add_resource(GetAllPlans, '/get-all-plans')
 plan_api.add_resource(MarkMilestoneComplete, '/set-milestone-complete')
 plan_api.add_resource(RemoveMilestone, '/remove-milestone')
 plan_api.add_resource(ViewMilestone, '/view-milestone')
