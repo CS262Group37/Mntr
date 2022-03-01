@@ -12,8 +12,8 @@ DROP TABLE IF EXISTS plan_of_action CASCADE;
 DROP TABLE IF EXISTS milestone CASCADE;
 
 -- Constraint functions --
-DROP FUNCTION IF EXISTS add_relation_contraints;
-DROP TRIGGER IF EXISTS add_relation_contraints ON relation;
+DROP FUNCTION IF EXISTS relation_constraints;
+DROP TRIGGER IF EXISTS relation_constraints ON relation;
 
 CREATE TABLE system_business_area (
     businessAreaID SERIAL PRIMARY KEY,
@@ -105,7 +105,7 @@ CREATE TABLE milestone (
 
 -------------------- Relation Trigger --------------------
 
-CREATE OR REPLACE FUNCTION add_relation_contraints()
+CREATE OR REPLACE FUNCTION relation_constraints()
 RETURNS TRIGGER AS
 $$
 DECLARE
@@ -113,13 +113,15 @@ DECLARE
     mentorAccountID INTEGER;
     menteeRole VARCHAR;
     mentorRole VARCHAR;
+    menteeBusinessArea VARCHAR;
+    mentorBusinessArea VARCHAR;
 BEGIN
     -- Get account IDs and roles
-    SELECT accountID, "role" INTO menteeAccountID, menteeRole FROM "user" WHERE userID = new.menteeID;
-    SELECT accountID, "role" INTO mentorAccountID, mentorRole FROM "user" WHERE userID = new.mentorID;
+    SELECT accountID, "role", businessArea INTO menteeAccountID, menteeRole, menteeBusinessArea FROM "user" WHERE userID = new.menteeID;
+    SELECT accountID, "role", businessArea INTO mentorAccountID, mentorRole, mentorBusinessArea FROM "user" WHERE userID = new.mentorID;
 
     IF menteeAccountID = mentorAccountID THEN
-        RAISE EXCEPTION 'Cannot add relation. Mentor and mentee have the same account';
+        RAISE EXCEPTION 'Invalid relation. Mentor and mentee have the same account';
     END IF;
 
     IF menteeRole != 'mentee' THEN
@@ -130,10 +132,14 @@ BEGIN
         RAISE EXCEPTION 'User with mentorID % is not a mentor', new.mentorID;
     END IF;
 
+    if menteeBusinessArea = mentorBusinessArea THEN
+        RAISE EXCEPTION 'Invalid relation. Mentor and mentee have the same business area';
+    END IF;
+
     RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
 
-CREATE TRIGGER add_relation_contraints BEFORE INSERT OR UPDATE ON relation
-    FOR EACH ROW EXECUTE PROCEDURE add_relation_contraints();
+CREATE TRIGGER relation_constraints BEFORE INSERT OR UPDATE ON relation
+    FOR EACH ROW EXECUTE PROCEDURE relation_constraints();
