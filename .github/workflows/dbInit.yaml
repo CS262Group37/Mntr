@@ -27,7 +27,7 @@ jobs:
     
     steps:
       - name: Log in to server with postgres user
-        run: createuser postgres
+        run: $ createuser postgres
       - name: Create user for postgres
         run: $ createuser testuser
       - name: Create database
