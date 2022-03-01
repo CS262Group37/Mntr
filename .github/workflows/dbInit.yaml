@@ -48,15 +48,15 @@ jobs:
       - name: Create .env file
         run: |
           touch backend/.env
-          echo FLASK_APP=app >> .env
-          echo FLASK_ENV=development >> .env
-          echo DB_USER=postgres_user >> .env
-          echo DB_HOST=postgres >> .env
-          echo DB_NAME=postgres_db >> .env
-          echo DB_PASSWORD=postgres_password >> .env
-          echo DB_DSN=postgres://postgres_user:postgres_password@postgres:5432/postgres_db >> .env
-          echo HOSTNAME=http://localhost:5000 >> .env
-          cat .env
+          echo FLASK_APP=app >> backend/.env
+          echo FLASK_ENV=development >> backend/.env
+          echo DB_USER=postgres_user >> backend/.env
+          echo DB_HOST=postgres >> backend/.env
+          echo DB_NAME=postgres_db >> backend/.env
+          echo DB_PASSWORD=postgres_password >> backend/.env
+          echo DB_DSN=postgres://postgres_user:postgres_password@postgres:5432/postgres_db >> backend/.env
+          echo HOSTNAME=http://localhost:5000 >> backend/.env
+          cat backend/.env
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
