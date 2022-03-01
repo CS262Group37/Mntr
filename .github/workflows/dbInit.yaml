@@ -1,5 +1,5 @@
 name: PostgreSQL container set up
-# on: push
+on: push
 
 jobs:
   # Label of the container job
