@@ -39,7 +39,7 @@ jobs:
       - name: Setup database
         run: |
           psql -h postgres -d postgres_db -U postgres_user -c 'CREATE DATABASE "cs261_project";'
-          psql -h postgres -d postgres_db -U postgres_user -c '\l;'
+          psql -h postgres -d postgres_db -U postgres_user -c '\l'
         env:
           PGPASSWORD: postgres_password
       - uses: actions/checkout@v2
