@@ -27,7 +27,7 @@ jobs:
     
     steps:
       - name: Connect to PostgreSQL
-        run: SoftwareEngProject/backend/tests/client.js
+        run: node client.js
         env:
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_PORT: 5432
