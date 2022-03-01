@@ -19,7 +19,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres_db
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: postgres_password
         ports:
           # maps tcp port 5432 on service container to the host
           - 5432:5432
@@ -39,6 +39,8 @@ jobs:
         run: |
           psql -h postgres -U postgres_user -c 'CREATE DATABASE "postgres_db";'
           psql -h postgres -U postgres_user -c '\l;'
+        env:
+          PGPASSWORD: postgres_password
       - uses: actions/checkout@v2
       - name: Create .env file
         run: |
