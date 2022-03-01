@@ -17,7 +17,7 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-          POSTGRES_USER: postgres
+          POSTGRES_USER: postgres_user
           POSTGRES_DB: postgres_db
           POSTGRES_PASSWORD: postgres_password
         ports:
@@ -37,17 +37,19 @@ jobs:
           apt-get install --yes postgresql-client
       - name: Setup database
         run: |
-          PGPASSWORD=postgres_password psql -h postgres -U postgres_user -c 'CREATE DATABASE "postgres_db";'
+          PGPASSWORD=postgres_password psql -h postgres -U postgres_user -c 'CREATE DATABASE "cs261_project";'
           PGPASSWORD=postgres_password psql -h postgres -U postgres_user -c '\l;'
+        env:
+          PGPASSWORD: postgres_password
       - uses: actions/checkout@v2
       - name: Create .env file
         run: |
           touch backend/.env
           echo FLASK_APP=app >> .env
           echo FLASK_ENV=development >> .env
-          echo DB_USER=postgres >> .env
+          echo DB_USER=postgres_user >> .env
           echo DB_NAME=postgres_db >> .env
-          echo DB_PASSWORD=postgres >> .env
+          echo DB_PASSWORD=postgres_password >> .env
           echo HOSTNAME=http://localhost:5000 >> .env
           cat .env
       - name: Install dependencies
