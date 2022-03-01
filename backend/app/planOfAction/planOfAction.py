@@ -1,8 +1,10 @@
 from app.database import DatabaseConnection
+from datetime import date
 
 def create_plan_of_action(realtionID, title, description):
     sql = 'INSERT INTO plan_of_action (planID, relationID, title, description, creationDate, "status") VALUES (NULL, %s, %s, %s, %s, %s);'
-    # time = 
+    today = date.today()
+    time = today.strftime("%Y-%m-%d") 
     data = (realtionID, title, description, time, "incomplete") # Need to get the time at which the function called
     conn = DatabaseConnection()
     with conn:
@@ -45,7 +47,8 @@ def remove_plan_of_action(planID):
 
 def add_milestone(planID, title, description):
     sql = 'INSERT INTO milestone (milestoneID, planID, title, description, creationDate, "status") VALUES (NULL, %s, %s, %s, %s, %s);'
-    # time = 
+    today = date.today()
+    time = today.strftime("%Y/%m/%d") 
     data = (planID, title, description, time, "complete") # Need to get the time at which the function called
     conn = DatabaseConnection()
     with conn:
