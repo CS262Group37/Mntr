@@ -7,7 +7,7 @@ from flask import current_app as app
 
 def init_db():
     try:
-        __pool = pool.ThreadedConnectionPool(1, 20, cursor_factory=DictCursor, dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host='127.0.0.1', port='5432')
+        __pool = pool.ThreadedConnectionPool(1, 20, cursor_factory=DictCursor,dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host=os.getenv('DB_HOST'), port='5432')
         app.db_pool = __pool
     except Exception as e:
         raise Exception('Failed to connect to database. Have you started the postgresql service?') from e
