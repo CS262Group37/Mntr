@@ -54,25 +54,15 @@ jobs:
           echo DB_HOST=postgres >> backend/.env
           echo DB_NAME=postgres_db >> backend/.env
           echo DB_PASSWORD=postgres_password >> backend/.env
-          echo DB_DSN=postgres://postgres_user:postgres_password@postgres:5432/postgres_db >> backend/.env
           echo HOSTNAME=http://localhost:5000 >> backend/.env
           cat backend/.env
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
-
-          
       - name: Run flask server
         run: |
           cd backend
           flask run &
-
-      # - name: Run tests
-      #   run: pytest
-      # - name: Log in to server with postgres user
-      #   run: docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
-      # - name: Create user for postgres
-      #   run: createuser testuser
-      # - name: Create database
-      #   run: createdb testdb
+      - name: Run tests
+        run: pytest
