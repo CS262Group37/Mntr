@@ -31,7 +31,25 @@ jobs:
           --health-retries 5
     
     steps:
+      - name: Install PostgreSQL client
+        run: |
+          apt-get update
+          apt-get install --yes postgresql-client
+      - name: Setup database
+        run: |
+          psql -h postgres -U postgres_user -c 'CREATE DATABASE "postgres_db";'
+          psql -h postgres -U postgres_user -c '\l;'
       - uses: actions/checkout@v2
+      - name: Create .env file
+        run: |
+          touch backend/.env
+          echo FLASK_APP=app >> .env
+          echo FLASK_ENV=development >> .env
+          echo DB_USER=postgres >> .env
+          echo DB_NAME=postgres_db >> .env
+          echo DB_PASSWORD=postgres >> .env
+          echo HOSTNAME=http://localhost:5000 >> .env
+          cat .env
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
