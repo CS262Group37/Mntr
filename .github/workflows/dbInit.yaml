@@ -42,8 +42,8 @@ jobs:
           psql -h postgres -d postgres_db -U postgres_user -c '\l'
         env:
           PGPASSWORD: postgres_password
-      - name: Check postgres status
-        run: service postgresql status
+      - name: Check port
+        run: echo ${{ job.services.postgres.ports['5432'] }}
       - uses: actions/checkout@v2
       - name: Create .env file
         run: |
@@ -51,6 +51,7 @@ jobs:
           echo FLASK_APP=app >> .env
           echo FLASK_ENV=development >> .env
           echo DB_USER=postgres_user >> .env
+          echo DB_HOST=postgres >> .env
           echo DB_NAME=postgres_db >> .env
           echo DB_PASSWORD=postgres_password >> .env
           echo HOSTNAME=http://localhost:5000 >> .env
