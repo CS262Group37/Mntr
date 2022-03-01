@@ -33,4 +33,3 @@ jobs:
         run: createuser testuser
       - name: Create database
         run: createdb testdb
-       
