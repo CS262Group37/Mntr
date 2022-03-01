@@ -6,6 +6,8 @@ from app.messages import messages
 from app.planOfAction import planOfAction
 from app.relations import relations
 
+# Where backend tests will be written
+
 def test_backend():
     # C1
     assert admin.add_topic() is 
