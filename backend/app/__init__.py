@@ -8,6 +8,7 @@ import app.meetings as meetings
 import app.messages as messages
 import app.relations as relations
 import app.admin as admin
+import app.planOfAction as plan
 from . import database as db
 
 # Good description of the pattern I'm trying to implement: http://exploreflask.com/en/latest/blueprints.html
@@ -30,6 +31,7 @@ def create_app():
         app.register_blueprint(meetings.meetings_bp, url_prefix='/api/meetings')
         app.register_blueprint(messages.messages_bp, url_prefix='/api/messages')
         app.register_blueprint(relations.relations_bp, url_prefix='/api/relations')
+        app.register_blueprint(plan.plan_bp, url_prefix='/api/plan')
 
     # Put login doc on the front page for convenience
     @api.documentation

@@ -1,4 +1,4 @@
-=DROP TABLE IF EXISTS account CASCADE;
+DROP TABLE IF EXISTS account CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 DROP TABLE IF EXISTS "message" CASCADE;
 DROP TABLE IF EXISTS relation CASCADE;
@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS system_skill CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
 DROP TABLE IF EXISTS report CASCADE;
 DROP TABLE IF EXISTS plan_of_action CASCADE;
-DROP TABLE IF EXISTS milestone CASCASE;
+DROP TABLE IF EXISTS milestone CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS add_relation_contraints;
@@ -78,7 +78,7 @@ CREATE TABLE report (
 
 CREATE TABLE plan_of_action (
     planID SERIAL PRIMARY KEY,
-    relationID INTEGER NOT NULL REFERENCES relation(relationID)
+    relationID INTEGER NOT NULL REFERENCES relation(relationID),
     title VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
     creationDate TIMESTAMP NOT NULL,
