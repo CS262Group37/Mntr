@@ -61,10 +61,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
+
+          
       - name: Run flask server
         run: |
           cd backend
-          flask run
+          flask run &
+
       # - name: Run tests
       #   run: pytest
       # - name: Log in to server with postgres user
