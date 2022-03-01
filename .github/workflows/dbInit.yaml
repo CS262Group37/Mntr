@@ -1,5 +1,5 @@
 name: PostgreSQL container set up
-# on: push
+on: push
 
 jobs:
   # Label of the container job
@@ -7,7 +7,7 @@ jobs:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
     # Docker Hub image that `container-job` executes in
-    container: node:10.18-jessie
+    container: python
 
     # Service containers to run with `container-job`
     services:
@@ -17,8 +17,13 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres_db
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
+        ports:
+          # maps tcp port 5432 on service container to the host
+          - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -27,10 +32,29 @@ jobs:
           --health-retries 5
     
     steps:
-      - name: Log in to server with postgres user
-        run: docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
-      - name: Create user for postgres
-        run: createuser testuser
-      - name: Create database
-        run: createdb testdb
-       
+      - name: Install PostgreSQL client
+        run: |
+          apt-get update
+          apt-get install --yes postgresql-client
+      - uses: actions/checkout@v2
+      - name: Create .env file
+        run: |
+          touch backend/.env
+          echo FLASK_APP=app >> backend/.env
+          echo FLASK_ENV=development >> backend/.env
+          echo DB_USER=postgres_user >> backend/.env
+          echo DB_HOST=postgres >> backend/.env
+          echo DB_NAME=postgres_db >> backend/.env
+          echo DB_PASSWORD=postgres_password >> backend/.env
+          echo HOSTNAME=http://localhost:5000 >> backend/.env
+          cat backend/.env
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+      - name: Run flask server
+        run: |
+          cd backend
+          flask run &
+      - name: Run tests
+        run: pytest
