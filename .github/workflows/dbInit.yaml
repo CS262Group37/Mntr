@@ -36,14 +36,6 @@ jobs:
         run: |
           apt-get update
           apt-get install --yes postgresql-client
-      - name: Setup database
-        run: |
-          psql -h postgres -d postgres_db -U postgres_user -c 'CREATE DATABASE "cs261_project";'
-          psql -h postgres -d postgres_db -U postgres_user -c '\l'
-        env:
-          PGPASSWORD: postgres_password
-      - name: Check port
-        run: echo ${{ job.services.postgres.ports['5432'] }}
       - uses: actions/checkout@v2
       - name: Create .env file
         run: |

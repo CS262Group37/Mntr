@@ -1,10 +1,10 @@
-from app.admin import admin
-from app.auth import auth
-from app.matching import matching
-from app.meetings import meetings
-from app.messages import messages
-from app.planOfAction import planOfAction
-from app.relations import relations
+# from app.admin import admin
+# from app.auth import auth
+# from app.matching import matching
+# from app.meetings import meetings
+# from app.messages import messages
+# from app.planOfAction import planOfAction
+# from app.relations import relations
 
 import json
 import requests
