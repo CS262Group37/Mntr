@@ -64,7 +64,7 @@ jobs:
       - name: Run flask server
         run: |
           cd backend
-          echo flask run
+          flask run
       # - name: Run tests
       #   run: pytest
       # - name: Log in to server with postgres user

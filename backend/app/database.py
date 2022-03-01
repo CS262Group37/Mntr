@@ -1,15 +1,17 @@
 import os
 import traceback as tb
 
+from dotenv import load_dotenv
 from psycopg2 import pool
 from psycopg2.extras import DictCursor
 from flask import current_app as app
 
 def init_db():
     try:
+        load_dotenv()
         print("Env vars are:", os.getenv('DB_NAME'), os.getenv('DB_USER'), os.getenv('DB_PASSWORD'), os.getenv('DB_HOST'))
-        __pool = pool.ThreadedConnectionPool(1, 20, cursor_factory=DictCursor, dsn=os.getenv('DB_DSN'))
-        #__pool = pool.ThreadedConnectionPool(1, 20, cursor_factory=DictCursor,dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host=os.getenv('DB_HOST'), port='5432')
+        #__pool = pool.ThreadedConnectionPool(1, 20, cursor_factory=DictCursor, dsn=os.getenv('DB_DSN'))
+        __pool = pool.ThreadedConnectionPool(1, 20, cursor_factory=DictCursor,dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host=os.getenv('DB_HOST'), port='5432')
         app.db_pool = __pool
     except Exception as e:
         raise Exception('Failed to connect to database. Have you started the postgresql service?') from e
