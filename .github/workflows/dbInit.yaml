@@ -26,9 +26,8 @@ jobs:
           --health-retries 5
     
     steps:
-      - name: Create postgres server
-        run: |
-          sudo service postgresql-9.3 initdb
-          sudo service postgresql-9.3 start
-      - name: Initialize app
-        run: __init__.py
+      - name: Connect to PostgreSQL
+        run: node client.js
+        env:
+          POSTGRES_HOST: 127.0.0.1
+          POSTGRES_PORT: 5432
