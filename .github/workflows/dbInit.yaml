@@ -17,9 +17,10 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-          POSTGRES_USER: postgres_user
           POSTGRES_DB: postgres_db
           POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
         ports:
           # maps tcp port 5432 on service container to the host
           - 5432:5432
@@ -37,8 +38,8 @@ jobs:
           apt-get install --yes postgresql-client
       - name: Setup database
         run: |
-          PGPASSWORD=postgres_password psql -h postgres -U postgres_user -c 'CREATE DATABASE "cs261_project";'
-          PGPASSWORD=postgres_password psql -h postgres -U postgres_user -c '\l;'
+          psql -h postgres -d postgres_db -U postgres_user -c 'CREATE DATABASE "cs261_project";'
+          psql -h postgres -d postgres_db -U postgres_user -c '\l;'
         env:
           PGPASSWORD: postgres_password
       - uses: actions/checkout@v2
