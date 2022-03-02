@@ -41,7 +41,7 @@ def mark_plan_of_action_completed(planID):
         conn.execute(sql, data)
     if conn.error:
         return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
-    return (True, {'message': 'Successfully marked plan of action as read'})
+    return (True, {'message': 'Successfully marked plan of action as complete'})
 
 # Removes a the plan with a given ID
 def remove_plan_of_action(planID):
@@ -80,7 +80,7 @@ def mark_milestone_as_completed(milestoneID):
         conn.execute(sql, data)
     if conn.error:
         return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
-    return (True, {'message': 'Successfully milestone as read'})
+    return (True, {'message': 'Successfully milestone as complete'})
 
 # Removes the milestone from the table
 def remove_milestone(milestoneID):
@@ -107,7 +107,8 @@ def get_milestones(planID):
 
 # Gets all milestones in the database, used for testing
 def get_all_milestones():
-    sql = 'SELECT milestoneID, title, description, status FROM milestone;'
+    # sql = 'SELECT milestoneID, title, description, status FROM milestone;'
+    sql = 'SELECT creationDate FROM milestone;'
     conn = DatabaseConnection()
     with conn:
         result = conn.execute(sql)

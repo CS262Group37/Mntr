@@ -6,6 +6,7 @@ from . import parsers
 class CreatePlan(AuthResource):
     routes = ['mentor', 'admin']
     @plan_api.expect(parsers.plan_parser)
+    @plan_api.doc(security='apiKey') # Unsure if this line was needed in every class???
     def post(self):
         data = parsers.plan_parser.parse_args()
         result = plan.create_plan_of_action(data['relationID'], data['title'], data['description'])
