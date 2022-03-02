@@ -38,11 +38,11 @@ meetings (Jake)
 - get_meetings (mentor, mentee)
 
 plan of actions (James)
-- create_plan_of_action
-- add_milestone
-- mark_milestone_as_completed
-- remove_milestone
-- view_milestones
+- create_plan_of_action DONE
+- add_milestone DONE
+- mark_milestone_as_completed DONE
+- remove_milestone DONE
+- view_milestones DONE
 
 workshops (Marin)
 - (internal) check_demand (called whenever a user with a new topic is added to the system)
@@ -50,8 +50,8 @@ workshops (Marin)
 - cancel_workshop
 
 messages (Joshua)
-- (internal) send_message(sender, recipient, message_type)
-- get_inbox(user)
+- (internal) send_message(sender, recipient, message_type) DONE
+- get_inbox(user) DONE
 
 reports
 - send_report (uses the internal send_message function)
