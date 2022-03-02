@@ -59,6 +59,7 @@ class RemoveUser(AuthResource):
 
 class MarkReportAsRead(AuthResource):
     roles = ['admin']
+    @admin_api.expect(parsers.report_parser)
     @admin_api.doc(security='apiKey')
     def post(self):
         data = parsers.report_parser.parse_args()

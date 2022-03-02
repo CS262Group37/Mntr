@@ -34,7 +34,7 @@ def get_all_plan_of_actions():
 
 # Changes a plans status to complete
 def mark_plan_of_action_completed(planID):
-    sql = 'UPDATE plan_of_action SET status = "complete" WHERE planID = %s'
+    sql = "UPDATE plan_of_action SET status = 'complete' WHERE planID = %s;"
     data = (planID,)
     conn = DatabaseConnection()
     with conn:
@@ -60,7 +60,7 @@ def add_milestone(planID, title, description):
     sql = 'INSERT INTO milestone (planID, title, description, creationDate, "status") VALUES (%s, %s, %s, %s, %s);'
     today = date.today()
     time = today.strftime("%Y-%m-%d") # Need to fix adding a time to the database
-    data = (planID, title, description, time, "complete")
+    data = (planID, title, description, time, "incomplete")
     conn = DatabaseConnection()
     with conn:
         conn.execute(sql, data)
@@ -72,7 +72,7 @@ def add_milestone(planID, title, description):
 
 # Marks the status of the given milestone as complete
 def mark_milestone_as_completed(milestoneID):
-    sql = 'UPDATE milestone SET status = "complete" WHERE milestoneID = %s'
+    sql = "UPDATE milestone SET status = 'complete' WHERE milestoneID = %s;"
     data = (milestoneID,)
     conn = DatabaseConnection()
 

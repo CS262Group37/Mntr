@@ -27,6 +27,7 @@ class GetAllPlans(AuthResource):
 
 class MarkPlanComplete(AuthResource):
     routes = ['mentor', 'admin'] # who should be able to mark a plan as correct??? Both the mentor and mentees?
+    @plan_api.expect(parsers.planID_parser)
     def post(self):
         data = parsers.planID_parser.parse_args()
         result = plan.mark_plan_of_action_completed(data['planID'])
