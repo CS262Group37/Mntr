@@ -10,38 +10,52 @@ pages
 - account settings
 
 admin (James)
-- get_topics
-- add_topic
-- remove_topic
-- clear_topics
-- view_reports
+- get_topics DONE
+- add_topic DONE
+- remove_topic DONE
+- clear_topics DONE
+- view_reports DONE
 - ban_user
-- mark_report_as_read
-- get_skills
-- add_skills
-- remove_skills
-- clear_skills
+- mark_report_as_read DONE
+- get_skills DONE
+- add_skills DONE
+- remove_skills DONE
+- clear_skills DONE
 
-auth
-- register (need to add mentor preference ratings and business area)
+auth (Joshua)
+- register-account (Add business area)
+- register-user (Add topics and skill ratings)
 - login (Done)
 
-matching
-- get_mentor_list(mentee)
+matching algorithm (Joshua)
+- calculate mentor rating (internal)
+- get_sorted_mentor_list
 
-meetings
-- create_meeting(mentor, mentee, time, etc...)
-- cancel_meeting(meetingID)
-- accept_meeting(mentor, meetingID)
-- get_meetings(mentor, mentee)
+meetings (Jake)
+- create_meeting (mentor, mentee, time, etc...)
+- cancel_meeting (meetingID)
+- accept_meeting (mentor, meetingID)
+- get_meetings (mentor, mentee)
+
+plan of actions (James)
+- create_plan_of_action DONE
+- add_milestone DONE
+- mark_milestone_as_completed DONE
+- remove_milestone DONE
+- view_milestones DONE
+
+workshops (Marin)
+- (internal) check_demand (called whenever a user with a new topic is added to the system)
+- schedule_workshop
+- cancel_workshop
 
 messages (Joshua)
-- (internal) send_message(sender, recipient, message_type)
-- get_inbox(user)
+- (internal) send_message(sender, recipient, message_type) DONE
+- get_inbox(user) DONE
 
 reports
-- send_report
+- send_report (uses the internal send_message function)
 
 relations
-- send_email(pairingID, text)
+- send_email(pairingID, text) DONE
 - rate_mentor_skills(pairingID)

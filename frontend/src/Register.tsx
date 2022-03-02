@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import "./App.css";
 import axios from "axios";
 import { BiUser, BiLockAlt, BiEnvelope } from "react-icons/bi";
@@ -6,31 +6,30 @@ import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
 import { Link } from "react-router-dom";
 import LoginButton from "./components/LoginButton";
-
-// TODO password confirmation
+import {useNavigate} from 'react-router-dom';
 
 function Register() {
-  const [email, setEmail] = React.useState<string>("");
-  const [psword, setPsword] = React.useState<string>("");
-  const [pswordConf, setPswordConf] = React.useState<string>("");
-  const [firstName, setFirstName] = React.useState<string>("");
-  const [lastName, setLastName] = React.useState<string>("");
-  const [role, setRole] = React.useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [psword, setPsword] = useState<string>("");
+  const [pswordConf, setPswordConf] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const register = async () => {
-    const res = await axios.post("/api/auth/register", {
-      email: email, 
-      password: psword,
-      firstName: firstName,
-      lastName: lastName,
-      role: role
-    });
-  };
-
-  // Not sure what this is for
-  const getUsers = async () => {
-    const res = await axios.get("/api/auth/users");
-    console.log(res);
+    if (psword === pswordConf) {
+      const res = await axios.post("/api/auth/register-account", {
+        email: email, 
+        password: psword,
+        firstName: firstName,
+        lastName: lastName
+      });
+      navigate("/register-user")
+    } else {
+      console.log(`1: ${psword}, 2: ${pswordConf}`)
+    }
+    
   };
 
   return(
@@ -45,7 +44,7 @@ function Register() {
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
             <h2 className="text-4xl">
               Register to {" "}
-              <span className="font-bold text-firebrick">Website Name</span>
+              <span className="font-bold text-firebrick">Mntr</span>
             </h2>
             <p className="text-2xl">
               Here's where you can learn a new skill or share your knowledge
