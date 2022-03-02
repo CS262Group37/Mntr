@@ -1,7 +1,7 @@
 {
-    "accounts" : 500,
+    "accounts" : 100,
     "topics" : 10,
     "skills" : 10,
     "businessAreas" : 10,
-    "relations": 500
+    "relations": 300
 }

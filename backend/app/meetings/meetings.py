@@ -25,11 +25,13 @@ def create_meeting(relationID, start_time, end_time, title, description):
         data = (relationID,)
         [(menteeID, mentorID)] = conn.execute(sql, data)
 
+    conn2 = DatabaseConnection()
+    with conn2:
         # Send meeting request
         meeting_message = MeetingMessage(mentorID, menteeID, 'request', meetingID)
         if not send_message(meeting_message):
-            conn.error = True
-            return (False, {'error': 'Failed to send meeting request.'})    
+            conn2.error = True
+            return (False, {'error': 'Failed to send meeting request'})    
     
     if conn.error:
         return (False, {'message': 'Failed to create meeting', 'error': conn.error_message})
@@ -48,10 +50,16 @@ def get_meeting_relationID(meetingID):
 
 # Change a meeting to cancelled status
 def cancel_meeting(meetingID):
+    
     conn = DatabaseConnection()
      # Check meeting exists and cancel it
     with conn:
         # Add to database
+        sql = 'SELECT "status" FROM meeting WHERE meetingID = %s;'
+        data = (meetingID,)
+        [(status,)] = conn.execute(sql, data)
+        if status != 'going-ahead' or status != 'pending':
+            return (False, {'error': 'Cannot cancel meeting.'})
         sql = 'UPDATE meeting SET "status" = \'cancelled\' WHERE meetingID = %s;'
         data = (meetingID,)
         conn.execute(sql, data)
@@ -61,11 +69,18 @@ def cancel_meeting(meetingID):
 
 # Change a meeting to accepted status
 def accept_meeting(meetingID):
-
+    update_meetings()
     # Check meeting exists and then update to accept it
     conn = DatabaseConnection()
      # Check meeting exists and cancel it
     with conn:
+        # Get the status
+        sql = 'SELECT "status" FROM meeting WHERE meetingID = %s'
+        data = (meetingID,)
+        [(status,)] = conn.execute(sql, data)
+        if status != 'pending':
+            return (False, {'error': 'Meeting already accepted or missed'})
+
         # Add to database
         sql = 'UPDATE meeting SET "status" = \'going-ahead\' WHERE meetingID = %s;'
         data = (meetingID,)
@@ -87,16 +102,16 @@ def update_meetings():
         for meeting in meetings:
             
             start_time = meeting['starttime']
-            print(f"TYPE OF START TIME IS {type(start_time)}")
             end_time = meeting['endtime']
             status = meeting['status']
-            
+            new_status = status
+
             if status == 'cancelled' or status == 'completed':
                 continue
 
-            if current_time > end_time + datetime.timedelta(minutes=30):
+            if current_time > end_time + timedelta(minutes=30):
                 new_status = 'missed'
-            elif current_time >= start_time and current_time <= end_time:
+            elif status == 'going-ahead' and current_time >= start_time and current_time <= end_time:
                 new_status = 'running'
 
             if new_status != status:
@@ -120,23 +135,36 @@ def get_meetings(userID, role):
     conn = DatabaseConnection()
     with conn:
         result = conn.execute(sql, data)
-        
+
     if conn.error:
         return None
+    
+    for row in result:
+        row['starttime'] = row['starttime'].strftime('%d/%m/%y %H:%M')
+        row['endtime'] = row['endtime'].strftime('%d/%m/%y %H:%M')
+    
     return result
 
 # Mark meeting as completed and provide feedback
 def complete_meeting(userID, meetingID, feedback):
+    update_meetings()
     # Check meeting exists and then update to accept it
     conn = DatabaseConnection()
      # Check meeting exists and cancel it
     with conn:
         # Add to database
         # You can only mark a meeting as completed if you are within 30 mins of the end time
-        sql = 'SELECT endTime FROM meeting where meetingID = %s;'
+        # Get the status
+        sql = 'SELECT "status" FROM meeting WHERE meetingID = %s'
         data = (meetingID,)
-        [(end_time,)] = conn.execute(sql, data)
-        if datetime.now() < end_time + timedelta(minutes=30): 
+        [(status,)] = conn.execute(sql, data)
+        if status != 'running':
+            return (False, {'error': 'Cannot complete meeting since not currently running.'})
+        
+        sql = 'SELECT endTime, startTime FROM meeting where meetingID = %s;'
+        data = (meetingID,)
+        [(end_time, start_time)] = conn.execute(sql, data)
+        if datetime.now() < end_time + timedelta(minutes=30) and datetime.now() > start_time: 
             sql = 'UPDATE meeting SET "status" = \'completed\', feedback = %s WHERE meetingID = %s;'
             data = (feedback, meetingID)
             conn.execute(sql, data)
@@ -156,7 +184,7 @@ def complete_meeting(userID, meetingID, feedback):
         else:
             senderID = mentorID
             recipientID = menteeID
-        meeting_message = MeetingMessage(recipientID, mentorID, 'complete', meetingID)
+        meeting_message = MeetingMessage(recipientID, senderID, 'complete', meetingID)
         if not send_message(meeting_message):
             conn.error = True
             return (False, {'error': 'Failed to send meeting request.'}) 

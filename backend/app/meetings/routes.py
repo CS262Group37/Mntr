@@ -6,7 +6,7 @@ from . import meetings_api
 
 # Start and end time format must be '09/19/18 13:55:26'
 class CreateMeeting(AuthResource):
-    routes = ['mentee']
+    roles = ['mentee']
 
     @meetings_api.expect(parsers.create_meeting_parser)
     @meetings_api.doc(security='apiKey')
@@ -28,7 +28,7 @@ class CreateMeeting(AuthResource):
             return result[1], 400
 
 class CancelMeeting(AuthResource):
-    routes = ['mentee', 'mentor']
+    roles = ['mentee', 'mentor']
     
     @meetings_api.expect(parsers.meetingID_parser)
     @meetings_api.doc(security='apiKey')
@@ -40,7 +40,7 @@ class CancelMeeting(AuthResource):
             return {'error': 'Meeting does not exist'}, 404
         
         # Check this is the callers meeting
-        if not check_relationID(self.payload['userID'], data['relationID']):
+        if not check_relationID(self.payload['userID'], relationID):
             return {'error': 'You do no have access to this relation'}, 401
 
         result = meetings.cancel_meeting(data['meetingID'])
@@ -50,7 +50,7 @@ class CancelMeeting(AuthResource):
             return result[1], 400
 
 class AcceptMeeting(AuthResource):
-    routes = ['mentor']
+    roles = ['mentor']
     
     @meetings_api.expect(parsers.meetingID_parser)
     @meetings_api.doc(security='apiKey')
@@ -62,7 +62,7 @@ class AcceptMeeting(AuthResource):
             return {'error': 'Meeting does not exist'}, 404
         
         # Check this is the callers meeting
-        if not check_relationID(self.payload['userID'], data['relationID']):
+        if not check_relationID(self.payload['userID'], relationID):
             return {'error': 'You do no have access to this relation'}, 401
 
         result = meetings.accept_meeting(data['meetingID'])
@@ -72,7 +72,7 @@ class AcceptMeeting(AuthResource):
             return result[1], 400
 
 class CompleteMeeting(AuthResource):
-    routes = ['mentor']
+    roles = ['mentor']
     
     @meetings_api.expect(parsers.complete_meeting_parser)
     @meetings_api.doc(security='apiKey')
@@ -84,17 +84,17 @@ class CompleteMeeting(AuthResource):
             return {'error': 'Meeting does not exist'}, 404
         
         # Check this is the callers meeting
-        if not check_relationID(self.payload['userID'], data['relationID']):
+        if not check_relationID(self.payload['userID'], relationID):
             return {'error': 'You do no have access to this relation'}, 401
 
-        result = meetings.complete_meeting(data['meetingID'], data['feedback'])
+        result = meetings.complete_meeting(self.payload['userID'], data['meetingID'], data['feedback'])
         if result[0]:
             return result[1], 201
         else:
             return result[1], 400
 
 class GetMeetings(AuthResource):
-    routes = ['mentee', 'mentor']
+    roles = ['mentee', 'mentor']
 
     @meetings_api.doc(security='apiKey')
     def get(self):
