@@ -2,6 +2,8 @@ import React from "react";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
+// TODO add a goal to the plan of action?
+
 const ListElem = (props: any) => {
   // TODO add onChange functionality
   const { label } = props;

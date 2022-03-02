@@ -19,14 +19,13 @@ const Dropdown = (props:DropdwonProps) => {
         px-3
         py-1.5
         font-normal
-        text-gray-700
         bg-cultured bg-clip-padding bg-no-repeat
         text-2xl
         rounded
         transition
         ease-in-out
         m-0
-        focus:text-gray-700 focus:outline-none focus:bg-cultured"
+        focus:outline-none focus:bg-cultured"
         onChange={props.onChange}
       >
         

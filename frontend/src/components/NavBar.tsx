@@ -1,5 +1,5 @@
 import React from "react";
-import { BiMenu, BiUserCircle } from "react-icons/bi";
+import { BiMenu, BiMenuAltRight, BiUserCircle } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 
@@ -30,8 +30,13 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
 };
 
 const NavBar: React.FC<NavBarProps> = (props) => {
+  // TODO get mentors from database
+  const mentors: string[] = ["Mentor 1", "Mentor 2", "Mentor 3", "Mentor 4"];
+
+  const [menu, setMenu] = React.useState(false);
+
   return (
-    <div className="text-cultured font-display">
+    <div className="text-cultured font-display select-none">
       {/* Blue main navbar */}
       <div className="bg-blueBgWide h-20 bg-cover flex flex-row text-2xl">
         {/* Website name - dashboard link */}
@@ -56,7 +61,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
             path="/workshops"
             activeStr={props.activeStr}
           />
-          {/* Profile picture */} 
+          {/* Profile picture */}
           <Avatar
             className="m-auto mr-6 ml-4"
             alt={props.firstName + " " + props.lastName}
@@ -66,13 +71,35 @@ const NavBar: React.FC<NavBarProps> = (props) => {
         </div>
       </div>
 
-      {/* Red navbar with dropdown menu */}
-      {/* TODO dropdown menu */}
-      <div className="bg-firebrick h-14 flex flex-row text-2xl">
-        <h2 className="m-auto ml-8 text-left font-semibold">
+      {/* Red navbar */}
+      <div className="bg-firebrick flex flex-row text-2xl text-left">
+        <h2 className="m-auto ml-8 text-left font-bold mt-3 mb-3">
           {props.activeStr}
         </h2>
-        <BiMenu className="m-auto mr-8 text-4xl" />
+        <BiMenu
+          className="m-auto mr-8 text-4xl cursor-pointer"
+          onClick={() => setMenu(!menu)}
+        />
+      </div>
+
+      {/* Dropdown menu */}
+      <div
+        className={
+          "bg-firebrick flex flex-col text-2xl text-left " +
+          (menu ? "visible" : "hidden")
+        }
+      >
+        {/* // TODO animate + implement functionality */}
+        {mentors.map((mentor) => {
+          return (
+            <Link
+              to="/dashboard-mentee"
+              className="p-auto ml-8 mt-3 mb-3 hover:font-bold"
+            >
+              {mentor}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

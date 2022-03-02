@@ -17,7 +17,7 @@ function Login() {
     const res = await axios.post("/api/auth/login", {
       email: email,
       password: psword,
-      role: role 
+      role: role,
     });
   };
 
@@ -32,18 +32,27 @@ function Login() {
           {/* Main center flexbox */}
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
             <h2 className="text-4xl pt-[10%]">
-              Welcome to{" "}
-              <span className="font-bold text-firebrick">Mntr</span>
+              Welcome to <span className="font-bold text-firebrick">Mntr</span>
             </h2>
             <p className="text-2xl">
               Here's where you can learn a new skill or share your knowledge
             </p>
 
             {/* Inputs */}
-            <div className="flex flex-col space-y-8 pt-[8%]">
+            <div className="flex flex-col space-y-8 pt-[6%]">
+              {/* Role input */}
+              <Dropdown
+                values={["mentor", "mentee", "admin"]}
+                labels={["Mentor", "Mentee", "Admin"]}
+                onChange={(e: any) => {
+                  setRole(e.target.value);
+                }}
+                icon={<BiUser className="text-4xl m-4 mr-0" />}
+              />
+
               {/* E-mail address input */}
               <TextInput
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e: any) => {
                   setEmail(e.target.value);
@@ -64,28 +73,16 @@ function Login() {
                   icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
                 />
 
-                
                 <p className="text-right text-lg pt-1 underline">
                   Forgot password?
                 </p>
-                <Dropdown
-                values={["mentor", "mentee", "admin"]}
-                labels={["Mentor", "Mentee", "Admin"]}
-                onChange={(e: any) => {
-                  setRole(e.target.value);
-                }}
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
-              />
               </div>
             </div>
 
-            <LoginButton 
-              value="Login"
-              onClick={login}
-            />
+            <LoginButton value="Login" onClick={login} />
 
             {/* Registration link */}
-            <p className="text-2xl m-auto pt-[10%]">
+            <p className="text-2xl m-auto pt-[5%]">
               Don't have an account yet?{" "}
               <span className="font-bold underline text-imperialRed">
                 <Link to="/register">Register now!</Link>

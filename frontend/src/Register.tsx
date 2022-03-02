@@ -39,7 +39,7 @@ function Register() {
         <LeftPanel />
 
         {/* White half */}
-        <div className="bg-cultured h-full w-3/5 m-auto pt-[5%] pb-[5%] flex text-prussianBlue overflow-scroll overflow-x-auto">
+        <div className="bg-cultured h-full w-3/5 m-auto pt-[5%] pb-[5%] flex text-prussianBlue overflow-auto">
           {/* Main center flexbox */}
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
             <h2 className="text-4xl">
@@ -54,7 +54,7 @@ function Register() {
             <div className="flex flex-col space-y-8 pt-[8%]">
               {/* E-mail address input */}
               <TextInput
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e: any) => {
                   setEmail(e.target.value);

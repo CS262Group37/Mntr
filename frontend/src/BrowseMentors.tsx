@@ -25,9 +25,9 @@ function BrowseMentors() {
       />
 
       {/* Main flexbox */}
-      <div className="flex flex-row items-stretch h-full align-middle font-display">
+      <div className="flex flex-row items-stretch h-full font-display">
         {/* White half */}
-        <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue overflow-scroll overflow-x-auto">
+        <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           {/* Main center flexbox */}
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
             <h2 className="text-4xl pt-[10%]">
