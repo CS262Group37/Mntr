@@ -19,10 +19,33 @@ function DashboardMentee() {
   const dummyText3 =
     "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?";
 
+  const dummyAvatarMentor =
+    "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
+  const dummyAvatarUser =
+    "https://images.unsplash.com/photo-1597586124394-fbd6ef244026?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80";
+
+  const mentorData = {
+    firstName: "John",
+    lastName: "Doe",
+    topic: "Random topic",
+    avatar: dummyAvatarMentor,
+  };
+
+  const userData = {
+    firstName: "Jane",
+    lastName: "Bruh",
+    avatar: dummyAvatarUser,
+  };
+
   return (
     // <div className="fixed h-full w-full overflow-scroll overflow-x-auto">
     <div className="fixed h-full w-full">
-      <NavBar activeStr="My mentors" />
+      <NavBar
+        activeStr="My mentors"
+        firstName={userData.firstName}
+        lastName={userData.lastName}
+        avatar={userData.avatar}
+      />
 
       {/* Main flexbox */}
       <div className="flex flex-row items-stretch h-full font-display">
@@ -30,9 +53,10 @@ function DashboardMentee() {
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
             <MentorDetails
-              firstName="John"
-              lastName="Doe"
-              topic="Random topic"
+              firstName={mentorData.firstName}
+              lastName={mentorData.lastName}
+              topic={mentorData.topic}
+              avatar={mentorData.avatar}
               nextMeeting={dummyDate0}
             />
 

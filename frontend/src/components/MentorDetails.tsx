@@ -1,3 +1,4 @@
+import { Avatar } from "@mui/material";
 import React from "react";
 import { BiUserCircle, BiCalendarEvent } from "react-icons/bi";
 
@@ -5,6 +6,7 @@ interface MentorObject {
   firstName: string;
   lastName: string;
   topic: string;
+  avatar: string;
   nextMeeting: Date;
 }
 
@@ -15,16 +17,30 @@ function MentorDetails(props: MentorObject) {
   };
 
   // Next meeting date formatting
-  const weekday = props.nextMeeting.toLocaleString("default", {weekday: "long"});
+  const weekday = props.nextMeeting.toLocaleString("default", {
+    weekday: "long",
+  });
   const month = props.nextMeeting.getMonth() + 1;
-  const date = weekday + ", " + props.nextMeeting.getDate() + "." + month + "." + props.nextMeeting.getFullYear();
+  const date =
+    weekday +
+    ", " +
+    props.nextMeeting.getDate() +
+    "." +
+    month +
+    "." +
+    props.nextMeeting.getFullYear();
 
   return (
     <div className="flex flex-col m-10 mb-2 text-firebrick font-display">
       <div className="flex flex-row h-min">
         <div className="flex">
           {/* TODO Mentor profile pic */}
-          <BiUserCircle className="text-8xl" />
+          <Avatar
+            className="m-auto"
+            alt={props.firstName + " " + props.lastName}
+            src={props.avatar}
+            sx={{ width: 80, height: 80 }}
+          />
 
           {/* Mentor name & topic */}
           <div className="flex flex-col text-left m-auto pl-4 space-y-1">
