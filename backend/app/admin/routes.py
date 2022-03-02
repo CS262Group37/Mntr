@@ -90,6 +90,7 @@ class GetReports(AuthResource):
 
 class MarkReportAsRead(AuthResource):
     roles = ['admin']
+    @admin_api.expect(parsers.report_parser)
     @admin_api.doc(security='apiKey')
     def put(self):
         data = parsers.report_parser.parse_args()

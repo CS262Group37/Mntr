@@ -72,7 +72,7 @@ def remove_user(userID):
 
 # Changes the status of the reprt with the given ID to read
 def mark_report_as_read(reportID):
-    sql = 'UPDATE report SET status = "read" WHERE reportID = %s'
+    sql = "UPDATE report SET status = 'read' WHERE reportID = %s"
     data = (reportID,)
     conn = DatabaseConnection()
 
