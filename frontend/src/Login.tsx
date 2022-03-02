@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BiUser, BiLockAlt } from "react-icons/bi";
 import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
@@ -11,14 +11,21 @@ import Dropdown from "./components/Dropdown";
 function Login() {
   const [email, setEmail] = React.useState<string>("");
   const [psword, setPsword] = React.useState<string>("");
-  const [role, setRole] = React.useState<string>("");
+  const [role, setRole] = React.useState<string>("mentor");
+
+  const navigate = useNavigate();
 
   const login = async () => {
-    const res = await axios.post("/api/auth/login", {
-      email: email,
-      password: psword,
-      role: role 
-    });
+    try {
+      const res = await axios.post("/api/auth/login", {
+        email: email,
+        password: psword,
+        role: role,
+      });
+      navigate("/dashboard-" + role)
+    } catch (error: any) {
+      console.log(error.response);
+    }
   };
 
   return (
@@ -32,8 +39,7 @@ function Login() {
           {/* Main center flexbox */}
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
             <h2 className="text-4xl pt-[10%]">
-              Welcome to{" "}
-              <span className="font-bold text-firebrick">Mntr</span>
+              Welcome to <span className="font-bold text-firebrick">Mntr</span>
             </h2>
             <p className="text-2xl">
               Here's where you can learn a new skill or share your knowledge
@@ -64,25 +70,21 @@ function Login() {
                   icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
                 />
 
-                
                 <p className="text-right text-lg pt-1 underline">
                   Forgot password?
                 </p>
                 <Dropdown
-                values={["mentor", "mentee", "admin"]}
-                labels={["Mentor", "Mentee", "Admin"]}
-                onChange={(e: any) => {
-                  setRole(e.target.value);
-                }}
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
-              />
+                  values={["mentor", "mentee", "admin"]}
+                  labels={["Mentor", "Mentee", "Admin"]}
+                  onChange={(e: any) => {
+                    setRole(e.target.value);
+                  }}
+                  icon={<BiUser className="text-4xl m-4 mr-0" />}
+                />
               </div>
             </div>
 
-            <LoginButton 
-              value="Login"
-              onClick={login}
-            />
+            <LoginButton value="Login" onClick={login} />
 
             {/* Registration link */}
             <p className="text-2xl m-auto pt-[10%]">
