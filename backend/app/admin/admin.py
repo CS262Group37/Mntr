@@ -45,7 +45,7 @@ def clear_topics():
     return (True, {'message': 'Successfully cleared topics'})
 
     
-def view_reports():
+def get_reports():
     sql = 'SELECT * FROM report;'
     conn = DatabaseConnection()
     with conn:
@@ -72,7 +72,7 @@ def remove_user(userID):
 
 # Changes the status of the reprt with the given ID to read
 def mark_report_as_read(reportID):
-    sql = 'UPDATE report SET status = "read" WHERE reportID = %s'
+    sql = "UPDATE report SET status = 'read' WHERE reportID = %s"
     data = (reportID,)
     conn = DatabaseConnection()
 
@@ -121,3 +121,42 @@ def clear_skills():
     if conn.error:
         return (False, {'error': conn.error_message})
     return (True, {'message': "Successfully cleared skills"})
+
+def add_business_area(businessAreaName):
+    sql = 'INSERT INTO system_business_area ("name") VALUES (%s);'
+    data = (businessAreaName,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully added business area'})
+
+def remove_business_area(businessAreaName):
+    sql = 'DELETE FROM system_business_area WHERE "name"=%s;'
+    data = (businessAreaName,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': "Successfully removed business area"})
+
+def clear_business_areas():
+    sql = 'TRUNCATE system_business_area CASCADE;'
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql)
+    
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': "Successfully cleared business areas"})
+
+def get_business_areas():
+    sql = 'SELECT * FROM system_business_area;'
+    conn = DatabaseConnection()
+    with conn:
+        businessAreas = conn.execute(sql)
+    
+    return businessAreas
