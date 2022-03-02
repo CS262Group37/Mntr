@@ -18,6 +18,7 @@ def create_plan_of_action(realtionID, title, description):
 # Gets all of the plan of actions for a mentee/mentor relationship
 def get_plan_of_actions(relationID):
     # sql = 'SELECT * FROM plan_of_action WHERE relationID = "%s";'
+    sql = 'SELECT relationID, title, description, status FROM plan_of_action WHERE relationID = "%s";'
     data = (relationID,)
     conn = DatabaseConnection()
     with conn:
