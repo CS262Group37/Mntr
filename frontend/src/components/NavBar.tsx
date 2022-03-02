@@ -40,7 +40,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
         </Link>
 
         {/* Navigation */}
-        <div className="flex flex-row mr-8 h-[100%]">
+        <div className="flex flex-row h-[100%]">
           <NavBarLink
             text="My mentors"
             path="/dashboard-mentee"
@@ -58,7 +58,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
           />
           {/* Profile picture */} 
           <Avatar
-            className="m-auto"
+            className="m-auto mr-6 ml-4"
             alt={props.firstName + " " + props.lastName}
             src={props.avatar}
             sx={{ width: 50, height: 50 }}

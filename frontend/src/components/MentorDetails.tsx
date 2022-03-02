@@ -63,7 +63,7 @@ function MentorDetails(props: MentorObject) {
       {/* Next meeting date */}
       <div className="flex flex-row text-lg font-body m-5">
         <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
-        <p className="mt-auto mb-auto">
+        <p className="mt-auto mb-auto text-left">
           Your next meeting with {props.firstName} is on{" "}
           <span className="font-bold">{date}</span>
         </p>

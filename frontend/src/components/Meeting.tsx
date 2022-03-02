@@ -17,8 +17,8 @@ function Meeting(props: MeetingObject) {
 
       {/* Heading & date */}
       <div className="flex flex-row text-2xl border-b-2 border-imperialRed justify-between">
-        <h1 className="font-semibold mt-1 mb-3 ml-3">Individual meeting</h1>
-        <div className="flex flex-row mr-3 mt-1 mb-3">
+        <h1 className="font-semibold mt-1 mb-3 ml-3 text-left">Individual meeting</h1>
+        <div className="flex flex-row mr-3 mt-1 mb-3 text-right">
           <BiCalendarCheck className="text-3xl mr-1" />
           <h1>{date}</h1>
         </div>
