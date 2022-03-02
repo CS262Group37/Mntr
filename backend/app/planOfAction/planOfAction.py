@@ -23,7 +23,7 @@ def get_plan_of_actions(relationID):
     return plans
 
 def get_all_plan_of_actions():
-    sql = 'SELECT * FROM plan_of_action;'
+    sql = 'SELECT planID FROM plan_of_action;'
     conn = DatabaseConnection()
     with conn:
         plans = conn.execute(sql)
@@ -92,10 +92,19 @@ def remove_milestone(milestoneID):
 
 
 def view_milestones(planID):
-    sql = 'SELECT * FROM milestone WHERE planID = "%s";'
+    sql = 'SELECT * FROM milestone WHERE planID = %s;'
     data = (planID,)
+    with DatabaseConnection() as conn:
+        result = conn.execute(sql, data)
+        if not conn.error:
+            return result
+        else:
+            return None
+
+def view_all_milestones():
+    sql = 'SELECT milestoneID, title FROM milestone;'
     conn = DatabaseConnection()
     with conn:
-        skills = conn.execute(sql, data)
-    return skills
+        result = conn.execute(sql)
+    return result  
 
