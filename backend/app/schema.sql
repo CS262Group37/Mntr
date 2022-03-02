@@ -65,11 +65,12 @@ CREATE TABLE relation (
 
 CREATE TABLE meeting (
     meetingID SERIAL PRIMARY KEY,
-    relationID INTEGER,
-    startTime DATE,
-    duration INTEGER,
-    title VARCHAR(5000),
-    status VARCHAR(10),
+    relationID INTEGER NOT NULL,
+    startTime DATE NOT NULL,
+    duration INTEGER NOT NULL,
+    title VARCHAR(500) NOT NULL,
+    descript VARCHAR(5000) NOT NULL,
+    _status VARCHAR(10) NOT NULL CONSTRAINT acceptable_status CHECK (_status IN ('ongoing', 'pending', 'cancelled', 'completed')),
     FOREIGN KEY (relationID) REFERENCES relation(relationID)
 );
 
