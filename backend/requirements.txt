@@ -6,3 +6,5 @@ PyJWT
 requests
 faker
 rich
+pytest
+pytest-cov

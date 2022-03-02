@@ -1,5 +1,6 @@
 import json
-from random import randrange
+import os
+from random import randrange, choice, sample
 from time import perf_counter
 
 import requests
@@ -8,7 +9,7 @@ from rich.progress import Progress
 from rich.prompt import IntPrompt
 from rich.table import Table
 
-from . import authentication, database
+from . import authentication, database, admin
 from .console import add_option, console, hostname
 from .fake_data import fake
 
@@ -48,16 +49,32 @@ def print_all_accounts():
     with console.pager():
         console.print(table, justify='center')
 
-def create_user(role):
-    response = requests.post(f'{hostname}/api/auth/register-user', 
-        data={
-            'role': role
-            },
-        cookies = authentication.active_cookie, timeout=10
-        )
+def create_user(role, businessArea = None, topics = None, skills = None, ratings = None, adminPassword = None):
+
+    if role == 'admin':
+        data = {
+            'role': role,
+            'adminPassword': adminPassword
+        }
+    elif role == 'mentor':
+        data = {
+            'role': role,
+            'businessArea': businessArea,
+            'topics': topics,
+        }
+    else:
+        data = {
+            'role': role,
+            'businessArea': businessArea,
+            'topics': topics,
+            'skills': skills,
+            'ratings': ratings,
+        }
+
+    response = requests.post(f'{hostname}/api/auth/register-user', data, cookies = authentication.active_cookie, timeout=10)
     data = json.loads(response.content)
-    
     if 'error' in data:
+        console.print(data['error'])
         return False
     return True
 
@@ -77,12 +94,34 @@ def print_all_users():
     with console.pager():
         console.print(table, justify='center')
 
-def create_random_accounts_and_users():
-    account_count = IntPrompt.ask('Enter the number of random accounts to add')
+def create_random_accounts_and_users(account_count = None):
+    if account_count is None:
+        account_count = IntPrompt.ask('Enter the number of random accounts to add')
+        console.line()
     created_accounts = 0
     created_users = 0
-    console.line()
     start = perf_counter()
+
+    def remove_tuples(list):
+        newList = []
+        for item in list:
+            newList.append(item[0])
+        return newList
+
+    def random_ratings(skills):
+        ratings = []
+        for i in range(len(skills)):
+            ratings.append(randrange(11))
+        return ratings
+
+    # Get data on the system
+    businessAreas = remove_tuples(database.get_data('SELECT "name" FROM system_business_area'))
+    skills = remove_tuples(database.get_data('SELECT "name" FROM system_skill'))
+    topics = remove_tuples(database.get_data('SELECT "name" FROM system_topic'))
+
+    if not businessAreas or not skills or not topics:
+        console.print('[red]System is missing either business areas, skills or topics[/]')
+        return
 
     with Progress() as progress:
         account_progress = progress.add_task('[cyan]Adding random accounts and users...[/]', total=account_count)
@@ -90,26 +129,46 @@ def create_random_accounts_and_users():
         for i in range(account_count):
 
             # Create an account
-            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()):
+            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[0:10]):
 
                 created_accounts += 1
 
                 # Create random user(s)
                 random_role = randrange(11)
                 if random_role < 5:
-                    if create_user('mentee') : created_users += 1
+                    if create_user('mentee', businessArea=choice(businessAreas), topics=sample(topics, k=randrange(1, len(topics))), skills=skills, ratings=random_ratings(skills)) : created_users += 1
                 elif random_role < 10:
-                    if create_user('mentor') : created_users += 1
+                    if create_user('mentor', businessArea=choice(businessAreas), topics=sample(topics, k=randrange(1, len(topics)))) : created_users += 1
                 else:
-                    if create_user('mentee') : created_users += 1
-                    if create_user('mentor') : created_users += 1
+                    if create_user('mentee', businessArea=choice(businessAreas), topics=sample(topics, k=randrange(1, len(topics))), skills=skills, ratings=random_ratings(skills)) : created_users += 1
+                    if create_user('mentor', businessArea=choice(businessAreas), topics=sample(topics, k=randrange(1, len(topics)))) : created_users += 1
             
             progress.update(account_progress, advance=1)
 
     stop = perf_counter()
     console.print(f'\n[green]Successfully added {created_accounts} accounts with {created_users} users in {stop - start} seconds[/]')
 
+def load_preset():
+    # Load json preset file
+    preset_dir = os.path.join(os.getcwd(), 'preset.json')
+    with open(preset_dir) as json_file:
+        preset = json.load(json_file)
+
+    authentication.simple_admin_login()
+    # Add topics
+    admin.add_random_topics(preset['topics'])
+    console.line()
+    # Add skills
+    admin.add_random_skills(preset['skills'])
+    console.line()
+    # Add areas
+    admin.add_random_areas(preset['businessAreas'])
+    console.line()
+
+    create_random_accounts_and_users(preset['accounts'])
+
 def add_options():
     add_option('add', 'Add random accounts and users', create_random_accounts_and_users)
     add_option('users', 'View users in a table', print_all_users)
     add_option('accounts', 'View accounts in a table', print_all_accounts)
+    add_option('preset', 'Configures system using preset.json', load_preset)
