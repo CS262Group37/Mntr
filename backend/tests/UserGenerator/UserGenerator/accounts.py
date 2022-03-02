@@ -164,11 +164,12 @@ def load_preset():
     # Add areas
     admin.add_random_areas(preset['businessAreas'])
     console.line()
+    # Add users and accounts
+    create_random_accounts_and_users(preset['accounts'])
+    console.line()
     # Add relations
     relations.add_random_relations(preset['relations'])
-    console.line()
-
-    create_random_accounts_and_users(preset['accounts'])
+    
 
 def add_options():
     add_option('add', 'Add random accounts and users', create_random_accounts_and_users)
