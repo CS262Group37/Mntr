@@ -1,6 +1,7 @@
 from app.database import DatabaseConnection
 from datetime import date
 
+# Creates a plan of action with status incomplete
 def create_plan_of_action(realtionID, title, description):
     sql = 'INSERT INTO plan_of_action (relationID, title, description, creationDate, "status") VALUES (%s, %s, %s, %s, %s);'
     today = date.today()
@@ -14,6 +15,7 @@ def create_plan_of_action(realtionID, title, description):
         return (False, {'error': conn.error_message})
     return (True, {'message': 'Successfully added plan'})
 
+# Gets all of the plan of actions for a mentee/mentor relationship
 def get_plan_of_actions(relationID):
     # sql = 'SELECT * FROM plan_of_action WHERE relationID = "%s";'
     data = (relationID,)
@@ -22,27 +24,29 @@ def get_plan_of_actions(relationID):
         plans = conn.execute(sql, data)
     return plans
 
+# Gets all plan of action, used to test
 def get_all_plan_of_actions():
-    sql = 'SELECT planID FROM plan_of_action;'
+    sql = 'SELECT planID, title, description, status FROM plan_of_action;'
     conn = DatabaseConnection()
     with conn:
         plans = conn.execute(sql)
     return plans    
 
+# Changes a plans status to complete
 def mark_plan_of_action_completed(planID):
     sql = 'UPDATE plan_of_action SET status = "complete" WHERE planID = %s'
     data = (planID,)
     conn = DatabaseConnection()
-
     with conn:
         conn.execute(sql, data)
     if conn.error:
         return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
     return (True, {'message': 'Successfully marked plan of action as read'})
 
+# Removes a the plan with a given ID
 def remove_plan_of_action(planID):
-    sql = 'DELETE FROM plan_of_action WHERE "planID"=%s;'
-    data = (planID,)
+    sql = 'DELETE FROM plan_of_action WHERE planID=%s; DELETE FROM milestone WHERE planID = %s' # ???
+    data = (planID, planID)
     conn = DatabaseConnection()
     with conn:
         conn.execute(sql, data)
@@ -51,12 +55,12 @@ def remove_plan_of_action(planID):
         return (False, {'error': conn.error_message})
     return (True, {'message': "Successfully removed plan of action"})
 
-
+# Creates a milestone for the given plan of action
 def add_milestone(planID, title, description):
     sql = 'INSERT INTO milestone (planID, title, description, creationDate, "status") VALUES (%s, %s, %s, %s, %s);'
     today = date.today()
-    time = today.strftime("%Y/%m/%d") 
-    data = (planID, title, description, time, "complete") # Need to get the time at which the function called
+    time = today.strftime("%Y-%m-%d") # Need to fix adding a time to the database
+    data = (planID, title, description, time, "complete")
     conn = DatabaseConnection()
     with conn:
         conn.execute(sql, data)
@@ -66,7 +70,7 @@ def add_milestone(planID, title, description):
     return (True, {'message': 'Successfully added plan'})
 
 
-
+# Marks the status of the given milestone as complete
 def mark_milestone_as_completed(milestoneID):
     sql = 'UPDATE milestone SET status = "complete" WHERE milestoneID = %s'
     data = (milestoneID,)
@@ -78,9 +82,9 @@ def mark_milestone_as_completed(milestoneID):
         return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
     return (True, {'message': 'Successfully milestone as read'})
 
-
+# Removes the milestone from the table
 def remove_milestone(milestoneID):
-    sql = 'DELETE FROM milestone WHERE "milestoneID"=%s;'
+    sql = 'DELETE FROM milestone WHERE milestoneID=%s;'
     data = (milestoneID,)
     conn = DatabaseConnection()
     with conn:
@@ -90,8 +94,8 @@ def remove_milestone(milestoneID):
         return (False, {'error': conn.error_message})
     return (True, {'message': "Successfully removed milestone"})
 
-
-def view_milestones(planID):
+# Gets all milestones for the given plan of action
+def get_milestones(planID):
     sql = 'SELECT * FROM milestone WHERE planID = %s;'
     data = (planID,)
     with DatabaseConnection() as conn:
@@ -101,8 +105,9 @@ def view_milestones(planID):
         else:
             return None
 
-def view_all_milestones():
-    sql = 'SELECT milestoneID, title FROM milestone;'
+# Gets all milestones in the database, used for testing
+def get_all_milestones():
+    sql = 'SELECT milestoneID, title, description, status FROM milestone;'
     conn = DatabaseConnection()
     with conn:
         result = conn.execute(sql)
