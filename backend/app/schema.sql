@@ -91,7 +91,7 @@ CREATE TABLE plan_of_action (
     title VARCHAR NOT NULL,
     "description" VARCHAR NOT NULL,
     creationDate TIMESTAMP NOT NULL,
-    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
+    "status" VARCHAR NOT NULL --CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
 );
 
 CREATE TABLE milestone (
