@@ -68,6 +68,23 @@ CREATE TABLE "message" (
     CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
 );
 
+CREATE TABLE message_email(
+    contextID SERIAL FOREIGN KEY
+);
+CREATE TABLE message_feedback(
+    contextID SERIAL PRIMARY KEY
+);
+CREATE TABLE message_report(
+    contextID SERIAL PRIMARY KEY
+);
+CREATE TABLE message_meeting(
+    contextID SERIAL PRIMARY KEY,
+    startTime TIMESTAMP NOT NULL,
+    duration INTERVAL NOT NULL,
+    title descript VARCHAR(30) NOT NULL,
+    descript VARCHAR(500) NOT NULL
+);
+
 CREATE TABLE relation (
     relationID SERIAL PRIMARY KEY, 
     -- We need a way to check that the mentorID and menteeID are actually users with mentor and mentee roles.
@@ -75,6 +92,17 @@ CREATE TABLE relation (
     menteeID INTEGER NOT NULL REFERENCES "user"(userID),
     mentorID INTEGER NOT NULL REFERENCES "user"(userID),
     CONSTRAINT unique_relation UNIQUE (mentorID, menteeID)
+);
+
+CREATE TABLE meeting (
+    meetingID SERIAL PRIMARY KEY,
+    relationID INTEGER NOT NULL,
+    startTime DATE NOT NULL,
+    duration INTEGER NOT NULL,
+    title VARCHAR(500) NOT NULL,
+    descript VARCHAR(5000) NOT NULL,
+    _status VARCHAR(10) NOT NULL CONSTRAINT acceptable_status CHECK (_status IN ('ongoing', 'pending', 'cancelled', 'completed')),
+    FOREIGN KEY (relationID) REFERENCES relation(relationID)
 );
 
 CREATE TABLE report (
