@@ -3,6 +3,7 @@ import React from "react";
 interface DropdwonProps {
   onChange: any,
   values: string[],
+  labels: string[],
   icon: JSX.Element
 }
 
@@ -29,8 +30,8 @@ const Dropdown = (props:DropdwonProps) => {
         onChange={props.onChange}
       >
         
-       {props.values.map(value => (
-         <option className="bg-cultured hover:bg-cultured" value={value}>{value}</option>
+       {props.values.map((value, i) => (
+         <option className="bg-cultured hover:bg-cultured" value={value}>{props.labels[i]}</option>
        ))}
       </select>
     </div>
