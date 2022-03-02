@@ -13,11 +13,13 @@ def get_messages(userID):
 # Define message type models here
 class Message():
     pass
-class MeetingRequest(Message):
-    def __init__(self, recipientID, senderID, content, meetingID):
+
+class MeetingMessage(Message):
+    # Message type can be: request, completed
+    def __init__(self, recipientID, senderID, message_type, meetingID):
         self.recipientID = recipientID
         self.senderID = senderID
-        self.content = content
+        self.message_type = message_type
         self.meetingID = meetingID
 
 # Returns true if message is successfully sent
@@ -42,10 +44,10 @@ def send_message(message):
         data = (message.recipientID, message.senderID, message_type, datetime.now())
         messageID = conn.execute(sql, data)
     
-        if message_type == 'MeetingRequest':
-            sql = 'INSERT INTO message_meeting_request (messageID, content, meetingID) VALUES (%s, %s, %s)'
-            data = (messageID[0][0], message.content, message.meetingID)
-            conn.execute(sql, data)        
+        if message_type == 'MeetingMessage':
+            sql = 'INSERT INTO message_meeting (messageID, messageType, meetingID) VALUES (%s, %s, %s)'
+            data = (messageID[0][0], message.message_type, message.meetingID)
+            conn.execute(sql, data)
         
     if conn.error:
         return False

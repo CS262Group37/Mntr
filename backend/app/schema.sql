@@ -9,6 +9,8 @@ DROP TABLE IF EXISTS "message" CASCADE;
 DROP TABLE IF EXISTS relation CASCADE;
 DROP TABLE IF EXISTS report CASCADE;
 DROP TABLE IF EXISTS plan_of_action CASCADE;
+DROP TABLE IF EXISTS meeting CASCADE;
+DROP TABLE IF EXISTS message_meeting CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
@@ -59,32 +61,6 @@ CREATE TABLE user_rating (
     PRIMARY KEY (userID, skill)
 );
 
-CREATE TABLE "message" (
-    messageID SERIAL PRIMARY KEY,
-    recipientID INTEGER NOT NULL REFERENCES "user"(userID),
-    senderID INTEGER NOT NULL REFERENCES "user"(userID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('email', 'feedback', 'report')),
-    sentTime TIMESTAMP NOT NULL,
-    CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
-);
-
-CREATE TABLE message_email(
-    contextID SERIAL FOREIGN KEY
-);
-CREATE TABLE message_feedback(
-    contextID SERIAL PRIMARY KEY
-);
-CREATE TABLE message_report(
-    contextID SERIAL PRIMARY KEY
-);
-CREATE TABLE message_meeting(
-    contextID SERIAL PRIMARY KEY,
-    startTime TIMESTAMP NOT NULL,
-    duration INTERVAL NOT NULL,
-    title descript VARCHAR(30) NOT NULL,
-    descript VARCHAR(500) NOT NULL
-);
-
 CREATE TABLE relation (
     relationID SERIAL PRIMARY KEY, 
     -- We need a way to check that the mentorID and menteeID are actually users with mentor and mentee roles.
@@ -96,13 +72,28 @@ CREATE TABLE relation (
 
 CREATE TABLE meeting (
     meetingID SERIAL PRIMARY KEY,
-    relationID INTEGER NOT NULL,
-    startTime DATE NOT NULL,
-    duration INTEGER NOT NULL,
-    title VARCHAR(500) NOT NULL,
-    descript VARCHAR(5000) NOT NULL,
-    _status VARCHAR(10) NOT NULL CONSTRAINT acceptable_status CHECK (_status IN ('ongoing', 'pending', 'cancelled', 'completed')),
-    FOREIGN KEY (relationID) REFERENCES relation(relationID)
+    relationID INTEGER NOT NULL REFERENCES relation(relationID),
+    startTime TIMESTAMP NOT NULL,
+    endTime TIMESTAMP NOT NULL,
+    title VARCHAR NOT NULL,
+    "description" VARCHAR NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT acceptable_status CHECK ("status" IN ('going-ahead', 'pending', 'cancelled', 'completed', 'missed', 'running')),
+    feedback VARCHAR
+);
+
+CREATE TABLE "message" (
+    messageID SERIAL PRIMARY KEY,
+    recipientID INTEGER NOT NULL REFERENCES "user"(userID),
+    senderID INTEGER NOT NULL REFERENCES "user"(userID),
+    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('email', 'feedback', 'report')),
+    sentTime TIMESTAMP NOT NULL,
+    CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
+);
+
+CREATE TABLE message_meeting(
+    messageID INTEGER REFERENCES "message"(messageID),
+    messageType VARCHAR NOT NULL CONSTRAINT valid_meeting_message_type CHECK (messageType IN ('request', 'complete')),
+    meetingID INTEGER REFERENCES meeting(meetingID)
 );
 
 CREATE TABLE report (
