@@ -30,6 +30,7 @@ def create_app():
         app.register_blueprint(meetings.meetings_bp, url_prefix='/api/meetings')
         app.register_blueprint(messages.messages_bp, url_prefix='/api/messages')
         app.register_blueprint(relations.relations_bp, url_prefix='/api/relations')
+        app.register_blueprint(relations.relations_bp, url_prefix='/api/workshop')
 
     # Put login doc on the front page for convenience
     @api.documentation
