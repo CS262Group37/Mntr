@@ -9,7 +9,7 @@ const ListElem = (props: any) => {
   const { label } = props;
 
   return (
-    <div className="text-prussianBlue bg-cultured shadow-md w-[82%] rounded-lg m-auto mt-3 mb-3 opacity-80 p-1 pr-4 pl-4">
+    <div className="text-prussianBlue bg-cultured shadow-md w-[82%] rounded-lg m-auto mt-3 mb-3 opacity-80 p-1 pr-4 pl-4 hover:opacity-90 transition duration-150">
       <FormControlLabel
         className="w-[100%]"
         value="end"
@@ -33,11 +33,18 @@ const ListElem = (props: any) => {
 };
 
 function PlanOfAction() {
-  const goals: string[] = ["goal1", "goal2", "goal3", "goal4", "goal5", "goal6"];
+  const goals: string[] = [
+    "goal1",
+    "goal2",
+    "goal3",
+    "goal4",
+    "goal5",
+    "goal6",
+  ];
 
   const listItems = goals.map((label) => {
     return <ListElem label={label} />;
-  })
+  });
 
   return (
     <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured">
@@ -45,9 +52,7 @@ function PlanOfAction() {
         Plan of action
       </h1>
 
-      <div className="flex flex-col">
-        {listItems}
-      </div>
+      <div className="flex flex-col">{listItems}</div>
     </div>
   );
 }
