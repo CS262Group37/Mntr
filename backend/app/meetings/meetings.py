@@ -25,13 +25,11 @@ def create_meeting(relationID, start_time, end_time, title, description):
         data = (relationID,)
         [(menteeID, mentorID)] = conn.execute(sql, data)
 
-    conn2 = DatabaseConnection()
-    with conn2:
         # Send meeting request
         meeting_message = MeetingMessage(mentorID, menteeID, 'request', meetingID)
-        if not send_message(meeting_message):
-            conn2.error = True
-            return (False, {'error': 'Failed to send meeting request'})    
+        if not send_message(meeting_message, conn):
+            conn.error = True
+            return (False, {'error': 'Failed to send meeting request messaeg'})
     
     if conn.error:
         return (False, {'message': 'Failed to create meeting', 'error': conn.error_message})
@@ -177,16 +175,19 @@ def complete_meeting(userID, meetingID, feedback):
         if menteeID is None or mentorID is None:
             conn.error = True
             return (False, {'error': 'Meeting does not exist'})
+        
         if userID == menteeID:
             senderID = userID
             recipientID = mentorID
         else:
             senderID = mentorID
             recipientID = menteeID
+        
         meeting_message = MeetingMessage(recipientID, senderID, 'complete', meetingID)
-        if not send_message(meeting_message):
+
+        if not send_message(meeting_message, conn):
             conn.error = True
-            return (False, {'error': 'Failed to send meeting request.'}) 
+            return (False, {'error': 'Failed to send meeting complete message'}) 
     if conn.error:
         return (False, {'message': 'Meeting completion failed', 'error': conn.error_message})
     return (True, {'message': 'Meeting successfully completed'})

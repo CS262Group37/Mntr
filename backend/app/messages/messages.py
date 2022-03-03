@@ -31,9 +31,15 @@ class MeetingMessage(Message):
         self.message_type = message_type
         self.meetingID = meetingID
 
-# Returns true if message is successfully sent
-def send_message(message):
+class Email(Message):
+    def __init__(self, recipientID, senderID, subject, content):
+        self.recipientID = recipientID
+        self.senderID = senderID
+        self.subject = subject
+        self.content = content
 
+# Returns true if message is successfully sent
+def send_message(message, custom_conn = None):
     # First check that the passed object is a message object
     valid_message = False
     for base in message.__class__.__bases__:
@@ -45,9 +51,8 @@ def send_message(message):
         return False
 
     message_type = type(message).__name__
-    
-    conn = DatabaseConnection()
-    with conn:
+
+    def run_sql(conn):
         # Add into main "message" table
         sql = 'INSERT INTO "message" (recipientID, senderID, messageType, sentTime) VALUES (%s, %s, %s, %s) RETURNING messageID'
         data = (message.recipientID, message.senderID, message_type, datetime.now())
@@ -57,7 +62,18 @@ def send_message(message):
             sql = 'INSERT INTO message_meeting (messageID, meetingMessageType, meetingID) VALUES (%s, %s, %s)'
             data = (messageID[0][0], message.message_type, message.meetingID)
             conn.execute(sql, data)
-        
-    if conn.error:
-        return False
+        elif message_type == 'Email':
+            sql = 'INSERT INTO message_email (messageID, "subject", content) VALUES (%s, %s, %s)'
+            data = (messageID[0][0], )
+    
+    # If a connection has not been provided use our own
+    if custom_conn is None:
+        conn = DatabaseConnection()
+        with conn:
+            run_sql(conn)
+        if conn.error:
+            return False
+    else:
+        run_sql(custom_conn)
+
     return True
