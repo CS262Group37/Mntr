@@ -1,4 +1,8 @@
 from app.database import DatabaseConnection
+
+from datetime import datetime, timedelta
+from time import time
+
 # Function to insert workshop details into database 
 def schedule_workshop(mentorID,title,topic,desc,time,duration,location):
     sql= 'SELECT demand FROM workshopdemand WHERE mentorID = %s'
@@ -23,9 +27,20 @@ def schedule_workshop(mentorID,title,topic,desc,time,duration,location):
 
 # Function to cancel workshops
 def cancel_workshop(workshopID):
-    sql = 'DELETE FROM workshop WHERE workshopID=%s'
-    data = workshopID
     conn = DatabaseConnection()
+
+    sql = 'SELECT demand, mentorID FROM workshop WHERE workshopID = %s'
+    data = (workshopID,)
+    with conn:
+        [(demand,mentorID)]=conn.execute(sql, data)
+
+    sql = 'DELETE FROM workshop WHERE workshopID=%s'
+    data = (workshopID,)
+    with conn:
+        conn.execute(sql, data)
+    
+    sql = 'UPDATE workshopdemand SET demand = %s WHERE mentorID = %s'
+    data = (demand,mentorID)
     with conn:
         conn.execute(sql, data)
 
