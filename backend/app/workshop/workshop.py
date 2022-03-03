@@ -1,9 +1,19 @@
 from app.database import DatabaseConnection
-
+# Function to insert workshop details into database 
 def schedule_workshop(mentorID,title,topic,desc,time,duration,location):
-    sql = 'INSERT INTO workshop (topic,mentorID,title,"description","time",duration,"location") VALUES (%s, %s, %s, %s, %s,%s,%s);'
-    data = (topic,mentorID,title,desc,time,duration,location)
+    sql= 'SELECT demand FROM workshopdemand WHERE mentorID = %s'
+    data = (mentorID,)
     conn = DatabaseConnection()
+    with conn:
+        [(demandResult,)]=conn.execute(sql, data)
+
+    sql = 'INSERT INTO workshop (topic,mentorID,title,"description","time",duration,"location",demand) VALUES (%s, %s, %s, %s, %s,%s,%s, %s);'
+    data = (topic,mentorID,title,desc,time,duration,location,demandResult,)
+    with conn:
+        conn.execute(sql, data)
+
+    sql = 'UPDATE workshopdemand SET demand = 0 WHERE mentorID = %s'
+    data = (mentorID,)
     with conn:
         conn.execute(sql, data)
 
@@ -11,6 +21,7 @@ def schedule_workshop(mentorID,title,topic,desc,time,duration,location):
         return (False, {'message': 'Failed creating workshop', 'error': conn.error_message})
     return (True, {'message': 'Successfully created workshop'})
 
+# Function to cancel workshops
 def cancel_workshop(workshopID):
     sql = 'DELETE FROM workshop WHERE workshopID=%s'
     data = workshopID
@@ -23,9 +34,15 @@ def cancel_workshop(workshopID):
     return (True, {'message': 'Successfully cancelled workshop'})
 
 
-def findworkshoplistformentee(menteeID):
-    sql = 'SELECT workshopID FROM user_workshop WHERE menteeID = %s'
-    data = (menteeID,)
+
+
+def getWorkshops(userID,role):
+    if role == 'mentor':
+        sql = 'SELECT workshopID FROM workshop WHERE mentorID = %s'
+    else:
+        sql = 'SELECT workshopID FROM user_workshop WHERE menteeID = %s'
+
+    data =(userID,)
 
     conn = DatabaseConnection()
     with conn:
@@ -34,19 +51,9 @@ def findworkshoplistformentee(menteeID):
         return result
     else:
         return None
-def findworkshoplistformentor(mentorID):
-    sql = 'SELECT workshopID FROM workshop WHERE mentorID = %s'
-    data = (mentorID,)
 
-    conn = DatabaseConnection()
-    with conn:
-        result = conn.execute(sql, data)
-    if not conn.error:
-        return result
-    else:
-        return None
-
-def getuserlistforworkshop(workshopID):
+# Function to view list of attendees for workshop
+def viewWorkshopAttendee(workshopID):
     sql = 'SELECT menteeID FROM user_workshop WHERE workshopID = %s'
     data = (workshopID,)
 
@@ -57,4 +64,17 @@ def getuserlistforworkshop(workshopID):
         return result
     else:
         return None
-
+# TODO
+def check_demand(mentorID):
+    x=5
+    sql = 'SELECT demand FROM workshopdemand WHERE mentorID = %s'
+    data=(mentorID,)
+    conn = DatabaseConnection()
+    with conn:
+        [(result,)] = conn.execute(sql, data)
+    if result >= x:
+        # message mentor
+        pass
+    else:
+        pass
+   

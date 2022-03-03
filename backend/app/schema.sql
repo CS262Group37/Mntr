@@ -115,6 +115,7 @@ CREATE TABLE workshop (
     "time" TIMESTAMP NOT NULL,
     duration INTEGER NOT NULL,
     "location" VARCHAR NOT NULL,
+    demand INTEGER NOT NULL
 );
 CREATE TABLE user_workshop(
     workshopID INTEGER NOT NULL REFERENCES workshop,
@@ -123,6 +124,12 @@ CREATE TABLE user_workshop(
 CREATE TABLE workshop_invitiation(
     workshopID INTEGER NOT NULL REFERENCES workshop,
     messageID INTEGER NOT NULL REFERENCES "message"
+);
+
+CREATE TABLE workshopdemand(
+    mentorID INTEGER NOT NULL REFERENCES "user"(userID),
+    topicID INTEGER NOT NULL REFERENCES system_topic,
+    demand INTEGER NOT NULL
 );
 
 -------------------- Relation Trigger --------------------
