@@ -5,7 +5,7 @@ from . import parsers
 
 # Topic routes
 class GetTopics(AuthResource):
-    roles = ['admin']
+    roles = ['admin', 'mentor', 'mentee']
     @admin_api.doc(security='apiKey')
     def get(self):
         return admin.get_topics(), 200
@@ -44,7 +44,7 @@ class ClearTopics(AuthResource):
 # Skill routes
 
 class GetSkills(AuthResource):
-    roles = ['admin']
+    roles = ['admin', 'mentee', 'mentor']
     @admin_api.doc(security='apiKey')
     def get(self):
         return admin.get_skills(), 200
