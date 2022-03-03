@@ -20,7 +20,7 @@ def get_relations(userID, role):
         sql = 'SELECT * FROM relation WHERE menteeID=%s'
     data = (userID,)
     
-    conn = DatabaseConnection()
+    conn = DatabaseConnection(real_dict=True)
     with conn:
         relations = conn.execute(sql, data)
     

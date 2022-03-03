@@ -28,7 +28,7 @@ def calculate_compatibility(menteeUser, mentorUser, menteeRatings, mentorRatings
     return (topic_factor + feedback_factor) / 2
 
 def get_recommended_mentors(menteeID):
-    recommended_mentors = {}
+    recommended_mentors = []
     conn = DatabaseConnection()
     with conn:
         # First get a all mentors on the system
@@ -46,8 +46,9 @@ def get_recommended_mentors(menteeID):
             mentorRatings = conn.execute('SELECT * FROM user_rating WHERE userID = %s', (mentor['userid'],))
             mentorTopics = conn.execute('SELECT * FROM user_topic WHERE userID = %s', (mentor['userid'],))
             compatibility = calculate_compatibility(menteeUser, mentorUser, menteeRatings, mentorRatings, menteeTopics, mentorTopics)
+
             if compatibility != 0:
-                recommended_mentors[mentor['userid']] = compatibility
+                recommended_mentors.append({'userID': mentor['userid'], 'compatibility': compatibility})
 
     if conn.error:
         return (False, {'message': 'Failed to get recommended mentors', 'error': conn.error_message})
