@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS report CASCADE;
 DROP TABLE IF EXISTS plan_of_action CASCADE;
 DROP TABLE IF EXISTS meeting CASCADE;
 DROP TABLE IF EXISTS message_meeting CASCADE;
+DROP TABLE IF EXISTS message_email CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
@@ -85,7 +86,7 @@ CREATE TABLE "message" (
     messageID SERIAL PRIMARY KEY,
     recipientID INTEGER NOT NULL REFERENCES "user"(userID),
     senderID INTEGER NOT NULL REFERENCES "user"(userID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage')),
+    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage', 'Email')),
     sentTime TIMESTAMP NOT NULL,
     CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
 );
@@ -94,6 +95,12 @@ CREATE TABLE message_meeting(
     messageID INTEGER REFERENCES "message"(messageID),
     meetingMessageType VARCHAR NOT NULL CONSTRAINT valid_meeting_message_type CHECK (meetingMessageType IN ('request', 'complete')),
     meetingID INTEGER REFERENCES meeting(meetingID)
+);
+
+CREATE TABLE message_email(
+    messageID INTEGER REFERENCES "message"(messageID),
+    "subject" VARCHAR NOT NULL,
+    content VARCHAR NOT NULL
 );
 
 CREATE TABLE report (

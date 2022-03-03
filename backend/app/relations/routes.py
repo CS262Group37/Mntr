@@ -1,5 +1,5 @@
 from app.auth.routes import AuthResource
-from app.messages.messages import send_message
+from app.messages.messages import send_message, Email
 from . import relations_api
 from . import parsers
 from . import relations
@@ -41,14 +41,10 @@ class SendEmail(AuthResource):
 
         data = parsers.send_email_parser.parse_args()
 
-        if not relations.email_allowed(self.userID, data['recipientID'], data['senderID']):
-            return {'error': 'You are not allowed to send this email.'}, 401
-
-        result = send_message(data['recipientID'], data['senderID'], 'email', data['contents'])
-        if result[0]:
+        message = Email(data['recipientID'], self.payload['userID'], data['subject'], data['content'])
+        if send_message(message):
             return {'message': 'Email sent successfully.'}, 200
-        else:
-            return result[1], 405
+        return {'error': 'Failed to send email'}, 405
 
 relations_api.add_resource(CreateRelation, '/create-relation')
 relations_api.add_resource(GetRelations, '/get-relations')
