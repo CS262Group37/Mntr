@@ -92,10 +92,9 @@ def accept_meeting(meetingID):
 # Updates all meetings in the database based on the current time
 def update_meetings():
 
-    sql = 'SELECT * FROM meeting'
     conn = DatabaseConnection()
     with conn:
-        meetings = conn.execute(sql)
+        meetings = conn.execute('SELECT * FROM meeting')
         current_time = datetime.now()
 
         sql = 'UPDATE meeting SET "status" = %s WHERE meetingID = %s'
@@ -132,7 +131,7 @@ def get_meetings(userID, role):
         sql = "SELECT * FROM meeting NATURAL JOIN relation WHERE mentorID = %s;"
 
     data = (userID,)
-    conn = DatabaseConnection()
+    conn = DatabaseConnection(real_dict=True)
     with conn:
         result = conn.execute(sql, data)
 
@@ -172,7 +171,7 @@ def complete_meeting(userID, meetingID, feedback):
             return (False, {'error': 'Cannot mark meeting as complete after 30 minutes.'})
         # Send meeting completed message
         # Get userIDs of meeting members
-        sql = "SELECT (menteeID, mentorID) FROM meeting NATURAL JOIN relation WHERE meetingID = %s;"
+        sql = "SELECT menteeID, mentorID FROM meeting NATURAL JOIN relation WHERE meetingID = %s;"
         data = (meetingID,)
         [(menteeID, mentorID)] = conn.execute(sql, data)
         if menteeID is None or mentorID is None:
