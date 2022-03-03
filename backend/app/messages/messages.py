@@ -1,13 +1,30 @@
 from datetime import datetime
+from re import L
 
 from app.database import DatabaseConnection
 
 def get_messages(userID):
-    sql = 'SELECT * FROM message FULL OUTER JOIN message_meeting ON message.messageID = message_meeting.messageID WHERE recipientID = %s'
-    data = (userID,)
+
+    messages = []
+
     conn = DatabaseConnection(real_dict=True)
     with conn:
-        messages = conn.execute(sql, data)
+        sql = 'SELECT * FROM "message" WHERE recipientID = %s'
+        data = (userID,)
+        all_messages = conn.execute(sql, data)
+        for message in all_messages:
+            # Add extra message info depending on the message type
+            message_data = message.copy()
+            if message['messagetype'] == 'MeetingMessage':
+                m_extra = conn.execute('SELECT * FROM message_meeting WHERE messageID=%s', (message['messageid'],))
+            elif message['messagetype'] == 'Email':
+                m_extra = conn.execute('SELECT * FROM message_email WHERE messageID=%s', (message['messageid'],))
+            
+            for key, value in m_extra[0].items():
+                message_data[key] = value
+            
+            messages.append(message_data)
+                
     if conn.error:
         return None
 
@@ -64,7 +81,8 @@ def send_message(message, custom_conn = None):
             conn.execute(sql, data)
         elif message_type == 'Email':
             sql = 'INSERT INTO message_email (messageID, "subject", content) VALUES (%s, %s, %s)'
-            data = (messageID[0][0], )
+            data = (messageID[0][0], message.subject, message.content)
+            conn.execute(sql, data)
     
     # If a connection has not been provided use our own
     if custom_conn is None:
