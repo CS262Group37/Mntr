@@ -3,11 +3,20 @@ from datetime import datetime
 from app.database import DatabaseConnection
 
 def get_messages(userID):
-    sql = 'SELECT * FROM messages WHERE recipientID = %s'
+    sql = 'SELECT * FROM message FULL OUTER JOIN message_meeting ON message.messageID = message_meeting.messageID WHERE recipientID = %s'
     data = (userID,)
-
-    with DatabaseConnection() as conn:
+    conn = DatabaseConnection(real_dict=True)
+    with conn:
         messages = conn.execute(sql, data)
+    if conn.error:
+        return None
+
+    # Convert any datetime objects to strings
+    for message in messages:
+        for key, value in message.items():
+            if type(value) is datetime:
+                message[key] = value.strftime('%d/%m/%y %H:%M')
+
     return messages
 
 # Define message type models here
@@ -45,7 +54,7 @@ def send_message(message):
         messageID = conn.execute(sql, data)
     
         if message_type == 'MeetingMessage':
-            sql = 'INSERT INTO message_meeting (messageID, messageType, meetingID) VALUES (%s, %s, %s)'
+            sql = 'INSERT INTO message_meeting (messageID, meetingMessageType, meetingID) VALUES (%s, %s, %s)'
             data = (messageID[0][0], message.message_type, message.meetingID)
             conn.execute(sql, data)
         

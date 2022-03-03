@@ -92,7 +92,7 @@ CREATE TABLE "message" (
 
 CREATE TABLE message_meeting(
     messageID INTEGER REFERENCES "message"(messageID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_meeting_message_type CHECK (messageType IN ('request', 'complete')),
+    meetingMessageType VARCHAR NOT NULL CONSTRAINT valid_meeting_message_type CHECK (meetingMessageType IN ('request', 'complete')),
     meetingID INTEGER REFERENCES meeting(meetingID)
 );
 
