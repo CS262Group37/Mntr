@@ -6,11 +6,21 @@ import PlanOfAction from "./components/PlanOfAction";
 import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
 import { Avatar } from "@mui/material";
 
+interface UserData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  role: string;
+  businessArea: string;
+  topic?: string[];
+}
+
 interface MentorObject {
   firstName: string;
   lastName: string;
-  topic: string;
   avatar: string;
+  topic: string;
   nextMeeting: Date;
 }
 
@@ -110,13 +120,41 @@ const Meeting: React.FC<MeetingProps> = (props) => {
 };
 
 function DashboardMentee() {
+  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
+  const [mentors, setMentors] = React.useState();
+
+  // useEffect(() => {
+  //   axios.get("/api/relations/get-relations").then((res) => {
+  //     setMentors(
+
+  //     )
+  //     console.log(res.data);
+  //     return res.data;
+  //   });
+  // });
+
+  // console.log(mentors);
+
+  // const menteeData = () => {
+  //   axios.get("/api/users/get-data").then((res) => {
+  //     console.log(res.data);
+  //   });
+  // };
+
   useEffect(() => {
-    axios.get("/api/relations/get-relations").then((res) => {
-      console.log(res.data);
+    axios.get("/api/users/get-data").then((res) => {
+      const newUser: UserData = {
+        email: res.data.email,
+        firstName: res.data.firstname,
+        lastName: res.data.lastname,
+        avatar: res.data.profilepicture,
+        role: res.data.role,
+        businessArea: res.data.businessarea,
+      }
+      setUser(newUser);
+      // console.log(user.lastName);
     });
   });
-
-  
 
   const dummyDate1 = new Date("2022-02-04");
   const dummyDate2 = new Date("2022-01-27");
@@ -152,9 +190,9 @@ function DashboardMentee() {
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="My mentors"
-        firstName={userData.firstName}
-        lastName={userData.lastName}
-        avatar={userData.avatar}
+        firstName={user.firstName}
+        lastName={user.lastName}
+        avatar={user.avatar}
       />
 
       {/* Main flexbox */}

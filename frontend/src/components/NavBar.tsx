@@ -117,7 +117,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 horizontal: "right",
               }}
             >
-              <UserMenu />
+              <UserMenu firstName={props.firstName} lastName={props.lastName} />
             </Popover>
           </div>
         </div>

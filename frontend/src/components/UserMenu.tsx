@@ -9,9 +9,10 @@ import {
 } from "react-icons/bi";
 import { Link } from "react-router-dom";
 
-// interface UserMenuProps {
-//   visible: boolean;
-// }
+interface UserMenuProps {
+  firstName: string;
+  lastName: string;
+}
 
 interface EventProps {
   date: Date;
@@ -84,21 +85,19 @@ const Notification: React.FC<NotifProps> = (props) => {
   );
 };
 
-const UserMenu = () => {
+const UserMenu: React.FC<UserMenuProps> = (props) => {
   return (
     <div
       className={
         "bg-cultured rounded-md text-prussianBlue flex-auto w-[500px] max-h-[640px] overflow-auto top-20 right-6 z-10 pt-2 text-left animate-growDown origin-top-right text-xl font-display"
       }
     >
-      {/* <h1 className="text-2xl font-bold pr-6 pl-6 pb-4 pt-4 border-b-[1px] border-gray-300">Jane Doe</h1> */}
-
       <Link
         to="/dashboard-mentee"
         className="flex flex-row font-semibold text-2xl hover:font-bold pr-6 pl-6 pb-4 pt-4 border-b-[1px] border-gray-300"
       >
         <BiUserCircle className="text-3xl m-auto ml-0 mr-2" />
-        <h2>Jane Doe</h2>
+        <h2>{props.firstName + " " + props.lastName}</h2>
       </Link>
 
       {/* Notifications */}
