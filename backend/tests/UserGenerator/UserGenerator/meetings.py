@@ -1,6 +1,6 @@
-from tracemalloc import start
 import requests
 import json
+import random
 
 from rich.table import Table
 from rich.progress import Progress
@@ -38,5 +38,9 @@ def create_random_meetings(meeting_count = None):
     # Get all relations on the system
     relations = get_data('SELECT * FROM relation')
     with Progress() as progress:
-        relation_progress = progress.add_task()
-    pass
+        meeting_progress = progress.add_task('[cyan]Adding random meetings...[/]', total=meeting_count)
+        
+        for i in range(meeting_count):
+            relation = random.choice(relations)
+            random_time = random.randrange()
+            add_meeting(relation, )
