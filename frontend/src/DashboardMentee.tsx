@@ -127,11 +127,15 @@ function DashboardMentee() {
   useEffect(() => {
     axios.get("/api/relations/get-relations").then((res) => {
       console.log(res.data);
-      const newMentors = res.data.map((relation: any) => {
-        const mentorID: number = relation.mentorid;
+      // const newMentors = res.data.map((relation: any) => {
+      const newMentors: UserData[] = [];
 
-        axios.post("/api/relations/get-user-data", {userID: mentorID}).then((res) => {
-          console.log(res.data);
+      for (let i = 0; i < res.data.length; i++) {
+        const element = res.data[i];
+        
+        const mentorID: number = element.mentorid;
+      
+        axios.post("/api/users/get-user-data", {userID: mentorID}).then((res) => {
           const newMentor: UserData = {
             email: res.data.email,
             firstName: res.data.firstname,
@@ -140,19 +144,17 @@ function DashboardMentee() {
             role: res.data.role,
             businessArea: res.data.businessarea,
           }
-
           console.log(newMentor);
-
-          return newMentor;
+          // return newMentor;
+          newMentors.push(newMentor);
+          setMentors(newMentors);
+          console.log(newMentors);
         });
+      };
 
-      });
-
-      setMentors(newMentors);
+      setCurrentMentor(mentors[0]);
     });
   }, []);
-
-  // console.log(mentors);
 
   useEffect(() => {
     axios.get("/api/users/get-own-data").then((res) => {
@@ -205,6 +207,7 @@ function DashboardMentee() {
         firstName={user.firstName}
         lastName={user.lastName}
         avatar={user.avatar}
+        // mentors={mentors}
       />
 
       {/* Main flexbox */}

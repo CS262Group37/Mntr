@@ -1,14 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
+import axios from "axios";
 import { BiMenu, BiMenuAltRight, BiUserCircle } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { Avatar, Popover } from "@mui/material";
 import UserMenu from "./UserMenu";
+
+interface UserData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  role: string;
+  businessArea: string;
+  topic?: string[];
+}
 
 interface NavBarProps {
   firstName: string;
   lastName: string;
   avatar: string;
   activeStr: string;
+  // mentors: UserData[];
 }
 interface LinkProps {
   text: string;
@@ -35,6 +47,41 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   const [menu, setMenu] = React.useState(false);
   const [userMenu, setUserMenu] = React.useState<HTMLDivElement | null>(null);
 
+  const [currentMentor, setCurrentMentor] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
+  const [mentors, setMentors] = React.useState<UserData[]>([]);
+
+  useEffect(() => {
+    axios.get("/api/relations/get-relations").then((res) => {
+      console.log(res.data);
+      // const newMentors = res.data.map((relation: any) => {
+      const newMentors: UserData[] = [];
+
+      for (let i = 0; i < res.data.length; i++) {
+        const element = res.data[i];
+        
+        const mentorID: number = element.mentorid;
+      
+        axios.post("/api/users/get-user-data", {userID: mentorID}).then((res) => {
+          const newMentor: UserData = {
+            email: res.data.email,
+            firstName: res.data.firstname,
+            lastName: res.data.lastname,
+            avatar: res.data.profilepicture,
+            role: res.data.role,
+            businessArea: res.data.businessarea,
+          }
+          console.log(newMentor);
+          // return newMentor;
+          newMentors.push(newMentor);
+          setMentors(newMentors);
+          console.log(newMentors);
+        });
+
+      };
+
+    });
+  }, []);
+
   const userMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
     setUserMenu(event.currentTarget);
   };
@@ -46,7 +93,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   const userMenuOpen = Boolean(userMenu);
   const userMenuID = userMenuOpen ? "simple-popover" : undefined;
 
-  const mentors: string[] = ["Mentor 1", "Mentor 2", "Mentor 3", "Mentor 4"];
+  // const mentors: string[] = ["Mentor 1", "Mentor 2", "Mentor 3", "Mentor 4"];
 
   // Renders the dropdown menu button in the page title
   const renderButton = (menu: boolean) => {
@@ -146,7 +193,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                   to="/dashboard-mentee"
                   className="p-auto ml-8 mt-3 mb-3 hover:font-bold"
                 >
-                  {mentor}
+                  {mentor.firstName + " " + mentor.lastName}
                 </Link>
               );
             })}
