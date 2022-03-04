@@ -2,6 +2,7 @@ import React from "react";
 import { BiMenu, BiMenuAltRight, BiUserCircle } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
+// import ClickAwayListener from '@mui/material/ClickAwayListener';
 import UserMenu from "./UserMenu";
 
 interface NavBarProps {
@@ -33,7 +34,7 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
 const NavBar: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
   const [menu, setMenu] = React.useState(false);
-  const [settings, setSettings] = React.useState(true);
+  const [userMenu, setUserMenu] = React.useState(false);
 
   const mentors: string[] = ["Mentor 1", "Mentor 2", "Mentor 3", "Mentor 4"];
 
@@ -50,7 +51,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
 
   return (
     <div>
-      <UserMenu visible={settings} />
+      <UserMenu visible={userMenu} />
 
       <div className="text-cultured font-display select-none overflow-visible h-auto">
         {/* Blue main navbar */}
@@ -82,11 +83,11 @@ const NavBar: React.FC<NavBarProps> = (props) => {
             />
             {/* Profile picture */}
             <div
-              className="m-auto rounded-full cursor-pointer"
-              onClick={() => setSettings(!settings)}
+              className="m-auto mr-6 ml-4 rounded-full box-content cursor-pointer hover:border-imperialRed hover:border-2 hover:ml-[14px] hover:mr-[22px]"
+              onClick={() => setUserMenu(!userMenu)}
             >
               <Avatar
-                className="m-auto mr-6 ml-4"
+                className="m-auto"
                 alt={props.firstName + " " + props.lastName}
                 src={props.avatar}
                 sx={{ width: 50, height: 50 }}

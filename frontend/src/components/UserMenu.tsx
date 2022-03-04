@@ -46,7 +46,7 @@ const Event: React.FC<EventProps> = (props) => {
         </p>
       </div>
 
-      <p>
+      <p className="font-bold">
         {props.date.toLocaleDateString() +
           " at " +
           props.date.toLocaleTimeString()}
@@ -88,7 +88,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
   return (
     <div
       className={
-        "absolute bg-cultured text-prussianBlue w-1/3 max-h-[66%] overflow-auto top-20 right-6 z-10 pt-2 text-left rounded-3xl shadow-md animate-growDown origin-top-right inline-block text-xl font-display " +
+        "absolute bg-cultured text-prussianBlue w-1/3 flex-auto max-h-[66%] overflow-auto top-20 right-6 z-10 pt-2 text-left rounded-3xl shadow-md animate-growDown origin-top-right inline-block text-xl font-display " +
         (props.visible ? "visible" : "hidden")
       }
     >
