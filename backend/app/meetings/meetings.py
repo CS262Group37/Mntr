@@ -121,15 +121,12 @@ def update_meetings():
     return True
 
 # Gets all meetings for a user, regardless of status
-def get_meetings(userID, role):
+def get_meetings(relationID):
     update_meetings()
 
-    if role == 'mentee':
-        sql = "SELECT * FROM meeting NATURAL JOIN relation WHERE menteeID = %s;"
-    else:
-        sql = "SELECT * FROM meeting NATURAL JOIN relation WHERE mentorID = %s;"
+    sql = 'SELECT * FROM meeting WHERE relationID = %s'
 
-    data = (userID,)
+    data = (relationID,)
     conn = DatabaseConnection(real_dict=True)
     with conn:
         result = conn.execute(sql, data)
@@ -143,10 +140,10 @@ def get_meetings(userID, role):
     
     return result
 
-def get_next_meeting(userID, role):
+def get_next_meeting(relationID):
     update_meetings()
 
-    meetings = get_meetings(userID, role)
+    meetings = get_meetings(relationID)
     if meetings is None or not meetings:
         return {'error': 'User does not have any upcoming meetings'}
     
