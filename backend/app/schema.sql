@@ -129,7 +129,8 @@ CREATE TABLE workshop_invitiation(
 CREATE TABLE workshopdemand(
     mentorID INTEGER NOT NULL REFERENCES "user"(userID),
     topicID INTEGER NOT NULL REFERENCES system_topic,
-    demand INTEGER NOT NULL
+    demand INTEGER NOT NULL,
+    startTime TIMESTAMP NOT NULL
 );
 
 -------------------- Relation Trigger --------------------
