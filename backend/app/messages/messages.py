@@ -55,6 +55,14 @@ class Email(Message):
         self.subject = subject
         self.content = content
 
+class WorkshopInvite(Message):
+    # Message type can be: request, completed
+    def __init__(self, recipientID, senderID, content, workshopID = None):
+        self.recipientID = recipientID
+        self.senderID = senderID
+        self.content = content
+        self.workshopID = workshopID
+
 # Returns true if message is successfully sent
 def send_message(message, custom_conn = None):
     # First check that the passed object is a message object

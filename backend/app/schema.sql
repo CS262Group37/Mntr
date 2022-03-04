@@ -139,24 +139,21 @@ CREATE TABLE workshop (
     startTime TIMESTAMP NOT NULL,
     endTime TIMESTAMP NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('going-ahead', 'cancelled', 'running', 'completed'))
-    "location" VARCHAR NOT NULL,
-    demand INTEGER NOT NULL
+    "location" VARCHAR NOT NULL
 
-CREATE TABLE user_workshop(
+CREATE TABLE user_workshop (
     menteeID INTEGER NOT NULL REFERENCES "user"(userID),
     workshopID INTEGER NOT NULL REFERENCES workshop
 );
 
-CREATE TABLE workshop_invitiation(
-    workshopID INTEGER NOT NULL REFERENCES workshop,
-    messageID INTEGER NOT NULL REFERENCES "message"
+CREATE TABLE workshop_invitiation (
+    messageID INTEGER NOT NULL REFERENCES "message"(messageID),
+    workshopID INTEGER NOT NULL REFERENCES workshop
 );
 
-CREATE TABLE workshopdemand(
-    mentorID INTEGER NOT NULL REFERENCES "user"(userID),
-    topicID INTEGER NOT NULL REFERENCES system_topic,
-    demand INTEGER NOT NULL,
-    startTime TIMESTAMP NOT NULL
+CREATE TABLE workshop_demand (
+    topic VARCHAR NOT NULL REFERENCES system_topic("name"),
+    demand NUMERIC NOT NULL
 );
 
 CREATE TABLE plan_of_action (
