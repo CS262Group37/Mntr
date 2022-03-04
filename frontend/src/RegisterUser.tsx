@@ -50,7 +50,19 @@ function RegisterUser() {
 
   const [psword, setPsword] = React.useState<string>("");
 
-  const register = () => {};
+  const register = () => {
+    switch (role) {
+      case "admin":
+        axios
+          .post("/api/auth/register-user", {
+            role: "admin",
+            adminPassword: psword,
+          })
+          .then((res: any) => {
+            console.log(res);
+          });
+    }
+  };
 
   const updateRating = (value: number, index: number) => {
     console.log(skills);
@@ -76,15 +88,38 @@ function RegisterUser() {
 
   const RegisterMentor = (
     <div>
-      <TextInput
-        type="password"
-        value={psword}
+      <Dropdown
+        values={areas}
+        labels={areas}
         onChange={(e: any) => {
-          setPsword(e.target.value);
+          setArea(e.target.value);
         }}
-        placeholder="Mentor Password"
-        icon={<BiUser className="text-4xl m-4 mr-0" />}
-      />
+        icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
+      ></Dropdown>
+      <Select
+        labelId="demo-multiple-chip-label"
+        id="demo-multiple-chip"
+        multiple
+        value={selectedTopics}
+        onChange={(e: any) => {
+          setSelectedTopics(e.target.value);
+        }}
+        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+        renderValue={(selected) => (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            {selected.map((value) => (
+              <Chip key={value} label={value} />
+            ))}
+          </Box>
+        )}
+      >
+        {topics.map((topic) => (
+          <MenuItem key={topic} value={topic}>
+            <Checkbox checked={selectedTopics.indexOf(topic) > -1} />
+            <ListItemText primary={topic} />
+          </MenuItem>
+        ))}
+      </Select>
     </div>
   );
 
@@ -117,9 +152,9 @@ function RegisterUser() {
       >
         {topics.map((topic) => (
           <MenuItem key={topic} value={topic}>
-          <Checkbox checked={selectedTopics.indexOf(topic) > -1} />
-          <ListItemText primary={topic} />
-        </MenuItem>
+            <Checkbox checked={selectedTopics.indexOf(topic) > -1} />
+            <ListItemText primary={topic} />
+          </MenuItem>
         ))}
       </Select>
       {skills.map((skill, index) => (
