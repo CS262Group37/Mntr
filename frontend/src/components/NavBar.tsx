@@ -1,10 +1,8 @@
 import React from "react";
 import { BiMenu, BiMenuAltRight, BiUserCircle } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import Avatar from "@mui/material/Avatar";
-// import ClickAwayListener from '@mui/material/ClickAwayListener';
+import { Avatar, Popover } from "@mui/material";
 import UserMenu from "./UserMenu";
-import { Popover } from "@mui/material";
 
 interface NavBarProps {
   firstName: string;
@@ -39,11 +37,11 @@ const NavBar: React.FC<NavBarProps> = (props) => {
 
   const userMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
     setUserMenu(event.currentTarget);
-  }
+  };
 
   const userMenuClose = () => {
     setUserMenu(null);
-  }
+  };
 
   const userMenuOpen = Boolean(userMenu);
   const userMenuID = userMenuOpen ? "simple-popover" : undefined;
@@ -106,24 +104,21 @@ const NavBar: React.FC<NavBarProps> = (props) => {
               />
             </div>
             <Popover
-                id={userMenuID}
-                open={userMenuOpen}
-                anchorEl={userMenu}
-                onClose={userMenuClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                anchorPosition={{ top: 50, left: 50 }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-              >
-                <UserMenu />
-                {/* <h1>The content of the Popover.</h1> */}
-
-              </Popover>
+              id={userMenuID}
+              open={userMenuOpen}
+              anchorEl={userMenu}
+              onClose={userMenuClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <UserMenu />
+            </Popover>
           </div>
         </div>
 
