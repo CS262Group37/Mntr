@@ -15,6 +15,13 @@ def str_to_datetime(str):
 
 # Create a new meeting
 def create_meeting(relationID, start_time, end_time, title, description):
+
+    if start_time >= end_time:
+        return (False, {'error': 'Meeting times are invalid'})
+    
+    # TODO: Add a way to check that the meeting time does not clash with an existing meeting for either
+    # user in the relation.
+
     conn = DatabaseConnection()
     # Check relationship exists and send request to mentor
     with conn:
