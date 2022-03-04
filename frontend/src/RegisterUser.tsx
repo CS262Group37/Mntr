@@ -1,29 +1,56 @@
 import React, { useEffect } from "react";
 import "./App.css";
-import { BiUser } from "react-icons/bi";
+import { BiBriefcase, BiUser } from "react-icons/bi";
 import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
 import Dropdown from "./components/Dropdown";
 import LoginButton from "./components/LoginButton";
 import axios from "axios";
+import { Slider, Typography } from "@mui/material";
+
+interface skillRating {
+  name: string;
+  rating: number;
+}
 
 function RegisterUser() {
   const [role, setRole] = React.useState<string>("mentor");
 
-  const [bizArea, setBizArea] = React.useState<string>("mentor");
-  const [topics, setTopics] = React.useState<string[]>();
-  const [ratings, setRatings] = React.useState<number[]>();
+  const [area, setArea] = React.useState<string>("");
+  const [topics, setTopics] = React.useState<string[]>([]);
+  
+  const [areas, setAreas] = React.useState<string[]>([]);
+  const [skills, setSkills] = React.useState<skillRating[]>([]);
 
   useEffect(() => {
     axios.get("/api/admin/get-skills").then((res: any) => {
-      const skills = res.data;
-      console.log(skills);
+      setSkills(
+        res.data.map((skill: any) => ({ name: skill.name, rating: 0 }))
+      );
+    });
+    axios.get("/api/admin/get-business-area").then((res: any) => {
+      console.log(res.data)
+      setAreas(
+        res.data.map((area: any) => (area.name)));
+    });
+    axios.get("/api/admin/get-topics").then((res: any) => {
+      console.log(res.data)
+      setTopics(
+        res.data.map((topic: any) => (topic.name)));
     });
   }, []);
 
   const [psword, setPsword] = React.useState<string>("");
 
   const register = () => {};
+
+  const updateRating = (value: number, index: number) => {
+    console.log(skills);
+    console.log(value, index);
+    const newSkills = [...skills];
+    newSkills[index] = { name: skills[index].name, rating: value };
+    setSkills(newSkills);
+  };
 
   const RegisterAdmin = (
     <div>
@@ -55,15 +82,35 @@ function RegisterUser() {
 
   const RegisterMentee = (
     <div>
-      <TextInput
-        type="password"
-        value={psword}
+      <Dropdown
+        values={areas}
+        labels={areas}
         onChange={(e: any) => {
-          setPsword(e.target.value);
+          setArea(e.target.value);
         }}
-        placeholder="Mentee Password"
-        icon={<BiUser className="text-4xl m-4 mr-0" />}
-      />
+        icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
+      ></Dropdown>
+      <Dropdown
+        values={topics}
+        labels={topics}
+        onChange={(e: any) => {
+          setArea(e.target.value);
+        }}
+        icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
+      ></Dropdown>
+      {skills.map((skill, index) => (
+        <div>
+          <label>{skill.name}</label>
+          <input
+            key={index}
+            type="number"
+            value={skill.rating}
+            onChange={(e: any) => {
+              updateRating(e.target.value, index);
+            }}
+          ></input>
+        </div>
+      ))}
     </div>
   );
 
