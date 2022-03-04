@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from operator import attrgetter
 from time import time
 
 from app.messages.messages import send_message, MeetingMessage
@@ -141,6 +142,16 @@ def get_meetings(userID, role):
         row['endtime'] = row['endtime'].strftime('%d/%m/%y %H:%M')
     
     return result
+
+def get_next_meeting(userID, role):
+    update_meetings()
+
+    meetings = get_meetings(userID, role)
+    if meetings is None or not meetings:
+        return {'error': 'User does not have any upcoming meetings'}
+    sorted_meetings = sorted(meetings, key=str_to_datetime(attrgetter('starttime')))
+    print('Sorted meetings are', sorted_meetings)
+    return sorted_meetings[0]
 
 # Mark meeting as completed and provide feedback
 def complete_meeting(userID, meetingID, feedback):

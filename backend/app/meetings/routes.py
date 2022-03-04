@@ -100,8 +100,16 @@ class GetMeetings(AuthResource):
     def get(self):
         return meetings.get_meetings(self.payload['userID'], self.payload['role'])
 
+class GetNextMeeting(AuthResource):
+    roles = ['mentee', 'mentor']
+
+    @meetings_api.doc(security='apiKey')
+    def get(self):
+        return meetings.get_next_meeting(self.payload['userID'], self.payload['role'])
+
 meetings_api.add_resource(CreateMeeting, '/create-meeting')
 meetings_api.add_resource(CancelMeeting, '/cancel-meeting')
 meetings_api.add_resource(AcceptMeeting, '/accept-meeting')
 meetings_api.add_resource(GetMeetings, '/get-meetings')
+meetings_api.add_resource(GetNextMeeting, '/get-next-meeting')
 meetings_api.add_resource(CompleteMeeting, '/complete-meeting')
