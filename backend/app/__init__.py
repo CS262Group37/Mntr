@@ -8,7 +8,7 @@ import app.meetings as meetings
 import app.messages as messages
 import app.relations as relations
 import app.admin as admin
-import app.planOfAction as plan
+import app.plan_of_action as plan
 from . import database as db
 
 # Good description of the pattern I'm trying to implement: http://exploreflask.com/en/latest/blueprints.html

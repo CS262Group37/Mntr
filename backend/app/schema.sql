@@ -9,11 +9,13 @@ DROP TABLE IF EXISTS "message" CASCADE;
 DROP TABLE IF EXISTS relation CASCADE;
 DROP TABLE IF EXISTS report CASCADE;
 DROP TABLE IF EXISTS plan_of_action CASCADE;
-DROP TABLE IF EXISTS milestone CASCADE;
+DROP TABLE IF EXISTS meeting CASCADE;
+DROP TABLE IF EXISTS message_meeting CASCADE;
+DROP TABLE IF EXISTS message_email CASCADE;
 
 -- Constraint functions --
-DROP FUNCTION IF EXISTS add_relation_contraints;
-DROP TRIGGER IF EXISTS add_relation_contraints ON relation;
+DROP FUNCTION IF EXISTS relation_constraints;
+DROP TRIGGER IF EXISTS relation_constraints ON relation;
 
 CREATE TABLE system_business_area (
     businessAreaID SERIAL PRIMARY KEY,
@@ -60,15 +62,6 @@ CREATE TABLE user_rating (
     PRIMARY KEY (userID, skill)
 );
 
-CREATE TABLE "message" (
-    messageID SERIAL PRIMARY KEY,
-    recipientID INTEGER NOT NULL REFERENCES "user"(userID),
-    senderID INTEGER NOT NULL REFERENCES "user"(userID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('email', 'feedback', 'report')),
-    sentTime TIMESTAMP NOT NULL,
-    CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
-);
-
 CREATE TABLE relation (
     relationID SERIAL PRIMARY KEY, 
     -- We need a way to check that the mentorID and menteeID are actually users with mentor and mentee roles.
@@ -76,6 +69,38 @@ CREATE TABLE relation (
     menteeID INTEGER NOT NULL REFERENCES "user"(userID),
     mentorID INTEGER NOT NULL REFERENCES "user"(userID),
     CONSTRAINT unique_relation UNIQUE (mentorID, menteeID)
+);
+
+CREATE TABLE meeting (
+    meetingID SERIAL PRIMARY KEY,
+    relationID INTEGER NOT NULL REFERENCES relation(relationID),
+    startTime TIMESTAMP NOT NULL,
+    endTime TIMESTAMP NOT NULL,
+    title VARCHAR NOT NULL,
+    "description" VARCHAR NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT acceptable_status CHECK ("status" IN ('going-ahead', 'pending', 'cancelled', 'completed', 'missed', 'running')),
+    feedback VARCHAR
+);
+
+CREATE TABLE "message" (
+    messageID SERIAL PRIMARY KEY,
+    recipientID INTEGER NOT NULL REFERENCES "user"(userID),
+    senderID INTEGER NOT NULL REFERENCES "user"(userID),
+    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage', 'Email')),
+    sentTime TIMESTAMP NOT NULL,
+    CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
+);
+
+CREATE TABLE message_meeting(
+    messageID INTEGER REFERENCES "message"(messageID),
+    meetingMessageType VARCHAR NOT NULL CONSTRAINT valid_meeting_message_type CHECK (meetingMessageType IN ('request', 'complete')),
+    meetingID INTEGER REFERENCES meeting(meetingID)
+);
+
+CREATE TABLE message_email(
+    messageID INTEGER REFERENCES "message"(messageID),
+    "subject" VARCHAR NOT NULL,
+    content VARCHAR NOT NULL
 );
 
 CREATE TABLE report (
@@ -86,26 +111,17 @@ CREATE TABLE report (
 );
 
 CREATE TABLE plan_of_action (
-    planID SERIAL PRIMARY KEY,
+    planOfActionID SERIAL PRIMARY KEY,
     relationID INTEGER NOT NULL REFERENCES relation(relationID),
     title VARCHAR NOT NULL,
     "description" VARCHAR NOT NULL,
-    creationDate TIMESTAMP NOT NULL,
-    "status" VARCHAR NOT NULL --CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
-);
-
-CREATE TABLE milestone (
-    milestoneID SERIAL PRIMARY KEY,
-    planID INTEGER NOT NULL REFERENCES plan_of_action(planID),
-    title VARCHAR NOT NULL,
-    description VARCHAR NOT NULL,
     creationDate TIMESTAMP NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
 );
 
 -------------------- Relation Trigger --------------------
 
-CREATE OR REPLACE FUNCTION add_relation_contraints()
+CREATE OR REPLACE FUNCTION relation_constraints()
 RETURNS TRIGGER AS
 $$
 DECLARE
@@ -113,13 +129,15 @@ DECLARE
     mentorAccountID INTEGER;
     menteeRole VARCHAR;
     mentorRole VARCHAR;
+    menteeBusinessArea VARCHAR;
+    mentorBusinessArea VARCHAR;
 BEGIN
     -- Get account IDs and roles
-    SELECT accountID, "role" INTO menteeAccountID, menteeRole FROM "user" WHERE userID = new.menteeID;
-    SELECT accountID, "role" INTO mentorAccountID, mentorRole FROM "user" WHERE userID = new.mentorID;
+    SELECT accountID, "role", businessArea INTO menteeAccountID, menteeRole, menteeBusinessArea FROM "user" WHERE userID = new.menteeID;
+    SELECT accountID, "role", businessArea INTO mentorAccountID, mentorRole, mentorBusinessArea FROM "user" WHERE userID = new.mentorID;
 
     IF menteeAccountID = mentorAccountID THEN
-        RAISE EXCEPTION 'Cannot add relation. Mentor and mentee have the same account';
+        RAISE EXCEPTION 'Invalid relation. Mentor and mentee have the same account';
     END IF;
 
     IF menteeRole != 'mentee' THEN
@@ -130,10 +148,14 @@ BEGIN
         RAISE EXCEPTION 'User with mentorID % is not a mentor', new.mentorID;
     END IF;
 
+    if menteeBusinessArea = mentorBusinessArea THEN
+        RAISE EXCEPTION 'Invalid relation. Mentor and mentee have the same business area';
+    END IF;
+
     RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
 
-CREATE TRIGGER add_relation_contraints BEFORE INSERT OR UPDATE ON relation
-    FOR EACH ROW EXECUTE PROCEDURE add_relation_contraints();
+CREATE TRIGGER relation_constraints BEFORE INSERT OR UPDATE ON relation
+    FOR EACH ROW EXECUTE PROCEDURE relation_constraints();

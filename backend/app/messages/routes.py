@@ -7,6 +7,6 @@ class GetMessages(AuthResource):
 
     @messages_api.doc(security='apiKey')
     def get(self):
-        return messages.get_messages(self.userID)
+        return messages.get_messages(self.payload['userID'])
 
 messages_api.add_resource(GetMessages, '/get_messages')

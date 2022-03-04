@@ -30,7 +30,7 @@ const Dropdown = (props:DropdwonProps) => {
       >
         
        {props.values.map((value, i) => (
-         <option className="bg-cultured hover:bg-cultured" value={value}>{props.labels[i]}</option>
+         <option className="bg-cultured hover:bg-cultured" key={i} value={value}>{props.labels[i]}</option>
        ))}
       </select>
     </div>

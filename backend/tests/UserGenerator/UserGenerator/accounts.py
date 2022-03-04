@@ -9,7 +9,7 @@ from rich.progress import Progress
 from rich.prompt import IntPrompt
 from rich.table import Table
 
-from . import authentication, database, admin
+from . import authentication, database, admin, relations
 from .console import add_option, console, hostname
 from .fake_data import fake
 
@@ -164,8 +164,12 @@ def load_preset():
     # Add areas
     admin.add_random_areas(preset['businessAreas'])
     console.line()
-
+    # Add users and accounts
     create_random_accounts_and_users(preset['accounts'])
+    console.line()
+    # Add relations
+    relations.add_random_relations(preset['relations'])
+    
 
 def add_options():
     add_option('add', 'Add random accounts and users', create_random_accounts_and_users)

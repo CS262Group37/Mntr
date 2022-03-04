@@ -1,4 +1,3 @@
-from curses import REPORT_MOUSE_POSITION
 from functools import wraps
 
 from flask import make_response, request

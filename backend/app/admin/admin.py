@@ -1,12 +1,11 @@
+import re
 from app.database import DatabaseConnection
 
 def get_topics():
     sql = 'SELECT * FROM system_topic;'
-    conn = DatabaseConnection()
+    conn = DatabaseConnection(real_dict=True)
     with conn:
         topics = conn.execute(sql)
-    # TODO: Need to test if this is safe. Might throw an undefined var error with setting result
-    # topics to None first.
     return topics
 
 def add_topic(topicName):
@@ -85,7 +84,7 @@ def mark_report_as_read(reportID):
 
 def get_skills():
     sql = 'SELECT * FROM system_skill;'
-    conn = DatabaseConnection()
+    conn = DatabaseConnection(real_dict=True)
     with conn:
         skills = conn.execute(sql)
     return skills
@@ -155,7 +154,7 @@ def clear_business_areas():
 
 def get_business_areas():
     sql = 'SELECT * FROM system_business_area;'
-    conn = DatabaseConnection()
+    conn = DatabaseConnection(real_dict=True)
     with conn:
         businessAreas = conn.execute(sql)
     

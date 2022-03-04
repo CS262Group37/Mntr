@@ -187,4 +187,16 @@ def decode_token(token):
     except Exception as e:
         return (False, str(e))
     else:
+        # Check if user with this data exist
+        conn = DatabaseConnection()
+        with conn:
+            sql = 'SELECT EXISTS(SELECT 1 FROM account WHERE accountID=%s AND email=%s);'
+            data = (payload['accountID'], payload['email'])
+            [(valid,)] = conn.execute(sql, data)
+            if valid and payload['userID']:
+                sql = 'SELECT EXISTS(SELECT 1 FROM "user" WHERE userID=%s AND accountID=%s AND role=%s);'
+                data = (payload['userID'], payload['accountID'], payload['role'])
+                [(valid,)] = conn.execute(sql, data)
+        if not valid:
+            return (False, 'Logged in user does not exist on the system')
         return (True, payload)
