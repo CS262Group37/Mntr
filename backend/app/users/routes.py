@@ -1,3 +1,4 @@
+from flask_restx import Resource
 from app.auth.routes import AuthResource
 from . import users_api
 from . import parsers
@@ -8,7 +9,7 @@ class GetOwnData(AuthResource):
     def get(self):
         return users.get_data(self.payload['userID'])
 
-class GetUserData(AuthResource):
+class GetUserData(Resource):
     @users_api.doc(security='apiKey')
     @users_api.expect(parsers.get_users_parser)
     def post(self):
