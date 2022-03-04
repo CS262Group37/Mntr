@@ -37,7 +37,8 @@ CREATE TABLE account (
     email VARCHAR NOT NULL CONSTRAINT unique_email UNIQUE,
     "password" VARCHAR NOT NULL,
     firstName VARCHAR NOT NULL,
-    lastName VARCHAR NOT NULL
+    lastName VARCHAR NOT NULL,
+    profilePicture VARCHAR
 );
 
 CREATE TABLE "user" (

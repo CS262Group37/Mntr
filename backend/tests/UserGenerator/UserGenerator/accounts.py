@@ -13,13 +13,14 @@ from . import authentication, database, admin, relations
 from .console import add_option, console, hostname
 from .fake_data import fake
 
-def create_account(first_name, last_name, email, password):
+def create_account(first_name, last_name, email, password, profilePicture = None):
     response = requests.post(f'{hostname}/api/auth/register-account', 
         data={
             'email': email,
             'password': password,
             'firstName': first_name,
-            'lastName': last_name
+            'lastName': last_name,
+            'profilePicture': profilePicture
             }, timeout=10
         )
     
@@ -129,7 +130,7 @@ def create_random_accounts_and_users(account_count = None):
         for i in range(account_count):
 
             # Create an account
-            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[0:10]):
+            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[0:10], fake.image_url(width=180, height=180)):
 
                 created_accounts += 1
 
