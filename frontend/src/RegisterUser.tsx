@@ -6,7 +6,16 @@ import TextInput from "./components/TextInput";
 import Dropdown from "./components/Dropdown";
 import LoginButton from "./components/LoginButton";
 import axios from "axios";
-import { Slider, Typography } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  Chip,
+  Input,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
+} from "@mui/material";
 
 interface skillRating {
   name: string;
@@ -17,8 +26,9 @@ function RegisterUser() {
   const [role, setRole] = React.useState<string>("mentor");
 
   const [area, setArea] = React.useState<string>("");
+  const [selectedTopics, setSelectedTopics] = React.useState<string[]>([]);
+
   const [topics, setTopics] = React.useState<string[]>([]);
-  
   const [areas, setAreas] = React.useState<string[]>([]);
   const [skills, setSkills] = React.useState<skillRating[]>([]);
 
@@ -29,14 +39,12 @@ function RegisterUser() {
       );
     });
     axios.get("/api/admin/get-business-area").then((res: any) => {
-      console.log(res.data)
-      setAreas(
-        res.data.map((area: any) => (area.name)));
+      console.log(res.data);
+      setAreas(res.data.map((area: any) => area.name));
     });
     axios.get("/api/admin/get-topics").then((res: any) => {
-      console.log(res.data)
-      setTopics(
-        res.data.map((topic: any) => (topic.name)));
+      console.log(res.data);
+      setTopics(res.data.map((topic: any) => topic.name));
     });
   }, []);
 
@@ -90,14 +98,30 @@ function RegisterUser() {
         }}
         icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
       ></Dropdown>
-      <Dropdown
-        values={topics}
-        labels={topics}
+      <Select
+        labelId="demo-multiple-chip-label"
+        id="demo-multiple-chip"
+        multiple
+        value={selectedTopics}
         onChange={(e: any) => {
-          setArea(e.target.value);
+          setSelectedTopics(e.target.value);
         }}
-        icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
-      ></Dropdown>
+        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+        renderValue={(selected) => (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            {selected.map((value) => (
+              <Chip key={value} label={value} />
+            ))}
+          </Box>
+        )}
+      >
+        {topics.map((topic) => (
+          <MenuItem key={topic} value={topic}>
+          <Checkbox checked={selectedTopics.indexOf(topic) > -1} />
+          <ListItemText primary={topic} />
+        </MenuItem>
+        ))}
+      </Select>
       {skills.map((skill, index) => (
         <div>
           <label>{skill.name}</label>
