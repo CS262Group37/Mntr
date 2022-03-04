@@ -84,14 +84,6 @@ function Login() {
                 <p className="text-right text-lg pt-1 underline">
                   Forgot password?
                 </p>
-                <Dropdown
-                  values={["mentor", "mentee", "admin"]}
-                  labels={["Mentor", "Mentee", "Admin"]}
-                  onChange={(e: any) => {
-                    setRole(e.target.value);
-                  }}
-                  icon={<BiUser className="text-4xl m-4 mr-0" />}
-                />
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import NavBar from "./components/NavBar";
@@ -19,6 +19,7 @@ interface MeetingProps {
   feedback: string;
 }
 
+// Mentor details component
 const MentorDetails: React.FC<MentorObject> = (props) => {
   // TODO schedule a meeting function
   const schedule = () => {
@@ -109,6 +110,14 @@ const Meeting: React.FC<MeetingProps> = (props) => {
 };
 
 function DashboardMentee() {
+  useEffect(() => {
+    axios.get("/api/relations/get-relations").then((res) => {
+      console.log(res.data);
+    });
+  });
+
+  
+
   const dummyDate1 = new Date("2022-02-04");
   const dummyDate2 = new Date("2022-01-27");
   const dummyDate3 = new Date("2022-01-24");
@@ -140,7 +149,6 @@ function DashboardMentee() {
   };
 
   return (
-    // <div className="fixed h-full w-full overflow-scroll overflow-x-auto">
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="My mentors"
