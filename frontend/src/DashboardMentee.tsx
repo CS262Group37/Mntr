@@ -121,28 +121,41 @@ const Meeting: React.FC<MeetingProps> = (props) => {
 
 function DashboardMentee() {
   const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
-  const [mentors, setMentors] = React.useState();
+  const [currentMentor, setCurrentMentor] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
+  const [mentors, setMentors] = React.useState<UserData[]>([]);
 
-  // useEffect(() => {
-  //   axios.get("/api/relations/get-relations").then((res) => {
-  //     setMentors(
+  useEffect(() => {
+    axios.get("/api/relations/get-relations").then((res) => {
+      console.log(res.data);
+      const newMentors = res.data.map((relation: any) => {
+        const mentorID: number = relation.mentorid;
 
-  //     )
-  //     console.log(res.data);
-  //     return res.data;
-  //   });
-  // });
+        axios.post("/api/relations/get-user-data", {userID: mentorID}).then((res) => {
+          console.log(res.data);
+          const newMentor: UserData = {
+            email: res.data.email,
+            firstName: res.data.firstname,
+            lastName: res.data.lastname,
+            avatar: res.data.profilepicture,
+            role: res.data.role,
+            businessArea: res.data.businessarea,
+          }
+
+          console.log(newMentor);
+
+          return newMentor;
+        });
+
+      });
+
+      setMentors(newMentors);
+    });
+  }, []);
 
   // console.log(mentors);
 
-  // const menteeData = () => {
-  //   axios.get("/api/users/get-data").then((res) => {
-  //     console.log(res.data);
-  //   });
-  // };
-
   useEffect(() => {
-    axios.get("/api/users/get-data").then((res) => {
+    axios.get("/api/users/get-own-data").then((res) => {
       const newUser: UserData = {
         email: res.data.email,
         firstName: res.data.firstname,
@@ -152,7 +165,6 @@ function DashboardMentee() {
         businessArea: res.data.businessarea,
       }
       setUser(newUser);
-      // console.log(user.lastName);
     });
   });
 

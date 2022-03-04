@@ -1,6 +1,5 @@
 from app.auth.routes import AuthResource
 from . import users_api
-from . import relations_api
 from . import parsers
 from . import users
 
@@ -11,9 +10,9 @@ class GetOwnData(AuthResource):
 
 class GetUserData(AuthResource):
     @users_api.doc(security='apiKey')
-    @relations_api.expect(parsers.get_users_parser)
-    def get(self):
-        data = parsers.send_email_parser.parse_args()
+    @users_api.expect(parsers.get_users_parser)
+    def post(self):
+        data = parsers.get_users_parser.parse_args()
 
         return users.get_data(data['userID'])
 
