@@ -149,9 +149,13 @@ def get_next_meeting(userID, role):
     meetings = get_meetings(userID, role)
     if meetings is None or not meetings:
         return {'error': 'User does not have any upcoming meetings'}
-    sorted_meetings = sorted(meetings, key=str_to_datetime(attrgetter('starttime')))
-    print('Sorted meetings are', sorted_meetings)
-    return sorted_meetings[0]
+    
+    next_meeting = meetings.pop(0)
+    for meeting in meetings:
+        start_time = str_to_datetime(meeting['starttime'])
+        if start_time < str_to_datetime(next_meeting['starttime']):
+            next_meeting = meeting
+    return next_meeting
 
 # Mark meeting as completed and provide feedback
 def complete_meeting(userID, meetingID, feedback):
