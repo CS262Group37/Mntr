@@ -7,6 +7,7 @@ import app.matching as matching
 import app.meetings as meetings
 import app.messages as messages
 import app.relations as relations
+import app.workshop as workshop
 import app.admin as admin
 from . import database as db
 
@@ -30,7 +31,7 @@ def create_app():
         app.register_blueprint(meetings.meetings_bp, url_prefix='/api/meetings')
         app.register_blueprint(messages.messages_bp, url_prefix='/api/messages')
         app.register_blueprint(relations.relations_bp, url_prefix='/api/relations')
-        app.register_blueprint(relations.relations_bp, url_prefix='/api/workshop')
+        app.register_blueprint(workshop.workshop_bp, url_prefix='/api/workshop')
 
     # Put login doc on the front page for convenience
     @api.documentation

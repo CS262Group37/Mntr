@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS milestone CASCADE;
 DROP TABLE IF EXISTS workshop CASCADE;
 DROP TABLE IF EXISTS workshop_invitiation CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
+DROP TABLE IF EXISTS workshopdemand CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS add_relation_contraints;
@@ -112,15 +113,18 @@ CREATE TABLE workshop (
     mentorID INTEGER NOT NULL REFERENCES "user"(userID),
     title VARCHAR NOT NULL,
     "description" VARCHAR NOT NULL,
-    "time" TIMESTAMP NOT NULL,
-    duration INTEGER NOT NULL,
+    startTime TIMESTAMP NOT NULL,
+    endTime TIMESTAMP NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('going-ahead', 'cancelled', 'running', 'completed'))
     "location" VARCHAR NOT NULL,
     demand INTEGER NOT NULL
 );
+
 CREATE TABLE user_workshop(
-    workshopID INTEGER NOT NULL REFERENCES workshop,
     menteeID INTEGER NOT NULL REFERENCES "user"(userID),
+    workshopID INTEGER NOT NULL REFERENCES workshop
 );
+
 CREATE TABLE workshop_invitiation(
     workshopID INTEGER NOT NULL REFERENCES workshop,
     messageID INTEGER NOT NULL REFERENCES "message"

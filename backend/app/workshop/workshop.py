@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from time import time
 
 # Function to insert workshop details into database 
-def schedule_workshop(mentorID,title,topic,desc,time,duration,location):
+def schedule_workshop(mentorID, title, topic, desc, time, duration, location):
     sql= 'SELECT demand FROM workshopdemand WHERE mentorID = %s'
     data = (mentorID,)
     conn = DatabaseConnection()
