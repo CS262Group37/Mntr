@@ -16,6 +16,7 @@ function Login() {
   const navigate = useNavigate();
 
   const login = async () => {
+
     try {
       const res = await axios.post("/api/auth/login", {
         email: email,
@@ -46,10 +47,20 @@ function Login() {
             </p>
 
             {/* Inputs */}
-            <div className="flex flex-col space-y-8 pt-[8%]">
+            <div className="flex flex-col space-y-8 pt-[6%]">
+              {/* Role input */}
+              <Dropdown
+                values={["mentor", "mentee", "admin"]}
+                labels={["Mentor", "Mentee", "Admin"]}
+                onChange={(e: any) => {
+                  setRole(e.target.value);
+                }}
+                icon={<BiUser className="text-4xl m-4 mr-0" />}
+              />
+
               {/* E-mail address input */}
               <TextInput
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e: any) => {
                   setEmail(e.target.value);
@@ -87,7 +98,7 @@ function Login() {
             <LoginButton value="Login" onClick={login} />
 
             {/* Registration link */}
-            <p className="text-2xl m-auto pt-[10%]">
+            <p className="text-2xl m-auto pt-[5%]">
               Don't have an account yet?{" "}
               <span className="font-bold underline text-imperialRed">
                 <Link to="/register">Register now!</Link>

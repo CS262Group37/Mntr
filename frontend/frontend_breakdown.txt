@@ -1,0 +1,35 @@
+Login page
+
+Registration page
+
+MENTEES
+  Dashboard - my mentors
+    main page
+      mentor details
+      meetings (feedbacks)
+      danger zone - end mentor relationship
+    plan of action
+  Browse mentors
+    mentor details (name, topic, business area)
+    mentor rating
+    mentor bio
+  Workshops
+    mentor cards (details - name, topic, business area, rating)
+  Public profile
+    details (name, business area)
+    profile picture
+    topics
+    bio - customisable
+  *Navbar
+    dropdown - My mentors, Browse mentors, Workshops
+    
+
+MENTORS
+  Dashboard - my mentees
+    main page
+  Public profile
+    details (name, business area)
+    profile picture
+    topics
+    bio - customisable
+    ratings

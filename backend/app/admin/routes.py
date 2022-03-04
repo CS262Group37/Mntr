@@ -1,11 +1,11 @@
 from app.auth.routes import AuthResource
+from flask_restx import Resource
 from . import admin_api
 from . import admin
 from . import parsers
 
 # Topic routes
-class GetTopics(AuthResource):
-    roles = ['admin']
+class GetTopics(Resource):
     @admin_api.doc(security='apiKey')
     def get(self):
         return admin.get_topics(), 200
@@ -42,9 +42,7 @@ class ClearTopics(AuthResource):
         return result[1], 404
 
 # Skill routes
-
-class GetSkills(AuthResource):
-    roles = ['admin']
+class GetSkills(Resource):
     @admin_api.doc(security='apiKey')
     def get(self):
         return admin.get_skills(), 200
@@ -100,8 +98,7 @@ class MarkReportAsRead(AuthResource):
         return result[1], 404
 
 # Business area routes
-class GetBusinessAreas(AuthResource):
-    roles = ['admin']
+class GetBusinessAreas(Resource):
     @admin_api.doc(security='apiKey')
     def get(self):
         return admin.get_business_areas(), 200

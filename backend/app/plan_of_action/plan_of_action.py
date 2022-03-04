@@ -6,7 +6,7 @@ def get_plan_of_actions(relationID):
     sql = 'SELECT * FROM plan_of_action WHERE relationID = %s;'
     # sql = 'SELECT relationID, title, description, status FROM plan_of_action WHERE relationID = "%s";'
     data = (relationID,)
-    conn = DatabaseConnection()
+    conn = DatabaseConnection(real_dict=True)
     with conn:
         plans = conn.execute(sql, data)
 
