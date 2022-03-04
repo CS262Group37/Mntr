@@ -1,12 +1,13 @@
 import os
+import traceback as tb
 
 from psycopg2 import pool
-from psycopg2.extras import DictCursor
+from psycopg2.extras import DictCursor, RealDictCursor
 from flask import current_app as app
 
 def init_db():
     try:
-        __pool = pool.ThreadedConnectionPool(1, 20, cursor_factory=DictCursor, dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host='127.0.0.1', port='5432')
+        __pool = pool.ThreadedConnectionPool(1, 20, dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host=os.getenv('DB_HOST'), port='5432')
         app.db_pool = __pool
     except Exception as e:
         raise Exception('Failed to connect to database. Have you started the postgresql service?') from e
@@ -17,9 +18,12 @@ def init_db():
 # class's lifetime. SQL errors are otherwised suppressed to keep things simple (I might change this eventually)
 class DatabaseConnection():
 
-    def __init__(self):
+    def __init__(self, real_dict = False):
         self.conn = app.db_pool.getconn()
-        self.curs = self.conn.cursor()
+        if real_dict:
+            self.curs = self.conn.cursor(cursor_factory=RealDictCursor)
+        else:
+            self.curs = self.conn.cursor(cursor_factory=DictCursor)
         self.error = False
         self.error_message = None
         self.constraint_violated = None
@@ -28,13 +32,17 @@ class DatabaseConnection():
         return self
 
     # Closes the cursor and connection
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exception_type, exception_value, traceback):
         if not self.error:
             self.conn.commit()
         else:
             self.conn.rollback()
         self.curs.close()
         app.db_pool.putconn(self.conn)
+
+        # Print non-database exceptions
+        if not self.error and exception_value is not None and exception_type is not None and traceback is not None:
+            tb.print_exception(exception_type, exception_value, traceback)
         return True
     
     # Pass sql in the form of a string data in the form of a tuple. NOTE: If you are passing in a

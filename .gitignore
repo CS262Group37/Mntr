@@ -5,6 +5,7 @@ static
 .vscode
 Pipfile
 Pipfile.lock
+ENV_DIR
 
 ### Node ###
 # Logs

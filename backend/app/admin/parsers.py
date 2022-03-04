@@ -11,3 +11,6 @@ report_parser.add_argument('reportID', required = True, type=int)
 
 user_parser = reqparse.RequestParser(bundle_errors=True)
 user_parser.add_argument('userID', required = True, type = int)
+
+business_area_parser = reqparse.RequestParser(bundle_errors=True)
+business_area_parser.add_argument('businessAreaName', required = True, type = str)

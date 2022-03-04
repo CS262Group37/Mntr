@@ -48,10 +48,9 @@ class RegisterAccount(Resource):
     def post(self):
         
         data = parsers.register_account_parser.parse_args()
-        result = auth.register_account(data['email'], data['password'], data['firstName'], data['lastName'])
+        result = auth.register_account(data['email'], data['password'], data['firstName'], data['lastName'], data['profilePicture'])
 
         if result[0]:
-
             # Generate an account token
             token = auth.encode_token(data['email'])
             if not token[0]:
@@ -68,7 +67,7 @@ class RegisterUser(AuthResource):
     def post(self):
         
         data = parsers.register_user_parser.parse_args()
-        result = auth.register_user(self.payload['accountID'], data['role'])
+        result = auth.register_user(self.payload['accountID'], data)
 
         if result[0]:
             return result[1], 201
@@ -100,22 +99,19 @@ class Login(Resource):
 
         return response
 
-# Just for testing authentication. Provide the user's jwt token in the url.
-# They will be able to see a list of users on the system if they are authenticated as an admin
-class PrintUsers(AuthResource):
-    roles = ['admin']
+class ChangeRole(AuthResource):
+    @auth_api.expect(parsers.role_parser)
+    def post(self):
+        data = parsers.role_parser.parse_args()
+        new_token = auth.encode_token(self.payload['email'], data['role'])
+        if not new_token[0]:
+            return new_token[1]
+        response = make_response({'message': 'Successfully changed role'}, 200)
+        response.set_cookie("JWT_Token", new_token[1], httponly=True, samesite='Lax')
 
-    @auth_api.doc(security='apiKey')
-    def get(self):
-        
-        result = auth.get_registered_users()
-        
-        if result[0]:
-            return result[1], 200
-        else:
-            return result[1], 404
+        return response
 
 auth_api.add_resource(RegisterAccount, '/register-account')
 auth_api.add_resource(RegisterUser, '/register-user')
 auth_api.add_resource(Login, '/login')
-auth_api.add_resource(PrintUsers, '/users')
+auth_api.add_resource(ChangeRole, '/change-role')

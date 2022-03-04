@@ -37,9 +37,10 @@ def create_relation(menteeID, mentorID):
     else:
         return True
 
-def add_random_relations():
-    relation_count = IntPrompt.ask('Enter the number of relations to add')
-    console.line()
+def add_random_relations(relation_count = None):
+    if relation_count is None:
+        relation_count = IntPrompt.ask('Enter the number of relations to add')
+        console.line()
 
     # Get mentees in the database
     mentees = get_data('SELECT * FROM "user" WHERE "role"=\'mentee\'')

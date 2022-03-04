@@ -10,6 +10,7 @@ from . import database
 from . import relations
 from . import accounts
 from . import admin
+from . import matching
 
 active_cookie = None
 logout_flag = False
@@ -20,12 +21,14 @@ def logout(*args):
 
 login_options = {
     ('relations', 'View relations'): relations.print_relations,
+    ('recommendations', 'View recommended mentors'): matching.print_recommendations,
     ('logout', 'Logout'): logout
 }
 
 admin_options = {
     ('skills', 'Add random skills to the system'): admin.add_random_skills,
     ('topics', 'Add random topics to the system'): admin.add_random_topics,
+    ('areas', 'Add random business areas to the system'): admin.add_random_areas,
     ('logout', 'Logout'): logout
 }
 
@@ -39,25 +42,27 @@ def login_user(email, password, role):
         return False
     return True
 
+def simple_admin_login():
+    # Register an admin account and user then login
+    accounts.create_account('admin', 'admin', 'admin@admin.com', 'admin')
+    accounts.create_user('admin', adminPassword = 'admin')
+    if not login_user('admin@admin.com', 'admin', 'admin'):
+        console.console.print("[red]Admin login failed for an unknown reason[/]")
+        return False
+    return True
+
 def admin_login():
     global logout_flag
     logout_flag = False
 
-    # Register an admin account and user then login
-    accounts.create_account('admin', 'admin', 'admin@admin.com', 'admin')
-    accounts.create_user('admin')
-    if login_user('admin@admin.com', 'admin', 'admin'):
-
+    if simple_admin_login():
         while not logout_flag:
             option = console.select_option(admin_options)
             console.console.line()
             admin_options[option]()
             if not logout_flag:
                 console.console.line()
-    else:
-        console.print("[red]Admin login failed for an unknown reason[/]")
-
-    
+        
 
 def random_login():
     global logout_flag
@@ -91,6 +96,7 @@ def random_login():
         table.add_row('Last Name', str(user_data[0]['lastname']))
         table.add_row('Email', str(user_data[0]['email']))
         table.add_row('Password', str(user_data[0]['password']))
+        table.add_row('Profile Picture', str(user_data[0]['profilepicture']))
 
         console.console.print(table, justify="center")
         console.console.line()
