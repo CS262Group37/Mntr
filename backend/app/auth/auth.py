@@ -10,12 +10,12 @@ token_lifetime = timedelta(minutes=5)
 # All functions used for responses should return a tuple containing (status, object containing message or data)
 
 # Registers an account. Returns type(status, dict)
-def register_account(email, password, firstName, lastName):
+def register_account(email, password, firstName, lastName, profilePicture):
     conn = DatabaseConnection()
     with conn:
         # Create the account
-        sql = 'INSERT INTO account (email, "password", firstName, lastName) VALUES (%s, %s, %s, %s) RETURNING accountID;'
-        data = (email, password, firstName, lastName)
+        sql = 'INSERT INTO account (email, "password", firstName, lastName, profilePicture) VALUES (%s, %s, %s, %s, %s) RETURNING accountID;'
+        data = (email, password, firstName, lastName, profilePicture)
         accountID = conn.execute(sql, data)
 
     if conn.error:

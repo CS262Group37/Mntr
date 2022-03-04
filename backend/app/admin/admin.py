@@ -1,4 +1,3 @@
-import re
 from app.database import DatabaseConnection
 
 def get_topics():

@@ -12,10 +12,30 @@ DROP TABLE IF EXISTS plan_of_action CASCADE;
 DROP TABLE IF EXISTS meeting CASCADE;
 DROP TABLE IF EXISTS message_meeting CASCADE;
 DROP TABLE IF EXISTS message_email CASCADE;
+DROP TABLE IF EXISTS milestone CASCADE;
+DROP TABLE IF EXISTS workshop CASCADE;
+DROP TABLE IF EXISTS workshop_invitiation CASCADE;
+DROP TABLE IF EXISTS user_workshop CASCADE;
+DROP TABLE IF EXISTS workshopdemand CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
 DROP TRIGGER IF EXISTS relation_constraints ON relation;
+
+CREATE TABLE system_business_area (
+    businessAreaID SERIAL PRIMARY KEY,
+    "name" VARCHAR NOT NULL CONSTRAINT unique_area_name UNIQUE
+);
+
+CREATE TABLE system_topic (
+    topicID SERIAL PRIMARY KEY,
+    "name" VARCHAR NOT NULL CONSTRAINT unique_topic UNIQUE
+);
+
+CREATE TABLE system_skill (
+    skillID SERIAL PRIMARY KEY,
+    "name" VARCHAR NOT NULL CONSTRAINT unique_skill UNIQUE
+);
 
 CREATE TABLE system_business_area (
     businessAreaID SERIAL PRIMARY KEY,
@@ -37,7 +57,8 @@ CREATE TABLE account (
     email VARCHAR NOT NULL CONSTRAINT unique_email UNIQUE,
     "password" VARCHAR NOT NULL,
     firstName VARCHAR NOT NULL,
-    lastName VARCHAR NOT NULL
+    lastName VARCHAR NOT NULL,
+    profilePicture VARCHAR
 );
 
 CREATE TABLE "user" (
@@ -101,13 +122,41 @@ CREATE TABLE message_email(
     messageID INTEGER REFERENCES "message"(messageID),
     "subject" VARCHAR NOT NULL,
     content VARCHAR NOT NULL
-);
 
 CREATE TABLE report (
     reportID SERIAL PRIMARY KEY,
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     content VARCHAR NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+);
+
+CREATE TABLE workshop (
+    workshopID SERIAL PRIMARY KEY,
+    topic VARCHAR NOT NULL CONSTRAINT valid_topic REFERENCES system_topic("name"),
+    mentorID INTEGER NOT NULL REFERENCES "user"(userID),
+    title VARCHAR NOT NULL,
+    "description" VARCHAR NOT NULL,
+    startTime TIMESTAMP NOT NULL,
+    endTime TIMESTAMP NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('going-ahead', 'cancelled', 'running', 'completed'))
+    "location" VARCHAR NOT NULL,
+    demand INTEGER NOT NULL
+
+CREATE TABLE user_workshop(
+    menteeID INTEGER NOT NULL REFERENCES "user"(userID),
+    workshopID INTEGER NOT NULL REFERENCES workshop
+);
+
+CREATE TABLE workshop_invitiation(
+    workshopID INTEGER NOT NULL REFERENCES workshop,
+    messageID INTEGER NOT NULL REFERENCES "message"
+);
+
+CREATE TABLE workshopdemand(
+    mentorID INTEGER NOT NULL REFERENCES "user"(userID),
+    topicID INTEGER NOT NULL REFERENCES system_topic,
+    demand INTEGER NOT NULL,
+    startTime TIMESTAMP NOT NULL
 );
 
 CREATE TABLE plan_of_action (

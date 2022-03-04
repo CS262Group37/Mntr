@@ -5,6 +5,7 @@ register_account_parser.add_argument('email', required=True, type=str)
 register_account_parser.add_argument('password', required=True, type=str)
 register_account_parser.add_argument('firstName', required=True, type=str)
 register_account_parser.add_argument('lastName', required=True, type=str)
+register_account_parser.add_argument('profilePicture', required=False, type=str)
 
 register_user_parser = reqparse.RequestParser()
 register_user_parser.add_argument('role', choices=('admin', 'mentor', 'mentee'), required=True, type=str)
