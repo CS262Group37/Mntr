@@ -16,26 +16,11 @@ DROP TABLE IF EXISTS milestone CASCADE;
 DROP TABLE IF EXISTS workshop CASCADE;
 DROP TABLE IF EXISTS workshop_invitiation CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
-DROP TABLE IF EXISTS workshopdemand CASCADE;
+DROP TABLE IF EXISTS workshop_demand CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
 DROP TRIGGER IF EXISTS relation_constraints ON relation;
-
-CREATE TABLE system_business_area (
-    businessAreaID SERIAL PRIMARY KEY,
-    "name" VARCHAR NOT NULL CONSTRAINT unique_area_name UNIQUE
-);
-
-CREATE TABLE system_topic (
-    topicID SERIAL PRIMARY KEY,
-    "name" VARCHAR NOT NULL CONSTRAINT unique_topic UNIQUE
-);
-
-CREATE TABLE system_skill (
-    skillID SERIAL PRIMARY KEY,
-    "name" VARCHAR NOT NULL CONSTRAINT unique_skill UNIQUE
-);
 
 CREATE TABLE system_business_area (
     businessAreaID SERIAL PRIMARY KEY,
@@ -122,6 +107,7 @@ CREATE TABLE message_email(
     messageID INTEGER REFERENCES "message"(messageID),
     "subject" VARCHAR NOT NULL,
     content VARCHAR NOT NULL
+);
 
 CREATE TABLE report (
     reportID SERIAL PRIMARY KEY,
@@ -138,8 +124,9 @@ CREATE TABLE workshop (
     "description" VARCHAR NOT NULL,
     startTime TIMESTAMP NOT NULL,
     endTime TIMESTAMP NOT NULL,
-    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('going-ahead', 'cancelled', 'running', 'completed'))
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('going-ahead', 'cancelled', 'running', 'completed')),
     "location" VARCHAR NOT NULL
+);
 
 CREATE TABLE user_workshop (
     menteeID INTEGER NOT NULL REFERENCES "user"(userID),
