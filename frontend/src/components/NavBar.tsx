@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 // import ClickAwayListener from '@mui/material/ClickAwayListener';
 import UserMenu from "./UserMenu";
+import { Popover } from "@mui/material";
 
 interface NavBarProps {
   firstName: string;
@@ -34,7 +35,18 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
 const NavBar: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
   const [menu, setMenu] = React.useState(false);
-  const [userMenu, setUserMenu] = React.useState(false);
+  const [userMenu, setUserMenu] = React.useState<HTMLDivElement | null>(null);
+
+  const userMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setUserMenu(event.currentTarget);
+  }
+
+  const userMenuClose = () => {
+    setUserMenu(null);
+  }
+
+  const userMenuOpen = Boolean(userMenu);
+  const userMenuID = userMenuOpen ? "simple-popover" : undefined;
 
   const mentors: string[] = ["Mentor 1", "Mentor 2", "Mentor 3", "Mentor 4"];
 
@@ -51,7 +63,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
 
   return (
     <div>
-      <UserMenu visible={userMenu} />
+      {/* <UserMenu visible={userMenu} /> */}
 
       <div className="text-cultured font-display select-none overflow-visible h-auto">
         {/* Blue main navbar */}
@@ -81,10 +93,10 @@ const NavBar: React.FC<NavBarProps> = (props) => {
               path="/workshops"
               activeStr={props.activeStr}
             />
-            {/* Profile picture */}
+            {/* Profile picture - display user menu on click */}
             <div
               className="m-auto mr-6 ml-4 rounded-full box-content cursor-pointer hover:border-imperialRed hover:border-2 hover:ml-[14px] hover:mr-[22px]"
-              onClick={() => setUserMenu(!userMenu)}
+              onClick={userMenuClick}
             >
               <Avatar
                 className="m-auto"
@@ -93,6 +105,25 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 sx={{ width: 50, height: 50 }}
               />
             </div>
+            <Popover
+                id={userMenuID}
+                open={userMenuOpen}
+                anchorEl={userMenu}
+                onClose={userMenuClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                anchorPosition={{ top: 50, left: 50 }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+              >
+                <UserMenu />
+                {/* <h1>The content of the Popover.</h1> */}
+
+              </Popover>
           </div>
         </div>
 
