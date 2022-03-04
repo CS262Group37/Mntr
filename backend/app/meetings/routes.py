@@ -97,11 +97,23 @@ class GetMeetings(AuthResource):
     roles = ['mentee', 'mentor']
 
     @meetings_api.doc(security='apiKey')
+    @meetings_api.expect(parsers.relationID_parser)
     def get(self):
-        return meetings.get_meetings(self.payload['userID'], self.payload['role'])
+        data = parsers.relationID_parser.parse_args()
+        return meetings.get_meetings(data['relationID'])
+
+class GetNextMeeting(AuthResource):
+    roles = ['mentee', 'mentor']
+
+    @meetings_api.doc(security='apiKey')
+    @meetings_api.expect(parsers.relationID_parser)
+    def get(self):
+        data = parsers.relationID_parser.parse_args()
+        return meetings.get_next_meeting(data['relationID'])
 
 meetings_api.add_resource(CreateMeeting, '/create-meeting')
 meetings_api.add_resource(CancelMeeting, '/cancel-meeting')
 meetings_api.add_resource(AcceptMeeting, '/accept-meeting')
 meetings_api.add_resource(GetMeetings, '/get-meetings')
+meetings_api.add_resource(GetNextMeeting, '/get-next-meeting')
 meetings_api.add_resource(CompleteMeeting, '/complete-meeting')

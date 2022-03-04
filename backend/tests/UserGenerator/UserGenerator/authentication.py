@@ -96,6 +96,7 @@ def random_login():
         table.add_row('Last Name', str(user_data[0]['lastname']))
         table.add_row('Email', str(user_data[0]['email']))
         table.add_row('Password', str(user_data[0]['password']))
+        table.add_row('Profile Picture', str(user_data[0]['profilepicture']))
 
         console.console.print(table, justify="center")
         console.console.line()

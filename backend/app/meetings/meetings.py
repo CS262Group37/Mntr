@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from operator import attrgetter
 from time import time
 
 from app.messages.messages import send_message, MeetingMessage
@@ -14,6 +15,13 @@ def str_to_datetime(str):
 
 # Create a new meeting
 def create_meeting(relationID, start_time, end_time, title, description):
+
+    if start_time >= end_time:
+        return (False, {'error': 'Meeting times are invalid'})
+    
+    # TODO: Add a way to check that the meeting time does not clash with an existing meeting for either
+    # user in the relation.
+
     conn = DatabaseConnection()
     # Check relationship exists and send request to mentor
     with conn:
@@ -120,15 +128,12 @@ def update_meetings():
     return True
 
 # Gets all meetings for a user, regardless of status
-def get_meetings(userID, role):
+def get_meetings(relationID):
     update_meetings()
 
-    if role == 'mentee':
-        sql = "SELECT * FROM meeting NATURAL JOIN relation WHERE menteeID = %s;"
-    else:
-        sql = "SELECT * FROM meeting NATURAL JOIN relation WHERE mentorID = %s;"
+    sql = 'SELECT * FROM meeting WHERE relationID = %s'
 
-    data = (userID,)
+    data = (relationID,)
     conn = DatabaseConnection(real_dict=True)
     with conn:
         result = conn.execute(sql, data)
@@ -141,6 +146,20 @@ def get_meetings(userID, role):
         row['endtime'] = row['endtime'].strftime('%d/%m/%y %H:%M')
     
     return result
+
+def get_next_meeting(relationID):
+    update_meetings()
+
+    meetings = get_meetings(relationID)
+    if meetings is None or not meetings:
+        return {'error': 'User does not have any upcoming meetings'}
+    
+    next_meeting = meetings.pop(0)
+    for meeting in meetings:
+        start_time = str_to_datetime(meeting['starttime'])
+        if start_time < str_to_datetime(next_meeting['starttime']):
+            next_meeting = meeting
+    return next_meeting
 
 # Mark meeting as completed and provide feedback
 def complete_meeting(userID, meetingID, feedback):

@@ -13,3 +13,6 @@ meetingID_parser.add_argument('meetingID', required=True, type=int)
 complete_meeting_parser = reqparse.RequestParser()
 complete_meeting_parser.add_argument('meetingID', required=True, type=int)
 complete_meeting_parser.add_argument('feedback', required=True, type=str)
+
+relationID_parser = reqparse.RequestParser()
+relationID_parser.add_argument('relationID', required=True, type=int)
