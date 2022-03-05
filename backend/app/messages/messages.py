@@ -38,28 +38,27 @@ def get_messages(userID):
 
 # Define message type models here
 class Message():
-    pass
+    def __init__(self, recipientID, senderID):
+        self.recipientID = recipientID
+        self.senderID = senderID
 
 class MeetingMessage(Message):
     # Message type can be: request, completed
     def __init__(self, recipientID, senderID, message_type, meetingID):
-        self.recipientID = recipientID
-        self.senderID = senderID
+        Message.__init__(self, recipientID, senderID)
         self.message_type = message_type
         self.meetingID = meetingID
 
 class Email(Message):
     def __init__(self, recipientID, senderID, subject, content):
-        self.recipientID = recipientID
-        self.senderID = senderID
+        Message.__init__(self, recipientID, senderID)
         self.subject = subject
         self.content = content
 
 class WorkshopInvite(Message):
     # Message type can be: request, completed
     def __init__(self, recipientID, senderID, content, workshopID = None):
-        self.recipientID = recipientID
-        self.senderID = senderID
+        Message.__init__(self, recipientID, senderID)
         self.content = content
         self.workshopID = workshopID
 
@@ -81,15 +80,19 @@ def send_message(message, custom_conn = None):
         # Add into main "message" table
         sql = 'INSERT INTO "message" (recipientID, senderID, messageType, sentTime) VALUES (%s, %s, %s, %s) RETURNING messageID'
         data = (message.recipientID, message.senderID, message_type, datetime.now())
-        messageID = conn.execute(sql, data)
+        [(messageID,)] = conn.execute(sql, data)
     
         if message_type == 'MeetingMessage':
             sql = 'INSERT INTO message_meeting (messageID, meetingMessageType, meetingID) VALUES (%s, %s, %s)'
-            data = (messageID[0][0], message.message_type, message.meetingID)
+            data = (messageID, message.message_type, message.meetingID)
             conn.execute(sql, data)
         elif message_type == 'Email':
             sql = 'INSERT INTO message_email (messageID, "subject", content) VALUES (%s, %s, %s)'
-            data = (messageID[0][0], message.subject, message.content)
+            data = (messageID, message.subject, message.content)
+            conn.execute(sql, data)
+        elif message_type == 'WorkshopInvite':
+            sql = 'INSERT INTO message_workshop_invite (messageID, content, workshopID) VALUES (%s, %s)'
+            data = (messageID, message.content, message.workshopID)
             conn.execute(sql, data)
     
     # If a connection has not been provided use our own

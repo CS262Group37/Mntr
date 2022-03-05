@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS message_meeting CASCADE;
 DROP TABLE IF EXISTS message_email CASCADE;
 DROP TABLE IF EXISTS milestone CASCADE;
 DROP TABLE IF EXISTS workshop CASCADE;
-DROP TABLE IF EXISTS workshop_invitiation CASCADE;
+DROP TABLE IF EXISTS message_workshop_invite CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
 DROP TABLE IF EXISTS workshop_demand CASCADE;
 
@@ -133,8 +133,9 @@ CREATE TABLE user_workshop (
     workshopID INTEGER NOT NULL REFERENCES workshop
 );
 
-CREATE TABLE workshop_invitiation (
+CREATE TABLE message_workshop_invite (
     messageID INTEGER NOT NULL REFERENCES "message"(messageID),
+    content VARCHAR NOT NULL,
     workshopID INTEGER NOT NULL REFERENCES workshop
 );
 
