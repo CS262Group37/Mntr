@@ -120,14 +120,12 @@ const Meeting: React.FC<MeetingProps> = (props) => {
 };
 
 function DashboardMentee() {
-  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
   const [currentMentor, setCurrentMentor] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
   const [mentors, setMentors] = React.useState<UserData[]>([]);
 
+  // Get mentee-mentor relations and mentors' data
   useEffect(() => {
     axios.get("/api/relations/get-relations").then((res) => {
-      console.log(res.data);
-      // const newMentors = res.data.map((relation: any) => {
       const newMentors: UserData[] = [];
 
       for (let i = 0; i < res.data.length; i++) {
@@ -144,31 +142,15 @@ function DashboardMentee() {
             role: res.data.role,
             businessArea: res.data.businessarea,
           }
-          console.log(newMentor);
-          // return newMentor;
+
           newMentors.push(newMentor);
           setMentors(newMentors);
-          console.log(newMentors);
         });
       };
 
       setCurrentMentor(mentors[0]);
     });
   }, []);
-
-  useEffect(() => {
-    axios.get("/api/users/get-own-data").then((res) => {
-      const newUser: UserData = {
-        email: res.data.email,
-        firstName: res.data.firstname,
-        lastName: res.data.lastname,
-        avatar: res.data.profilepicture,
-        role: res.data.role,
-        businessArea: res.data.businessarea,
-      }
-      setUser(newUser);
-    });
-  });
 
   const dummyDate1 = new Date("2022-02-04");
   const dummyDate2 = new Date("2022-01-27");
@@ -183,8 +165,6 @@ function DashboardMentee() {
 
   const dummyAvatarMentor =
     "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
-  const dummyAvatarUser =
-    "https://images.unsplash.com/photo-1597586124394-fbd6ef244026?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80";
 
   const mentorData: MentorObject = {
     firstName: "John",
@@ -194,20 +174,11 @@ function DashboardMentee() {
     nextMeeting: new Date("2022-02-25"),
   };
 
-  const userData = {
-    firstName: "Jane",
-    lastName: "Bruh",
-    avatar: dummyAvatarUser,
-  };
-
   return (
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="My mentors"
-        firstName={user.firstName}
-        lastName={user.lastName}
-        avatar={user.avatar}
-        // mentors={mentors}
+        mentors={mentors}
       />
 
       {/* Main flexbox */}

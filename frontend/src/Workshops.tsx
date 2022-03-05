@@ -6,22 +6,11 @@ import NavBar from "./components/NavBar";
 import PlanOfAction from "./components/PlanOfAction";
 
 function Workshops() {
-  const dummyAvatarUser =
-    "https://images.unsplash.com/photo-1597586124394-fbd6ef244026?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80";
-
-  const userData = {
-    firstName: "Jane",
-    lastName: "Bruh",
-    avatar: dummyAvatarUser,
-  };
-
   return(
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="Workshops"
-        firstName={userData.firstName}
-        lastName={userData.lastName}
-        avatar={userData.avatar}
+        mentors={[]}
       />
 
       {/* Main flexbox */}

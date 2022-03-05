@@ -1,54 +1,88 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import NavBar from "./components/NavBar";
-import PlanOfAction from "./components/PlanOfAction";
+
+interface UserData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  role: string;
+  businessArea: string;
+  topic?: string[];
+}
+
+interface CardProps {
+  mentorData: UserData;
+}
+
+const MentorCard: React.FC<CardProps> = (props) => {
+  const mentor = props.mentorData;
+
+  return (
+    <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-auto mt-5 mb-5 w-[70%] text-prussianBlue p-6 rounded-xl text-left">
+      <h1>{mentor.firstName + " " + mentor.lastName}</h1>
+    </div>
+  );
+};
 
 function BrowseMentors() {
-  const dummyAvatarUser =
-    "https://images.unsplash.com/photo-1597586124394-fbd6ef244026?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80";
+  const [mentors, setMentors] = React.useState<UserData[]>([]);
 
-  const userData = {
-    firstName: "Jane",
-    lastName: "Bruh",
-    avatar: dummyAvatarUser,
-  };
-  
-  return(
+  // Get recommended mentors
+  useEffect(() => {
+    axios.get("/api/matching/relation-recommendations").then((res) => {
+      const newMentors: any[] = [];
+
+      // Sort by compatibility
+      res.data.sort((e1: any, e2: any) => {
+        return e2.compatibility - e1.compatibility;
+      });
+
+      console.log(res.data);
+
+      // Get user data for all mentors
+      for (let i = 0; i < res.data.length; i++) {
+        const element = res.data[i];
+
+        const mentorID: number = element.userID;
+
+        newMentors.push(
+          axios
+            .post("/api/users/get-user-data", { userID: mentorID })
+            .then((res) => {
+              return {
+                email: res.data.email,
+                firstName: res.data.firstname,
+                lastName: res.data.lastname,
+                avatar: res.data.profilepicture,
+                role: res.data.role,
+                businessArea: res.data.businessarea,
+              };
+            })
+        );
+      }
+      Promise.all(newMentors).then((res: UserData[]) => {
+        setMentors(res);
+      });
+    });
+  }, []);
+
+  return (
     <div className="fixed h-full w-full">
-      <NavBar
-        activeStr="Browse mentors"
-        firstName={userData.firstName}
-        lastName={userData.lastName}
-        avatar={userData.avatar}
-      />
+      <NavBar activeStr="Browse mentors" mentors={[]} />
 
       {/* Main flexbox */}
-      <div className="flex flex-row items-stretch h-full font-display">
-        {/* White half */}
-        <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
-          {/* Main center flexbox */}
-          <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
-            <h2 className="text-4xl pt-[10%]">
-              Welcome to{" "}
-              <span className="font-bold text-firebrick">Mntr</span>
-            </h2>
-            <p className="text-2xl">
-              Here's where you can learn a new skill or share your knowledge
-            </p>
-
-            {/* Registration link */}
-            <p className="text-2xl m-auto pt-[10%]">
-              Don't have an account yet?{" "}
-              <span className="font-bold underline text-imperialRed">
-                <Link to="/register">Register now!</Link>
-              </span>
-            </p>
-          </div>
-        </div>
-
-        <PlanOfAction />
+      <div className="h-full w-full font-display bg-cultured overflow-auto p-6 flex flex-col pb-40">
+        {/* <div className="h-full w-full p-6 flex flex-col overflow-auto"> */}
+        {mentors.map((mentor) => {
+          console.log(mentors);
+          console.log("bruh");
+          return <MentorCard mentorData={mentor} />;
+        })}
+        {/* </div> */}
       </div>
     </div>
   );

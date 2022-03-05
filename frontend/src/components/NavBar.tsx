@@ -16,11 +16,11 @@ interface UserData {
 }
 
 interface NavBarProps {
-  firstName: string;
-  lastName: string;
-  avatar: string;
+  // firstName: string;
+  // lastName: string;
+  // avatar: string;
   activeStr: string;
-  // mentors: UserData[];
+  mentors: UserData[];
 }
 interface LinkProps {
   text: string;
@@ -44,41 +44,22 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
 
 const NavBar: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
-  const [menu, setMenu] = React.useState(false);
+  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
+  const [menu, setMenu] = React.useState<boolean>(false);
   const [userMenu, setUserMenu] = React.useState<HTMLDivElement | null>(null);
 
-  const [currentMentor, setCurrentMentor] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
-  const [mentors, setMentors] = React.useState<UserData[]>([]);
-
+  // Get user data
   useEffect(() => {
-    axios.get("/api/relations/get-relations").then((res) => {
-      console.log(res.data);
-      // const newMentors = res.data.map((relation: any) => {
-      const newMentors: UserData[] = [];
-
-      for (let i = 0; i < res.data.length; i++) {
-        const element = res.data[i];
-        
-        const mentorID: number = element.mentorid;
-      
-        axios.post("/api/users/get-user-data", {userID: mentorID}).then((res) => {
-          const newMentor: UserData = {
-            email: res.data.email,
-            firstName: res.data.firstname,
-            lastName: res.data.lastname,
-            avatar: res.data.profilepicture,
-            role: res.data.role,
-            businessArea: res.data.businessarea,
-          }
-          console.log(newMentor);
-          // return newMentor;
-          newMentors.push(newMentor);
-          setMentors(newMentors);
-          console.log(newMentors);
-        });
-
-      };
-
+    axios.get("/api/users/get-own-data").then((res) => {
+      const newUser: UserData = {
+        email: res.data.email,
+        firstName: res.data.firstname,
+        lastName: res.data.lastname,
+        avatar: res.data.profilepicture,
+        role: res.data.role,
+        businessArea: res.data.businessarea,
+      }
+      setUser(newUser);
     });
   }, []);
 
@@ -92,8 +73,6 @@ const NavBar: React.FC<NavBarProps> = (props) => {
 
   const userMenuOpen = Boolean(userMenu);
   const userMenuID = userMenuOpen ? "simple-popover" : undefined;
-
-  // const mentors: string[] = ["Mentor 1", "Mentor 2", "Mentor 3", "Mentor 4"];
 
   // Renders the dropdown menu button in the page title
   const renderButton = (menu: boolean) => {
@@ -145,8 +124,8 @@ const NavBar: React.FC<NavBarProps> = (props) => {
             >
               <Avatar
                 className="m-auto"
-                alt={props.firstName + " " + props.lastName}
-                src={props.avatar}
+                alt={user.firstName + " " + user.lastName}
+                src={user.avatar}
                 sx={{ width: 50, height: 50 }}
               />
             </div>
@@ -164,7 +143,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 horizontal: "right",
               }}
             >
-              <UserMenu firstName={props.firstName} lastName={props.lastName} />
+              <UserMenu firstName={user.firstName} lastName={user.lastName} />
             </Popover>
           </div>
         </div>
@@ -185,9 +164,9 @@ const NavBar: React.FC<NavBarProps> = (props) => {
             (menu ? "visible" : "hidden")
           }
         >
-          {/* // TODO animate + implement functionality */}
+
           {props.activeStr === "My mentors" &&
-            mentors.map((mentor) => {
+            props.mentors.map((mentor) => {
               return (
                 <Link
                   to="/dashboard-mentee"
