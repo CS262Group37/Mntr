@@ -3,7 +3,8 @@ import "./App.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import NavBar from "./components/NavBar";
-import { Avatar } from "@mui/material";
+import { Avatar, Rating, Typography } from "@mui/material";
+import { BiEnvelope } from "react-icons/bi";
 
 interface UserData {
   email: string;
@@ -28,30 +29,55 @@ interface CardProps {
 const MentorCard: React.FC<CardProps> = (props) => {
   const mentor = props.mentorData;
 
+  // TODO schedule a meeting function
+  const connectMentor = () => {
+    return;
+  };
+
   return (
-    <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-auto mt-5 mb-5 w-[70%] text-prussianBlue p-6 rounded-xl text-left">
-      <div className="flex">
+    <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-auto mt-5 mb-5 w-[70%] text-prussianBlue p-8 rounded-xl text-left">
+      <div className="flex flex-row mb-6 justify-between">
         <Avatar
-          className="m-auto"
+          className="m-2"
           alt={mentor.firstName + " " + mentor.lastName}
           src={mentor.avatar}
-          sx={{ width: 80, height: 80 }}
+          sx={{ width: 130, height: 130 }}
         />
-        {/* Mentor name & topic */}
-        <div className="flex flex-col text-left m-auto pl-4 space-y-1">
-          <h2 className="font-semibold text-3xl">
+        {/* Mentor name & topics */}
+        <div className="flex flex-col text-left m-auto mr-0 ml-0 pl-4 space-y-1">
+          <h2 className="font-semibold hover:font-bold text-3xl">
             {mentor.firstName + " " + mentor.lastName}
           </h2>
-          <h3 className="text-xl">{mentor.topics}</h3>
-          {mentor.ratings?.map((rating) => {
-            return (
-              <div>
-                <h1>{rating.skill}</h1>
-                <h1>{rating.rating}</h1>
-              </div>
-            );
-          })}
+
+          {/* Topics */}
+          <p className="text-xl">
+            {mentor.topics?.map((topic, i, { length }) => {
+              if (i === length - 1) {
+                return <span>{topic}</span>;
+              } else return <span>{topic + ", "}</span>;
+            })}
+          </p>
+          <p>{mentor.businessArea}</p>
         </div>
+
+        <button
+          className="bg-firebrick text-cultured text-xl min-w-80 p-4 m-auto mr-2 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
+          onClick={connectMentor}
+        >
+          <BiEnvelope className="h-12 w-12 p-2" />
+        </button>
+      </div>
+
+      {/* Ratings */}
+      <div className="flex flex-row justify-evenly overflow-clip flex-wrap">
+        {mentor.ratings?.map((rating) => {
+          return (
+            <div className="p-1">
+              <Typography component="legend">{rating.skill}</Typography>
+              <Rating name="read-only" value={rating.rating} readOnly />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -109,21 +135,15 @@ function BrowseMentors() {
         await axios
           .post("/api/users/get-user-ratings", { userID: mentorID })
           .then((res) => {
-            // const arr: string[] = [];
-            // res.data.map((t: any) => {
-            //   arr.push(t.topic);
-            // })
-            console.log(res.data);
-
             newRatings.push(res.data);
           });
       }
 
-      var test: UserData[] = [];
+      var newMentorsAll: UserData[] = [];
       for (let i = 0; i < newMentors.length; i++) {
         const element = newMentors[i];
 
-        test.push({
+        newMentorsAll.push({
           email: element.email,
           firstName: element.firstName,
           lastName: element.lastName,
@@ -135,7 +155,7 @@ function BrowseMentors() {
         });
       }
 
-      setMentors(test);
+      setMentors(newMentorsAll);
     });
   }, []);
 
