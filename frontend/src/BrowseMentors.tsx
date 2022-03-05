@@ -3,6 +3,7 @@ import "./App.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import NavBar from "./components/NavBar";
+import { Avatar } from "@mui/material";
 
 interface UserData {
   email: string;
@@ -23,18 +24,36 @@ const MentorCard: React.FC<CardProps> = (props) => {
 
   return (
     <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-auto mt-5 mb-5 w-[70%] text-prussianBlue p-6 rounded-xl text-left">
-      <h1>{mentor.firstName + " " + mentor.lastName}</h1>
+      {/* <h1>{mentor.firstName + " " + mentor.lastName}</h1> */}
+      <div className="flex">
+        <Avatar
+          className="m-auto"
+          alt={mentor.firstName + " " + mentor.lastName}
+          src={mentor.avatar}
+          sx={{ width: 80, height: 80 }}
+        />
+        {/* Mentor name & topic */}
+        <div className="flex flex-col text-left m-auto pl-4 space-y-1">
+          <h2 className="font-semibold text-3xl">
+            {mentor.firstName + " " + mentor.lastName}
+          </h2>
+          <h3 className="text-xl">{mentor.topic}</h3>
+        </div>
+      </div>
     </div>
   );
 };
 
 function BrowseMentors() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
+  const [topics, setTopics] = React.useState<string[][]>([]);
+  const [ratings, setRatings] = React.useState<UserData[]>([]);
 
   // Get recommended mentors
   useEffect(() => {
-    axios.get("/api/matching/relation-recommendations").then((res) => {
-      const newMentors: any[] = [];
+    axios.get("/api/matching/relation-recommendations").then(async (res) => {
+      var newMentors: UserData[] = [];
+      var newTopics: string[][] = [];
 
       // Sort by compatibility
       res.data.sort((e1: any, e2: any) => {
@@ -49,24 +68,51 @@ function BrowseMentors() {
 
         const mentorID: number = element.userID;
 
-        newMentors.push(
-          axios
-            .post("/api/users/get-user-data", { userID: mentorID })
-            .then((res) => {
-              return {
-                email: res.data.email,
-                firstName: res.data.firstname,
-                lastName: res.data.lastname,
-                avatar: res.data.profilepicture,
-                role: res.data.role,
-                businessArea: res.data.businessarea,
-              };
+        
+        await axios
+          .post("/api/users/get-user-data", { userID: mentorID })
+          .then((res) => {
+            newMentors.push({
+              email: res.data.email,
+              firstName: res.data.firstname,
+              lastName: res.data.lastname,
+              avatar: res.data.profilepicture,
+              role: res.data.role,
+              businessArea: res.data.businessarea,
+            });
+          });
+
+        await axios
+          .post("/api/users/get-user-topics", { userID: mentorID })
+          .then((res) => {
+            const arr: string[] = [];
+            res.data.map((t: any) => {
+              arr.push(t.topic);
             })
-        );
+            console.log(arr);
+            newTopics.push(arr);
+          });
       }
-      Promise.all(newMentors).then((res: UserData[]) => {
-        setMentors(res);
-      });
+
+      var test:UserData[] = [];
+      for (let i = 0; i < newMentors.length; i++) {
+        const element = newMentors[i];
+        console.log(element);
+        console.log(newTopics[i]);
+        
+        test.push({
+          email: element.email,
+          firstName: element.firstName,
+          lastName: element.lastName,
+          avatar: element.avatar,
+          role: element.role,
+          businessArea: element.businessArea,
+          topic: newTopics[i],
+        })        
+      }
+
+      setMentors(test);
+      console.log(mentors);
     });
   }, []);
 
@@ -76,13 +122,9 @@ function BrowseMentors() {
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display bg-cultured overflow-auto p-6 flex flex-col pb-40">
-        {/* <div className="h-full w-full p-6 flex flex-col overflow-auto"> */}
         {mentors.map((mentor) => {
-          console.log(mentors);
-          console.log("bruh");
           return <MentorCard mentorData={mentor} />;
         })}
-        {/* </div> */}
       </div>
     </div>
   );
