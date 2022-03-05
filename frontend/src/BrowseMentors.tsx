@@ -12,7 +12,13 @@ interface UserData {
   avatar: string;
   role: string;
   businessArea: string;
-  topic?: string[];
+  topics?: string[];
+  ratings?: Rating[];
+}
+
+interface Rating {
+  skill: string;
+  rating: number;
 }
 
 interface CardProps {
@@ -24,7 +30,6 @@ const MentorCard: React.FC<CardProps> = (props) => {
 
   return (
     <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-auto mt-5 mb-5 w-[70%] text-prussianBlue p-6 rounded-xl text-left">
-      {/* <h1>{mentor.firstName + " " + mentor.lastName}</h1> */}
       <div className="flex">
         <Avatar
           className="m-auto"
@@ -37,7 +42,15 @@ const MentorCard: React.FC<CardProps> = (props) => {
           <h2 className="font-semibold text-3xl">
             {mentor.firstName + " " + mentor.lastName}
           </h2>
-          <h3 className="text-xl">{mentor.topic}</h3>
+          <h3 className="text-xl">{mentor.topics}</h3>
+          {mentor.ratings?.map((rating) => {
+            return (
+              <div>
+                <h1>{rating.skill}</h1>
+                <h1>{rating.rating}</h1>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -46,16 +59,15 @@ const MentorCard: React.FC<CardProps> = (props) => {
 
 function BrowseMentors() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
-  const [topics, setTopics] = React.useState<string[][]>([]);
-  const [ratings, setRatings] = React.useState<UserData[]>([]);
 
   // Get recommended mentors
   useEffect(() => {
     axios.get("/api/matching/relation-recommendations").then(async (res) => {
       var newMentors: UserData[] = [];
       var newTopics: string[][] = [];
+      var newRatings: Rating[][] = [];
 
-      // Sort by compatibility
+      // Sort recommended mentors by compatibility
       res.data.sort((e1: any, e2: any) => {
         return e2.compatibility - e1.compatibility;
       });
@@ -68,7 +80,7 @@ function BrowseMentors() {
 
         const mentorID: number = element.userID;
 
-        
+        // Get mentor data
         await axios
           .post("/api/users/get-user-data", { userID: mentorID })
           .then((res) => {
@@ -82,24 +94,35 @@ function BrowseMentors() {
             });
           });
 
+        // Get topics
         await axios
           .post("/api/users/get-user-topics", { userID: mentorID })
           .then((res) => {
             const arr: string[] = [];
             res.data.map((t: any) => {
               arr.push(t.topic);
-            })
-            console.log(arr);
+            });
             newTopics.push(arr);
+          });
+
+        // Get ratings
+        await axios
+          .post("/api/users/get-user-ratings", { userID: mentorID })
+          .then((res) => {
+            // const arr: string[] = [];
+            // res.data.map((t: any) => {
+            //   arr.push(t.topic);
+            // })
+            console.log(res.data);
+
+            newRatings.push(res.data);
           });
       }
 
-      var test:UserData[] = [];
+      var test: UserData[] = [];
       for (let i = 0; i < newMentors.length; i++) {
         const element = newMentors[i];
-        console.log(element);
-        console.log(newTopics[i]);
-        
+
         test.push({
           email: element.email,
           firstName: element.firstName,
@@ -107,12 +130,12 @@ function BrowseMentors() {
           avatar: element.avatar,
           role: element.role,
           businessArea: element.businessArea,
-          topic: newTopics[i],
-        })        
+          topics: newTopics[i],
+          ratings: newRatings[i],
+        });
       }
 
       setMentors(test);
-      console.log(mentors);
     });
   }, []);
 

@@ -148,7 +148,7 @@ function DashboardMentee() {
         });
       };
 
-      setCurrentMentor(mentors[0]);
+      // setCurrentMentor(mentors[0]);
     });
   }, []);
 
