@@ -98,8 +98,6 @@ function BrowseMentors() {
         return e2.compatibility - e1.compatibility;
       });
 
-      console.log(res.data);
-
       // Get user data for all mentors
       for (let i = 0; i < res.data.length; i++) {
         const element = res.data[i];
