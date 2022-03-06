@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
   BiUserCircle,
   BiEnvelope,
@@ -64,6 +65,14 @@ const Event: React.FC<EventProps> = (props) => {
       </p>
     </div>
   );
+};
+
+const logout = async () => {
+  try {
+    axios.get("/api/auth/logout");
+  } catch (error: any) {
+    console.log(error.response);
+  }
 };
 
 const Message: React.FC<MessageProps> = (props) => {
@@ -162,11 +171,8 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           <h2>Settings</h2>
         </Link>
 
-        <Link
-          to="/"
-          className="flex flex-row hover:font-semibold pr-6 pl-6 pb-4 pt-4"
-        >
-          <h2>Log out</h2>
+        <Link to="/" className="flex flex-row hover:font-semibold pr-6 pl-6 pb-4 pt-4">
+          <span onClick={logout}>Log out</span>
           <BiLogOut className="text-2xl m-auto mr-0 ml-2" />
         </Link>
       </div>
