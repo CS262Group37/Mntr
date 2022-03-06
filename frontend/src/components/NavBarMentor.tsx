@@ -45,7 +45,7 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
 
 const NavBar: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
-  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
+  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
   const [menu, setMenu] = React.useState<boolean>(false);
   const [userMenu, setUserMenu] = React.useState<HTMLDivElement | null>(null);
 

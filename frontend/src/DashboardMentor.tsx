@@ -56,7 +56,7 @@ const MenteeDetails: React.FC<MenteeDetailsProps> = (props) => {
             className="m-auto"
             alt={props.firstName + " " + props.lastName}
             src={props.avatar}
-            sx={{ width: 80, height: 80 }}
+            sx={{ width: 100, height: 100 }}
           />
 
           {/* Mentor name & topic */}
@@ -64,7 +64,13 @@ const MenteeDetails: React.FC<MenteeDetailsProps> = (props) => {
             <h2 className="font-semibold text-3xl">
               {props.firstName + " " + props.lastName}
             </h2>
-            <h3 className="text-xl">{props.topics}</h3>
+            <h3 className="text-xl">
+              {props.topics.map((topic, i, { length }) => {
+                if (i === length - 1) {
+                  return <span>{topic}</span>;
+                } else return <span>{topic + ", "}</span>;
+              })}
+            </h3>
           </div>
         </div>
 
@@ -127,32 +133,59 @@ function DashboardMentor() {
 
   // Get mentee-mentor relations and mentees' data
   useEffect(() => {
-    axios.get("/api/relations/get-relations").then((res) => {
-      const newMentees: UserData[] = [];
+    axios.get("/api/relations/get-relations").then(async (res) => {
+      var newMentees: any = [];
+      var newTopics: string[][] = [];
 
       for (let i = 0; i < res.data.length; i++) {
         const element = res.data[i];
-        
         const menteeID: number = element.menteeid;
-      
-        axios.post("/api/users/get-user-data", {userID: menteeID}).then((res) => {
-          const newMentee: UserData = {
-            id: menteeID,
-            email: res.data.email,
-            firstName: res.data.firstname,
-            lastName: res.data.lastname,
-            avatar: res.data.profilepicture,
-            role: res.data.role,
-            businessArea: res.data.businessarea,
-          }
 
-          newMentees.push(newMentee);
-          setMentees(newMentees);
+        // Get mentee data
+        await axios
+          .post("/api/users/get-user-data", { userID: menteeID })
+          .then((res) => {
+            newMentees.push({
+              id: menteeID,
+              email: res.data.email,
+              firstName: res.data.firstname,
+              lastName: res.data.lastname,
+              avatar: res.data.profilepicture,
+              role: res.data.role,
+              businessArea: res.data.businessarea,
+            });
+          });
+
+        // Get topics
+        await axios
+          .post("/api/users/get-user-topics", { userID: menteeID })
+          .then((res) => {
+            const arr: string[] = [];
+            res.data.map((t: any) => {
+              arr.push(t.topic);
+            });
+
+            newTopics.push(arr);
+          });
+      }
+
+      var newMenteesAll: UserData[] = [];
+      for (let i = 0; i < newMentees.length; i++) {
+        const element = newMentees[i];
+
+        newMenteesAll.push({
+          id: element.id,
+          email: element.email,
+          firstName: element.firstName,
+          lastName: element.lastName,
+          avatar: element.avatar,
+          role: element.role,
+          businessArea: element.businessArea,
+          topics: newTopics[i],
         });
-      };
+      }
 
-      // setCurrentMentee(mentees[0]);
-      // console.log(currentMentee);
+      setMentees(newMenteesAll);
     });
   }, []);
 
@@ -179,16 +212,8 @@ function DashboardMentor() {
   for (let i = 0; i < mentees.length; i++) {
     if (currentMenteeId != null && mentees[i].id === parseInt(currentMenteeId)) {
       currentMentee = mentees[i];
-      console.log(currentMentee);
     }
   }
-
-  // currentMenteeId = (String) currentMenteeId
-  // for (let i = 0; i < mentees.length; i++) {
-  //   if (mentees[i].id === parseInt(currentMenteeId)) {
-  //     currentMentee = mentees[i];
-  //   }
-  // }
 
   return (
     <div className="fixed h-full w-full">

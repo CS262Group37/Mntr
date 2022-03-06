@@ -44,7 +44,7 @@ const MentorCard: React.FC<CardProps> = (props) => {
           sx={{ width: 130, height: 130 }}
         />
         {/* Mentor name & topics */}
-        <div className="flex flex-col text-left m-auto mr-0 ml-0 pl-4 space-y-1">
+        <div className="flex flex-col text-left m-auto ml-0 pl-4 space-y-1">
           <h2 className="font-semibold hover:font-bold text-3xl">
             {mentor.firstName + " " + mentor.lastName}
           </h2>
@@ -61,7 +61,7 @@ const MentorCard: React.FC<CardProps> = (props) => {
         </div>
 
         <button
-          className="bg-firebrick text-cultured text-xl min-w-80 p-4 m-auto mr-2 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
+          className="bg-firebrick text-cultured text-xl min-w-80 p-4 m-auto mt-2 mr-2 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
           onClick={connectMentor}
         >
           <BiEnvelope className="h-12 w-12 p-2" />
@@ -133,6 +133,11 @@ function BrowseMentors() {
         await axios
           .post("/api/users/get-user-ratings", { userID: mentorID })
           .then((res) => {
+            // Sort alphabetically by skill
+            res.data.sort((e1: any, e2: any) => {
+              return e2.skill < e1.skill;
+            });
+
             newRatings.push(res.data);
           });
       }
