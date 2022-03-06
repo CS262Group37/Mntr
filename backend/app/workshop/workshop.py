@@ -9,22 +9,11 @@ demand_threshold = 5
 
 # Function to insert workshop details into database 
 def create_workshop(mentorID, title, topic, desc, time, duration, location):
-
-    sql = 'INSERT INTO workshop (topic, mentorID, title, "description", "time", duration, "location") VALUES (%s, %s, %s, %s, %s,%s,%s) RETURNING workshopID;'
+    sql = 'INSERT INTO workshop (topic, mentorID, title, "description", "time", duration, "location",status) VALUES (%s, %s, %s, %s, %s,%s,%s,\'going-ahead\') RETURNING workshopID;'
     data = (topic, mentorID, title, desc, time, duration, location,)
     conn = DatabaseConnection()
     with conn:
         [(workshopID,)] = conn.execute(sql, data)
-
-        # Reset demand
-        sql = 'UPDATE workshop_demand SET demand = 0 WHERE topic = %s'
-        data = (topic,)
-        conn.execute(sql, data)
-
-        # Update status
-        sql = 'UPDATE workshop SET status = \'going-ahead\' WHERE workshopID = %s'
-        data = (workshopID,)
-        conn.execute(sql, data)
 
     if conn.error:
         return (False, {'message': 'Failed creating workshop', 'error': conn.error_message})
@@ -99,12 +88,19 @@ def update_workshop_status():
         for workshop in workshops:
             status = workshop['status']
             new_status = status
-            if current_time >= workshop['starttime'] and current_time <= workshop['endtime']:
-                new_status = 'running'
-            elif current_time > workshop['endtime']:
-                new_status = 'completed'
+            if status != 'cancelled':
+                if current_time >= workshop['starttime'] and current_time <= workshop['endtime']:
+                    new_status = 'running'
+                elif current_time > workshop['endtime']:
+                    new_status = 'completed'
             
             if status != new_status:
+                # Reset demand
+                topic = workshop['topic']
+                sql = 'UPDATE workshop_demand SET demand = 0 WHERE topic = %s'
+                data = (topic,)
+                conn.execute(sql, data)
+                
                 sql = 'UPDATE workshop SET status = %s WHERE workshopID = %s'
                 data = (new_status, workshop['workshopid'])
                 conn.execute(sql, data)
