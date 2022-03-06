@@ -61,12 +61,37 @@ function RegisterUser() {
           .then((res: any) => {
             console.log(res);
           });
+          break;
+
+      case "mentor":
+        axios
+          .post("/api/auth/register-user", {
+            role: "mentor",
+            businessArea: area,
+            topics: selectedTopics,
+          })
+          .then((res: any) => {
+            console.log(res);
+          });
+          break;
+
+      case "mentee":
+        axios
+          .post("/api/auth/register-user", {
+            role: "mentee",
+            businessArea: area,
+            topics: selectedTopics,
+            skills: skills.map((skill) => skill.name),
+            ratings: skills.map((skill) => skill.rating)
+          })
+          .then((res: any) => {
+            console.log(res);
+          });
+          break;
     }
   };
 
   const updateRating = (value: number, index: number) => {
-    console.log(skills);
-    console.log(value, index);
     const newSkills = [...skills];
     newSkills[index] = { name: skills[index].name, rating: value };
     setSkills(newSkills);
@@ -163,6 +188,8 @@ function RegisterUser() {
           <input
             key={index}
             type="number"
+            min={0}
+            max={10}
             value={skill.rating}
             onChange={(e: any) => {
               updateRating(e.target.value, index);
