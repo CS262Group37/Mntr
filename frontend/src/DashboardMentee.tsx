@@ -5,22 +5,24 @@ import NavBar from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
 import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
 import { Avatar } from "@mui/material";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface UserData {
+  id?: number;
   email: string;
   firstName: string;
   lastName: string;
   avatar: string;
   role: string;
   businessArea: string;
-  topic?: string[];
+  topics: string[];
 }
 
-interface MentorObject {
+interface MentorDetailsProps {
   firstName: string;
   lastName: string;
   avatar: string;
-  topic: string;
+  topics: string[];
   nextMeeting: Date;
 }
 
@@ -30,7 +32,7 @@ interface MeetingProps {
 }
 
 // Mentor details component
-const MentorDetails: React.FC<MentorObject> = (props) => {
+const MentorDetails: React.FC<MentorDetailsProps> = (props) => {
   // TODO schedule a meeting function
   const schedule = () => {
     return;
@@ -59,7 +61,7 @@ const MentorDetails: React.FC<MentorObject> = (props) => {
             className="m-auto"
             alt={props.firstName + " " + props.lastName}
             src={props.avatar}
-            sx={{ width: 80, height: 80 }}
+            sx={{ width: 100, height: 100 }}
           />
 
           {/* Mentor name & topic */}
@@ -67,26 +69,40 @@ const MentorDetails: React.FC<MentorObject> = (props) => {
             <h2 className="font-semibold text-3xl">
               {props.firstName + " " + props.lastName}
             </h2>
-            <h3 className="text-xl">{props.topic}</h3>
+            <h3 className="text-xl">
+              {props.topics.map((topic, i, { length }) => {
+                if (i === length - 1) {
+                  return <span>{topic}</span>;
+                } else return <span>{topic + ", "}</span>;
+              })}
+            </h3>
           </div>
         </div>
 
         {/* Schedule meeting button */}
-        <button
-          className="bg-prussianBlue text-cultured text-xl w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-2"
+        {/* <button
+          className="bg-prussianBlue text-cultured text-xl min-w-100 w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-2"
           onClick={schedule}
         >
           Schedule a meeting
-        </button>
+        </button> */}
       </div>
 
       {/* Next meeting date */}
-      <div className="flex flex-row text-lg font-body m-5">
+      <div className="flex flex-row text-lg font-body m-5 mr-2">
         <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
         <p className="mt-auto mb-auto text-left">
           Your next meeting with {props.firstName} is on{" "}
           <span className="font-bold">{date}</span>
         </p>
+
+        {/* Schedule meeting button */}
+        <button
+          className="bg-prussianBlue font-display text-cultured text-xl min-w-100 w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
+          onClick={schedule}
+        >
+          Schedule a meeting
+        </button>
       </div>
     </div>
   );
@@ -119,36 +135,101 @@ const Meeting: React.FC<MeetingProps> = (props) => {
   );
 };
 
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
 function DashboardMentee() {
-  const [currentMentor, setCurrentMentor] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
+  // const [currentMentor, setCurrentMentor] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
   const [mentors, setMentors] = React.useState<UserData[]>([]);
 
   // Get mentee-mentor relations and mentors' data
+  // useEffect(() => {
+  //   axios.get("/api/relations/get-relations").then((res) => {
+  //     const newMentors: UserData[] = [];
+
+  //     for (let i = 0; i < res.data.length; i++) {
+  //       const element = res.data[i];
+        
+  //       const mentorID: number = element.mentorid;
+      
+  //       axios.post("/api/users/get-user-data", {userID: mentorID}).then((res) => {
+  //         const newMentor: UserData = {
+  //           id: mentorID,
+  //           email: res.data.email,
+  //           firstName: res.data.firstname,
+  //           lastName: res.data.lastname,
+  //           avatar: res.data.profilepicture,
+  //           role: res.data.role,
+  //           businessArea: res.data.businessarea,
+  //         }
+
+  //         newMentors.push(newMentor);
+  //         setMentors(newMentors);
+  //       });
+  //     };
+
+  //     // setCurrentMentor(mentors[0]);
+  //   });
+  // }, []);
+
+  // Get mentee-mentor relations and mentees' data
   useEffect(() => {
-    axios.get("/api/relations/get-relations").then((res) => {
-      const newMentors: UserData[] = [];
+    axios.get("/api/relations/get-relations").then(async (res) => {
+      var newMentors: any = [];
+      var newTopics: string[][] = [];
 
       for (let i = 0; i < res.data.length; i++) {
         const element = res.data[i];
-        
         const mentorID: number = element.mentorid;
-      
-        axios.post("/api/users/get-user-data", {userID: mentorID}).then((res) => {
-          const newMentor: UserData = {
-            email: res.data.email,
-            firstName: res.data.firstname,
-            lastName: res.data.lastname,
-            avatar: res.data.profilepicture,
-            role: res.data.role,
-            businessArea: res.data.businessarea,
-          }
 
-          newMentors.push(newMentor);
-          setMentors(newMentors);
+        // Get mentor data
+        await axios
+          .post("/api/users/get-user-data", { userID: mentorID })
+          .then((res) => {
+            newMentors.push({
+              id: mentorID,
+              email: res.data.email,
+              firstName: res.data.firstname,
+              lastName: res.data.lastname,
+              avatar: res.data.profilepicture,
+              role: res.data.role,
+              businessArea: res.data.businessarea,
+            });
+          });
+
+        // Get topics
+        await axios
+          .post("/api/users/get-user-topics", { userID: mentorID })
+          .then((res) => {
+            const arr: string[] = [];
+            res.data.map((t: any) => {
+              arr.push(t.topic);
+            });
+
+            newTopics.push(arr);
+          });
+      }
+
+      var newMentorsAll: UserData[] = [];
+      for (let i = 0; i < newMentors.length; i++) {
+        const element = newMentors[i];
+
+        newMentorsAll.push({
+          id: element.id,
+          email: element.email,
+          firstName: element.firstName,
+          lastName: element.lastName,
+          avatar: element.avatar,
+          role: element.role,
+          businessArea: element.businessArea,
+          topics: newTopics[i],
         });
-      };
+      }
 
-      // setCurrentMentor(mentors[0]);
+      setMentors(newMentorsAll);
     });
   }, []);
 
@@ -163,16 +244,31 @@ function DashboardMentee() {
   const dummyText3 =
     "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?";
 
-  const dummyAvatarMentor =
-    "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
+  // const dummyAvatarMentor =
+  //   "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
 
-  const mentorData: MentorObject = {
-    firstName: "John",
-    lastName: "Doe",
-    topic: "Random topic",
-    avatar: dummyAvatarMentor,
-    nextMeeting: new Date("2022-02-25"),
-  };
+  // const mentorData: MentorObject = {
+  //   firstName: "John",
+  //   lastName: "Doe",
+  //   topic: "Random topic",
+  //   avatar: dummyAvatarMentor,
+  //   nextMeeting: new Date("2022-02-25"),
+  // };
+
+  // Read the query string to get the mentee to render
+  let query = useQuery();
+  const currentMentorId = query.get("mentor");
+  let currentMentor: UserData = {email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []};
+
+  if (mentors.length > 0 && currentMentorId == null) {
+    return <Navigate to={"/dashboard-mentee?mentor=" + mentors[0].id} />;
+  }
+
+  for (let i = 0; i < mentors.length; i++) {
+    if (currentMentorId != null && mentors[i].id === parseInt(currentMentorId)) {
+      currentMentor = mentors[i];
+    }
+  }
 
   return (
     <div className="fixed h-full w-full">
@@ -187,11 +283,11 @@ function DashboardMentee() {
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
             <MentorDetails
-              firstName={mentorData.firstName}
-              lastName={mentorData.lastName}
-              topic={mentorData.topic}
-              avatar={mentorData.avatar}
-              nextMeeting={mentorData.nextMeeting}
+              firstName={currentMentor.firstName}
+              lastName={currentMentor.lastName}
+              topics={currentMentor.topics}
+              avatar={currentMentor.avatar}
+              nextMeeting={new Date("2022-02-25")}
             />
 
             <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">

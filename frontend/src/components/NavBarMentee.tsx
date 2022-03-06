@@ -6,13 +6,14 @@ import { Avatar, Popover } from "@mui/material";
 import UserMenu from "./UserMenu";
 
 interface UserData {
+  id?: number;
   email: string;
   firstName: string;
   lastName: string;
   avatar: string;
   role: string;
   businessArea: string;
-  topic?: string[];
+  topics?: string[];
 }
 
 interface NavBarProps {
@@ -44,7 +45,7 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
 
 const NavBar: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
-  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
+  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
   const [menu, setMenu] = React.useState<boolean>(false);
   const [userMenu, setUserMenu] = React.useState<HTMLDivElement | null>(null);
 
@@ -168,12 +169,18 @@ const NavBar: React.FC<NavBarProps> = (props) => {
           {props.activeStr === "My mentors" &&
             props.mentors.map((mentor) => {
               return (
+                // <Link
+                //   to="/dashboard-mentee"
+                //   className="p-auto ml-8 mt-3 mb-3 hover:font-bold"
+                // >
+                //   {mentor.firstName + " " + mentor.lastName}
+                // </Link>
                 <Link
-                  to="/dashboard-mentee"
-                  className="p-auto ml-8 mt-3 mb-3 hover:font-bold"
-                >
-                  {mentor.firstName + " " + mentor.lastName}
-                </Link>
+                to={"/dashboard-mentee?mentor=" + mentor.id}
+                className="p-auto ml-8 mt-3 mb-3 hover:font-bold"
+              >
+                {mentor.firstName + " " + mentor.lastName}
+              </Link>
               );
             })}
         </div>
