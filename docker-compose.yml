@@ -13,6 +13,8 @@ services:
       - database
     env_file:
       - backend/.env
+    environment:
+      - DB_HOST=database
     ports:
       - "5000:5000"
   frontend:
