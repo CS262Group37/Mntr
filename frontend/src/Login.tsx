@@ -39,7 +39,7 @@ function Login() {
         <div className="bg-cultured h-full w-3/5 m-auto flex text-prussianBlue overflow-scroll overflow-x-auto">
           {/* Main center flexbox */}
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
-            <h2 className="text-4xl pt-[10%]">
+            <h2 className="text-4xl pt-[0%]">
               Welcome to <span className="font-bold text-firebrick">Mntr</span>
             </h2>
             <p className="text-2xl">
