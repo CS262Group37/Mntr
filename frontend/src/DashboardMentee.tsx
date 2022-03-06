@@ -5,7 +5,7 @@ import NavBar from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
 import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
 import { Avatar } from "@mui/material";
-import { Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 
 interface UserData {
   id?: number;
@@ -19,6 +19,7 @@ interface UserData {
 }
 
 interface MentorDetailsProps {
+  id: number;
   firstName: string;
   lastName: string;
   avatar: string;
@@ -66,9 +67,9 @@ const MentorDetails: React.FC<MentorDetailsProps> = (props) => {
 
           {/* Mentor name & topic */}
           <div className="flex flex-col text-left m-auto pl-4 space-y-1">
-            <h2 className="font-semibold text-3xl">
+            <Link to={"/profile?id=" + props.id} className="font-semibold text-3xl hover:font-bold">
               {props.firstName + " " + props.lastName}
-            </h2>
+            </Link>
             <h3 className="text-xl">
               {props.topics.map((topic, i, { length }) => {
                 if (i === length - 1) {
@@ -128,7 +129,7 @@ const Meeting: React.FC<MeetingProps> = (props) => {
       </div>
 
       {/* Mentor feedback */}
-      <div className="font-body text-lg text-justify m-3 mb-1">
+      <div className="font-body text-md text-justify m-3 mb-1">
         <p>{props.feedback}</p>
       </div>
     </div>
@@ -244,6 +245,7 @@ function DashboardMentee() {
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
             <MentorDetails
+              id={currentMentorIdNum}
               firstName={currentMentor.firstName}
               lastName={currentMentor.lastName}
               topics={currentMentor.topics}

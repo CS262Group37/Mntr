@@ -7,6 +7,7 @@ import { Avatar, Rating, Typography } from "@mui/material";
 import { BiEnvelope } from "react-icons/bi";
 
 interface UserData {
+  id: number;
   email: string;
   firstName: string;
   lastName: string;
@@ -29,7 +30,7 @@ interface CardProps {
 const MentorCard: React.FC<CardProps> = (props) => {
   const mentor = props.mentorData;
 
-  // TODO schedule a meeting function
+  // TODO connect to a mentor function
   const connectMentor = () => {
     return;
   };
@@ -45,9 +46,9 @@ const MentorCard: React.FC<CardProps> = (props) => {
         />
         {/* Mentor name & topics */}
         <div className="flex flex-col text-left m-auto ml-0 pl-4 space-y-1">
-          <h2 className="font-semibold hover:font-bold text-3xl">
+          <Link to={"/profile?id=" + mentor.id} className="font-semibold hover:font-bold text-3xl">
             {mentor.firstName + " " + mentor.lastName}
-          </h2>
+          </Link>
 
           {/* Topics */}
           <p className="text-xl">
@@ -109,6 +110,7 @@ function BrowseMentors() {
           .post("/api/users/get-user-data", { userID: mentorID })
           .then((res) => {
             newMentors.push({
+              id: mentorID,
               email: res.data.email,
               firstName: res.data.firstname,
               lastName: res.data.lastname,
@@ -147,6 +149,7 @@ function BrowseMentors() {
         const element = newMentors[i];
 
         newMentorsAll.push({
+          id: element.id,
           email: element.email,
           firstName: element.firstName,
           lastName: element.lastName,

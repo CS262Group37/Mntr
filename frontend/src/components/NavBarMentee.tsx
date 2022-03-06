@@ -54,6 +54,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   useEffect(() => {
     axios.get("/api/users/get-own-data").then((res) => {
       const newUser: UserData = {
+        id: res.data.userid,
         email: res.data.email,
         firstName: res.data.firstname,
         lastName: res.data.lastname,
@@ -145,7 +146,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 horizontal: "right",
               }}
             >
-              <UserMenu firstName={user.firstName} lastName={user.lastName} />
+              <UserMenu firstName={user.firstName} lastName={user.lastName} id={user.id} />
             </Popover>
           </div>
         </div>
