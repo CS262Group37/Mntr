@@ -8,11 +8,11 @@ RUN apt-get install -y python3 python3-pip libpq-dev
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create directory and copy files
+# Create directory
 WORKDIR /opt/mntr/backend
-COPY backend/ .
 
 # Install dependencies
+COPY backend/requirements.txt .
 RUN pip install -r requirements.txt
 
 # Expose port

@@ -4,7 +4,6 @@ services:
     image: postgres:latest
     env_file:
       - backend/.env
-    restart: always
     ports:
       - "5432:5432"
   backend:
@@ -14,12 +13,26 @@ services:
     env_file:
       - backend/.env
     environment:
+      - WAIT_HOSTS=database:5432
       - DB_HOST=database
     ports:
       - "5000:5000"
+    volumes:
+      - ./backend:/opt/mntr/backend
+    build:
+      context: .
+      dockerfile: ./backend/backend.dockerfile
   frontend:
     image: mntr-frontend:latest
     depends_on:
       - mntr-backend
+    environment:
+      - WAIT_HOSTS=backend:5000
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - 3000:3000
+    build:
+      context: .
+      dockerfile: ./frontend/frontend.dockerfile
+    volumes:
+    - ./frontend:/opt/mntr/frontend
