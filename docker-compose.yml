@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:latest
+    env_file:
+      - backend/.env
+    restart: always
+    ports:
+      - "5432:5432"
+  backend:
+    image: mntr-backend:latest
+    depends_on:
+      - database
+    env_file:
+      - backend/.env
+    ports:
+      - "5000:5000"
+  frontend:
+    image: mntr-frontend:latest
+    depends_on:
+      - mntr-backend
+    ports:
+      - 3000:3000
