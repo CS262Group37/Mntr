@@ -9,7 +9,7 @@ from rich.progress import Progress
 from rich.prompt import IntPrompt
 from rich.table import Table
 
-from . import authentication, database, admin, relations
+from . import authentication, database, admin, relations, meetings
 from .console import add_option, console, hostname
 from .fake_data import fake
 
@@ -130,7 +130,7 @@ def create_random_accounts_and_users(account_count = None):
         for i in range(account_count):
 
             # Create an account
-            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[0:10], fake.image_url(width=180, height=180)):
+            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[0:10], fake.image_url()):
 
                 created_accounts += 1
 
@@ -170,6 +170,10 @@ def load_preset():
     console.line()
     # Add relations
     relations.add_random_relations(preset['relations'])
+    console.line()
+    # Add meetings
+    meetings.create_random_meetings(preset['meetings'])
+
     
 
 def add_options():
