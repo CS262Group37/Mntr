@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
 import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
 import { Avatar } from "@mui/material";

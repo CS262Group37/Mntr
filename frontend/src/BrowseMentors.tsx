@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/NavBarMentee";
 import { Avatar, Rating, Typography } from "@mui/material";
 import { BiEnvelope } from "react-icons/bi";
 

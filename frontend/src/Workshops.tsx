@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
 
 function Workshops() {
