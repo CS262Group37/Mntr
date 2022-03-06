@@ -203,6 +203,7 @@ function DashboardMentor() {
   // Read the query string to get the mentee to render
   let query = useQuery();
   const currentMenteeId = query.get("mentee");
+  let currentMenteeIdNum: number = -1;
   let currentMentee: UserData = {email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []};
 
   if (mentees.length > 0 && currentMenteeId == null) {
@@ -211,6 +212,7 @@ function DashboardMentor() {
 
   for (let i = 0; i < mentees.length; i++) {
     if (currentMenteeId != null && mentees[i].id === parseInt(currentMenteeId)) {
+      currentMenteeIdNum = parseInt(currentMenteeId);
       currentMentee = mentees[i];
     }
   }
@@ -219,6 +221,7 @@ function DashboardMentor() {
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="My mentees"
+        activeMenteeId={currentMenteeIdNum}
         mentees={mentees}
       />
 

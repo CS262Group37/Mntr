@@ -10,7 +10,6 @@ function Workshops() {
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="Workshops"
-        mentors={[]}
       />
 
       {/* Main flexbox */}

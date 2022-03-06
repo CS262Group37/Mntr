@@ -21,7 +21,8 @@ interface NavBarProps {
   // lastName: string;
   // avatar: string;
   activeStr: string;
-  mentors: UserData[];
+  activeMentorId?: number;
+  mentors?: UserData[];
 }
 interface LinkProps {
   text: string;
@@ -167,20 +168,21 @@ const NavBar: React.FC<NavBarProps> = (props) => {
         >
 
           {props.activeStr === "My mentors" &&
-            props.mentors.map((mentor) => {
+            props.mentors?.map((mentor) => {
+              let css: string;
+              if (mentor.id === props.activeMentorId) {
+                css = "p-auto ml-8 mt-3 mb-3 font-bold"
+              } else {
+                css = "p-auto ml-8 mt-3 mb-3 hover:font-bold"
+              }
+
               return (
-                // <Link
-                //   to="/dashboard-mentee"
-                //   className="p-auto ml-8 mt-3 mb-3 hover:font-bold"
-                // >
-                //   {mentor.firstName + " " + mentor.lastName}
-                // </Link>
                 <Link
-                to={"/dashboard-mentee?mentor=" + mentor.id}
-                className="p-auto ml-8 mt-3 mb-3 hover:font-bold"
-              >
-                {mentor.firstName + " " + mentor.lastName}
-              </Link>
+                  to={"/dashboard-mentee?mentor=" + mentor.id}
+                  className={css}
+                >
+                  {mentor.firstName + " " + mentor.lastName}
+                </Link>
               );
             })}
         </div>

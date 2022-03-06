@@ -142,38 +142,7 @@ function useQuery() {
 }
 
 function DashboardMentee() {
-  // const [currentMentor, setCurrentMentor] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topic: []});
   const [mentors, setMentors] = React.useState<UserData[]>([]);
-
-  // Get mentee-mentor relations and mentors' data
-  // useEffect(() => {
-  //   axios.get("/api/relations/get-relations").then((res) => {
-  //     const newMentors: UserData[] = [];
-
-  //     for (let i = 0; i < res.data.length; i++) {
-  //       const element = res.data[i];
-        
-  //       const mentorID: number = element.mentorid;
-      
-  //       axios.post("/api/users/get-user-data", {userID: mentorID}).then((res) => {
-  //         const newMentor: UserData = {
-  //           id: mentorID,
-  //           email: res.data.email,
-  //           firstName: res.data.firstname,
-  //           lastName: res.data.lastname,
-  //           avatar: res.data.profilepicture,
-  //           role: res.data.role,
-  //           businessArea: res.data.businessarea,
-  //         }
-
-  //         newMentors.push(newMentor);
-  //         setMentors(newMentors);
-  //       });
-  //     };
-
-  //     // setCurrentMentor(mentors[0]);
-  //   });
-  // }, []);
 
   // Get mentee-mentor relations and mentees' data
   useEffect(() => {
@@ -244,20 +213,10 @@ function DashboardMentee() {
   const dummyText3 =
     "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?";
 
-  // const dummyAvatarMentor =
-  //   "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
-
-  // const mentorData: MentorObject = {
-  //   firstName: "John",
-  //   lastName: "Doe",
-  //   topic: "Random topic",
-  //   avatar: dummyAvatarMentor,
-  //   nextMeeting: new Date("2022-02-25"),
-  // };
-
   // Read the query string to get the mentee to render
   let query = useQuery();
   const currentMentorId = query.get("mentor");
+  let currentMentorIdNum: number = -1;
   let currentMentor: UserData = {email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []};
 
   if (mentors.length > 0 && currentMentorId == null) {
@@ -266,6 +225,7 @@ function DashboardMentee() {
 
   for (let i = 0; i < mentors.length; i++) {
     if (currentMentorId != null && mentors[i].id === parseInt(currentMentorId)) {
+      currentMentorIdNum = parseInt(currentMentorId);
       currentMentor = mentors[i];
     }
   }
@@ -274,6 +234,7 @@ function DashboardMentee() {
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="My mentors"
+        activeMentorId={currentMentorIdNum}
         mentors={mentors}
       />
 
