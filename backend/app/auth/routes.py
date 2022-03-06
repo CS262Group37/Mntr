@@ -1,4 +1,5 @@
 from functools import wraps
+import re
 
 from flask import make_response, request
 from flask_restx import Resource
@@ -99,6 +100,12 @@ class Login(Resource):
 
         return response
 
+class Logout(Resource):
+    def get(self):
+        response = make_response({'message': 'Successfully logged out'}, 200)
+        response.set_cookie("JWT_Token", '', expires='Thu, 01 Jan 1970 00:00:00 GMT')
+        return response
+
 class ChangeRole(AuthResource):
     @auth_api.expect(parsers.role_parser)
     def post(self):
@@ -114,4 +121,5 @@ class ChangeRole(AuthResource):
 auth_api.add_resource(RegisterAccount, '/register-account')
 auth_api.add_resource(RegisterUser, '/register-user')
 auth_api.add_resource(Login, '/login')
+auth_api.add_resource(Logout, '/logout')
 auth_api.add_resource(ChangeRole, '/change-role')
