@@ -1,5 +1,3 @@
-import React from "react";
-
 const LoginButton = (props:any) => {
   const {
     value,
