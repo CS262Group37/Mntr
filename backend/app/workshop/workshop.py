@@ -9,7 +9,7 @@ demand_threshold = 5
 
 # Function to insert workshop details into database 
 def create_workshop(mentorID, title, topic, desc, time, duration, location):
-    sql = 'INSERT INTO workshop (topic, mentorID, title, "description", "time", duration, "location",status) VALUES (%s, %s, %s, %s, %s,%s,%s,\'going-ahead\') RETURNING workshopID;'
+    sql = 'INSERT INTO workshop (topic, mentorID, title, "description", startTime, endTime, "location",status) VALUES (%s, %s, %s, %s, %s,%s,%s,\'going-ahead\') RETURNING workshopID;'
     data = (topic, mentorID, title, desc, time, duration, location,)
     conn = DatabaseConnection()
     with conn:
