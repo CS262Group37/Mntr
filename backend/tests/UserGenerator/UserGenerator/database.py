@@ -8,7 +8,7 @@ conn = None
 def create_connection():
     global conn
     try:
-        conn = psycopg2.connect(dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host='127.0.0.1', port='5432')
+        conn = psycopg2.connect(dbname=os.getenv('POSTGRES_DB'), user=os.getenv('POSTGRES_USER'), password=os.getenv('POSTGRES_PASSWORD'), host=os.getenv('DB_HOST'), port=os.getenv('POSTGRES_PORT'))
     except Exception as e:
         print("\nFailed to create database connection. Is the database running?")
         exit()
