@@ -10,6 +10,7 @@ import BrowseMentors from "./BrowseMentors";
 import Workshops from "./Workshops";
 import RegisterUser from "./RegisterUser"
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Profile from "./Profile";
 
 const theme = createTheme({
   palette: {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/workshops" element={ <Workshops /> } />
           <Route path="/dashboard-mentor" element={ <DashboardMentor /> } />
           <Route path="/register-user" element={ <RegisterUser /> } />
+          <Route path="/profile" element={ <Profile /> } />
         </Routes>
       </ThemeProvider>
     </div>
