@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 interface UserMenuProps {
   firstName: string;
   lastName: string;
+  id?: number;
 }
 
 interface EventProps {
@@ -93,7 +94,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
       }
     >
       <Link
-        to="/dashboard-mentee"
+        to={"/profile?id=" + props.id}
         className="flex flex-row font-semibold text-2xl hover:font-bold pr-6 pl-6 pb-4 pt-4 border-b-[1px] border-gray-300"
       >
         <BiUserCircle className="text-3xl m-auto ml-0 mr-2" />
