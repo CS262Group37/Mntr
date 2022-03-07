@@ -57,8 +57,7 @@ class Email(Message):
 
 class Report(Message):
     def __init__(self, recipientID, senderID, reportID):
-        self.recipientID = recipientID
-        self.senderID = senderID
+        Message.__init__(self, recipientID, senderID)
         self.reportID = reportID
 
 class WorkshopInvite(Message):
@@ -102,6 +101,10 @@ def send_message(message, custom_conn = None):
             elif message_type == 'WorkshopInvite':
                 sql = 'INSERT INTO message_workshop_invite (messageID, content, workshopID) VALUES (%s, %s, %s)'
                 data = (messageID, message.content, message.workshopID)
+                conn.execute(sql, data)
+            elif message_type == 'Report':
+                sql = 'INSERT INTO message_report (messageID, reportID) VALUES (%s, %s)'
+                data = (messageID, message.reportID)
                 conn.execute(sql, data)
 
         if message.recipientID == -1 or message.senderID == -1:
