@@ -3,5 +3,6 @@
     "topics" : 10,
     "skills" : 10,
     "businessAreas" : 10,
-    "relations": 300
+    "relations": 300,
+    "meetings": 500
 }
