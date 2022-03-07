@@ -13,9 +13,9 @@ DROP TABLE IF EXISTS meeting CASCADE;
 DROP TABLE IF EXISTS message_meeting CASCADE;
 DROP TABLE IF EXISTS message_email CASCADE;
 DROP TABLE IF EXISTS workshop CASCADE;
-DROP TABLE IF EXISTS workshop_invitiation CASCADE;
+DROP TABLE IF EXISTS message_workshop_invite CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
-DROP TABLE IF EXISTS workshopdemand CASCADE;
+DROP TABLE IF EXISTS workshop_demand CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
@@ -35,21 +35,6 @@ CREATE TABLE system_skill (
     skillID SERIAL PRIMARY KEY,
     "name" VARCHAR NOT NULL CONSTRAINT unique_skill UNIQUE
 );
-
--- CREATE TABLE system_business_area (
---     businessAreaID SERIAL PRIMARY KEY,
---     "name" VARCHAR NOT NULL CONSTRAINT unique_area_name UNIQUE
--- );
-
--- CREATE TABLE system_topic (
---     topicID SERIAL PRIMARY KEY,
---     "name" VARCHAR NOT NULL CONSTRAINT unique_topic UNIQUE
--- );
-
--- CREATE TABLE system_skill (
---     skillID SERIAL PRIMARY KEY,
---     "name" VARCHAR NOT NULL CONSTRAINT unique_skill UNIQUE
--- );
 
 CREATE TABLE account (
     accountID SERIAL PRIMARY KEY,
@@ -106,7 +91,7 @@ CREATE TABLE "message" (
     messageID SERIAL PRIMARY KEY,
     recipientID INTEGER NOT NULL REFERENCES "user"(userID),
     senderID INTEGER NOT NULL REFERENCES "user"(userID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('Report', 'MeetingMessage', 'Email')),
+    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage', 'Email', 'WorkshopInvite', 'Report')),
     sentTime TIMESTAMP NOT NULL,
     CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
 );
@@ -144,25 +129,23 @@ CREATE TABLE workshop (
     startTime TIMESTAMP NOT NULL,
     endTime TIMESTAMP NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('going-ahead', 'cancelled', 'running', 'completed')),
-    "location" VARCHAR NOT NULL,
-    demand INTEGER NOT NULL
+    "location" VARCHAR NOT NULL
 );
 
-CREATE TABLE user_workshop(
+CREATE TABLE user_workshop (
     menteeID INTEGER NOT NULL REFERENCES "user"(userID),
     workshopID INTEGER NOT NULL REFERENCES workshop
 );
 
-CREATE TABLE workshop_invitiation(
-    workshopID INTEGER NOT NULL REFERENCES workshop,
-    messageID INTEGER NOT NULL REFERENCES "message"
+CREATE TABLE message_workshop_invite (
+    messageID INTEGER NOT NULL REFERENCES "message"(messageID),
+    content VARCHAR NOT NULL,
+    workshopID INTEGER REFERENCES workshop
 );
 
-CREATE TABLE workshopdemand(
-    mentorID INTEGER NOT NULL REFERENCES "user"(userID),
-    topicID INTEGER NOT NULL REFERENCES system_topic,
-    demand INTEGER NOT NULL,
-    startTime TIMESTAMP NOT NULL
+CREATE TABLE workshop_demand (
+    topic VARCHAR PRIMARY KEY REFERENCES system_topic("name"),
+    demand NUMERIC NOT NULL
 );
 
 CREATE TABLE plan_of_action (

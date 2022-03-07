@@ -15,6 +15,7 @@ services:
     environment:
       - WAIT_HOSTS=database:5432
       - DB_HOST=database
+      - TZ=Europe/London
     ports:
       - "5000:5000"
     volumes:
@@ -35,4 +36,4 @@ services:
       context: .
       dockerfile: ./frontend/frontend.dockerfile
     volumes:
-    - ./frontend:/opt/mntr/frontend
+      - ./frontend:/opt/mntr/frontend

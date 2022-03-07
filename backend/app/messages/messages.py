@@ -1,5 +1,5 @@
 from datetime import datetime
-from re import L
+from random import choice
 
 from app.database import DatabaseConnection
 
@@ -38,20 +38,20 @@ def get_messages(userID):
 
 # Define message type models here
 class Message():
-    pass
+    def __init__(self, recipientID, senderID):
+        self.recipientID = recipientID
+        self.senderID = senderID
 
 class MeetingMessage(Message):
     # Message type can be: request, completed
     def __init__(self, recipientID, senderID, message_type, meetingID):
-        self.recipientID = recipientID
-        self.senderID = senderID
+        Message.__init__(self, recipientID, senderID)
         self.message_type = message_type
         self.meetingID = meetingID
 
 class Email(Message):
     def __init__(self, recipientID, senderID, subject, content):
-        self.recipientID = recipientID
-        self.senderID = senderID
+        Message.__init__(self, recipientID, senderID)
         self.subject = subject
         self.content = content
 
@@ -61,6 +61,12 @@ class Report(Message):
         self.senderID = senderID
         self.reportID = reportID
 
+class WorkshopInvite(Message):
+    # Message type can be: request, completed
+    def __init__(self, recipientID, senderID, content, workshopID = None):
+        Message.__init__(self, recipientID, senderID)
+        self.content = content
+        self.workshopID = workshopID
 
 # Returns true if message is successfully sent
 def send_message(message, custom_conn = None):
@@ -78,24 +84,49 @@ def send_message(message, custom_conn = None):
     message_type = type(message).__name__
     print(message_type)
     def run_sql(conn):
-        # Add into main "message" table
-        sql = 'INSERT INTO "message" (recipientID, senderID, messageType, sentTime) VALUES (%s, %s, %s, %s) RETURNING messageID'
-        data = (message.recipientID, message.senderID, message_type, datetime.now())
-        messageID = conn.execute(sql, data)
-    
-        if message_type == 'MeetingMessage':
-            sql = 'INSERT INTO message_meeting (messageID, meetingMessageType, meetingID) VALUES (%s, %s, %s)'
-            data = (messageID[0][0], message.message_type, message.meetingID)
-            conn.execute(sql, data)
-        elif message_type == 'Email':
-            sql = 'INSERT INTO message_email (messageID, "subject", content) VALUES (%s, %s, %s)'
-            data = (messageID[0][0], message.subject, message.content)
-            conn.execute(sql, data)
-        elif message_type == 'Report':
-            sql = 'INSERT INTO message_report (messageID, reportID) VALUES (%s, %s)'
-            data = (messageID[0][0], message.reportID)
-            conn.execute(sql, data)
-    
+
+        def send(recipientID, senderID):
+            # Add into main "message" table
+            sql = 'INSERT INTO "message" (recipientID, senderID, messageType, sentTime) VALUES (%s, %s, %s, %s) RETURNING messageID'
+            data = (recipientID, senderID, message_type, datetime.now())
+            [(messageID,)] = conn.execute(sql, data)
+        
+            if message_type == 'MeetingMessage':
+                sql = 'INSERT INTO message_meeting (messageID, meetingMessageType, meetingID) VALUES (%s, %s, %s)'
+                data = (messageID, message.message_type, message.meetingID)
+                conn.execute(sql, data)
+            elif message_type == 'Email':
+                sql = 'INSERT INTO message_email (messageID, "subject", content) VALUES (%s, %s, %s)'
+                data = (messageID, message.subject, message.content)
+                conn.execute(sql, data)
+            elif message_type == 'WorkshopInvite':
+                sql = 'INSERT INTO message_workshop_invite (messageID, content, workshopID) VALUES (%s, %s, %s)'
+                data = (messageID, message.content, message.workshopID)
+                conn.execute(sql, data)
+
+        if message.recipientID == -1 or message.senderID == -1:
+            # Get all admins on the system
+            sql = 'SELECT userID FROM "user" WHERE "role" = \'admin\''
+            admins = conn.execute(sql)
+            if not admins:
+                print("Failed to send message as there are no admins on the system")
+                return False
+            
+            if message.recipientID == -1 and message.senderID == -1:
+                # Admins can't send messages to each other
+                return False
+            elif message.recipientID == -1:
+                # Send the message to all admins
+                for (admin,) in admins:
+                    send(admin, message.senderID)
+            elif message.senderID == -1:
+                # Send the message once from a random admin
+                (admin,) = choice(admins)
+                send(message.recipientID, admin)
+        else:
+            # Send message normally
+            send(message.recipientID, message.senderID)
+                
     # If a connection has not been provided use our own
     if custom_conn is None:
         conn = DatabaseConnection()
