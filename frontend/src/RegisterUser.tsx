@@ -99,7 +99,7 @@ function RegisterUser() {
               ratings: skills.map((skill) => skill.rating),
             })
             .then((res: any) => {
-              navigate('dashboard-mentee')
+              navigate('/dashboard-mentee')
             });
         } catch (e) {
           console.log(e);
