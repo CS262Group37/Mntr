@@ -71,7 +71,14 @@ class RegisterUser(AuthResource):
         result = auth.register_user(self.payload['accountID'], data)
 
         if result[0]:
-            return result[1], 201
+            # Login
+            token = auth.encode_token(self.payload['email'], self.payload['role'])
+            if not token[0]:
+                return token[1], 403
+
+            response = make_response(result[1], 201)
+            response.set_cookie("JWT_Token", token[1], httponly=True, samesite='Lax')
+            return response
         else:
             return result[1], 403
 
