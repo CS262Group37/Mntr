@@ -75,9 +75,7 @@ const MenteeDetails: React.FC<MenteeDetailsProps> = (props) => {
         </div>
 
         {/* Schedule meeting button */}
-        <button
-          className="bg-prussianBlue text-cultured text-xl w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-2"
-        >
+        <button className="bg-prussianBlue text-cultured text-xl w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-2">
           Schedule a meeting
         </button>
       </div>
@@ -133,59 +131,33 @@ function DashboardMentor() {
 
   // Get mentee-mentor relations and mentees' data
   useEffect(() => {
-    axios.get("/api/relations/get-relations").then(async (res) => {
-      var newMentees: any = [];
-      var newTopics: string[][] = [];
+    axios.get("/api/relations/get-relations").then(async (res: any) => {
+      var newMentees: UserData[] = [];
 
-      for (let i = 0; i < res.data.length; i++) {
-        const element = res.data[i];
-        const menteeID: number = element.menteeid;
+      for (const relationship of res.data) {
+        let menteeTopics: string[];
+        await axios.post("/api/users/get-user-topics", { userID: relationship.menteeid }).then((res: any) => {
+          menteeTopics = res.data.map((t: any) => t.topic);
+        });
 
-        // Get mentee data
         await axios
-          .post("/api/users/get-user-data", { userID: menteeID })
-          .then((res) => {
-            newMentees.push({
-              id: menteeID,
+          .post("/api/users/get-user-data", { userID: relationship.menteeid })
+          .then((res: any) => {
+            const mentee = {
+              id: relationship.menteeid,
               email: res.data.email,
               firstName: res.data.firstname,
               lastName: res.data.lastname,
               avatar: res.data.profilepicture,
               role: res.data.role,
               businessArea: res.data.businessarea,
-            });
-          });
-
-        // Get topics
-        await axios
-          .post("/api/users/get-user-topics", { userID: menteeID })
-          .then((res) => {
-            const arr: string[] = [];
-            res.data.map((t: any) => {
-              arr.push(t.topic);
-            });
-
-            newTopics.push(arr);
+              topics: menteeTopics,
+            };
+            newMentees.push(mentee)
           });
       }
 
-      var newMenteesAll: UserData[] = [];
-      for (let i = 0; i < newMentees.length; i++) {
-        const element = newMentees[i];
-
-        newMenteesAll.push({
-          id: element.id,
-          email: element.email,
-          firstName: element.firstName,
-          lastName: element.lastName,
-          avatar: element.avatar,
-          role: element.role,
-          businessArea: element.businessArea,
-          topics: newTopics[i],
-        });
-      }
-
-      setMentees(newMenteesAll);
+      setMentees(newMentees)
     });
   }, []);
 
@@ -204,14 +176,25 @@ function DashboardMentor() {
   let query = useQuery();
   const currentMenteeId = query.get("mentee");
   let currentMenteeIdNum: number = -1;
-  let currentMentee: UserData = {email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []};
+  let currentMentee: UserData = {
+    email: "",
+    firstName: "",
+    lastName: "",
+    avatar: "",
+    role: "",
+    businessArea: "",
+    topics: [],
+  };
 
   if (mentees.length > 0 && currentMenteeId == null) {
     return <Navigate to={"/dashboard-mentor?mentee=" + mentees[0].id} />;
   }
 
   for (let i = 0; i < mentees.length; i++) {
-    if (currentMenteeId != null && mentees[i].id === parseInt(currentMenteeId)) {
+    if (
+      currentMenteeId != null &&
+      mentees[i].id === parseInt(currentMenteeId)
+    ) {
       currentMenteeIdNum = parseInt(currentMenteeId);
       currentMentee = mentees[i];
     }
