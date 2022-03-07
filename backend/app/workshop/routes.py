@@ -48,4 +48,3 @@ workshop_api.add_resource(CreateWorkshop, '/create-workshop')
 workshop_api.add_resource(CancelWorkshop,'/cancel-workshop')
 workshop_api.add_resource(GetWorkshops,'/get-workshops')
 workshop_api.add_resource(ViewWorkshopAttendee,'view-workshop-attendee')
-

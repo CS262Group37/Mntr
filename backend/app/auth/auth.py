@@ -77,6 +77,10 @@ def register_user(accountID, userData):
                 for i in range(len(skills)):
                     data = (userID, skills[i], ratings[i])
                     conn.execute(sql, data)
+
+                # Update workshop demand
+                from app.workshop.workshop import update_demand
+                update_demand(userID, userData['role'], conn)
             else:
                 # Give mentors a default rating a 5 for all skills
                 # TODO: Might want to change this to start at 0

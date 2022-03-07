@@ -92,7 +92,7 @@ CREATE TABLE "message" (
     messageID SERIAL PRIMARY KEY,
     recipientID INTEGER NOT NULL REFERENCES "user"(userID),
     senderID INTEGER NOT NULL REFERENCES "user"(userID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage', 'Email')),
+    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage', 'Email', 'WorkshopInvite')),
     sentTime TIMESTAMP NOT NULL,
     CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
 );
@@ -136,11 +136,11 @@ CREATE TABLE user_workshop (
 CREATE TABLE message_workshop_invite (
     messageID INTEGER NOT NULL REFERENCES "message"(messageID),
     content VARCHAR NOT NULL,
-    workshopID INTEGER NOT NULL REFERENCES workshop
+    workshopID INTEGER REFERENCES workshop
 );
 
 CREATE TABLE workshop_demand (
-    topic VARCHAR NOT NULL REFERENCES system_topic("name"),
+    topic VARCHAR PRIMARY KEY REFERENCES system_topic("name"),
     demand NUMERIC NOT NULL
 );
 
