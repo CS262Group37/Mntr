@@ -11,6 +11,7 @@ import app.workshop as workshop
 import app.admin as admin
 import app.plan_of_action as plan
 import app.users as users
+import app.reports as reports
 from . import database as db
 
 # Good description of the pattern I'm trying to implement: http://exploreflask.com/en/latest/blueprints.html

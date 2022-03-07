@@ -55,6 +55,13 @@ class Email(Message):
         self.subject = subject
         self.content = content
 
+class Report(Message):
+    def __init__(self, recipientID, senderID, reportID):
+        self.recipientID = recipientID
+        self.senderID = senderID
+        self.reportID = reportID
+
+
 # Returns true if message is successfully sent
 def send_message(message, custom_conn = None):
     # First check that the passed object is a message object
@@ -65,10 +72,11 @@ def send_message(message, custom_conn = None):
             break
 
     if not valid_message:
+        print("HERE")
         return False
 
     message_type = type(message).__name__
-
+    print(message_type)
     def run_sql(conn):
         # Add into main "message" table
         sql = 'INSERT INTO "message" (recipientID, senderID, messageType, sentTime) VALUES (%s, %s, %s, %s) RETURNING messageID'
@@ -82,6 +90,10 @@ def send_message(message, custom_conn = None):
         elif message_type == 'Email':
             sql = 'INSERT INTO message_email (messageID, "subject", content) VALUES (%s, %s, %s)'
             data = (messageID[0][0], message.subject, message.content)
+            conn.execute(sql, data)
+        elif message_type == 'Report':
+            sql = 'INSERT INTO message_report (messageID, reportID) VALUES (%s, %s)'
+            data = (messageID[0][0], message.reportID)
             conn.execute(sql, data)
     
     # If a connection has not been provided use our own
