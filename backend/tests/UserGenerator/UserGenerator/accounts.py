@@ -130,7 +130,10 @@ def create_random_accounts_and_users(account_count = None):
         for i in range(account_count):
 
             # Create an account
-            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[0:10], fake.image_url()):
+            image = fake.image_url()
+            while image[8:18] == 'dummyimage':
+                image = fake.image_url()
+            if create_account(fake.first_name(), fake.last_name(), fake.ascii_company_email(), fake.sha256()[0:10], image):
 
                 created_accounts += 1
 
