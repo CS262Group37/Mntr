@@ -78,10 +78,10 @@ def send_message(message, custom_conn = None):
 
     def run_sql(conn):
 
-        def send(recipient, sender):
+        def send(recipientID, senderID):
             # Add into main "message" table
             sql = 'INSERT INTO "message" (recipientID, senderID, messageType, sentTime) VALUES (%s, %s, %s, %s) RETURNING messageID'
-            data = (recipient, sender, message_type, datetime.now())
+            data = (recipientID, senderID, message_type, datetime.now())
             [(messageID,)] = conn.execute(sql, data)
         
             if message_type == 'MeetingMessage':
@@ -93,7 +93,7 @@ def send_message(message, custom_conn = None):
                 data = (messageID, message.subject, message.content)
                 conn.execute(sql, data)
             elif message_type == 'WorkshopInvite':
-                sql = 'INSERT INTO message_workshop_invite (messageID, content, workshopID) VALUES (%s, %s)'
+                sql = 'INSERT INTO message_workshop_invite (messageID, content, workshopID) VALUES (%s, %s, %s)'
                 data = (messageID, message.content, message.workshopID)
                 conn.execute(sql, data)
 
@@ -111,14 +111,14 @@ def send_message(message, custom_conn = None):
             elif message.recipientID == -1:
                 # Send the message to all admins
                 for (admin,) in admins:
-                    send(admin, message.sender)
+                    send(admin, message.senderID)
             elif message.senderID == -1:
                 # Send the message once from a random admin
                 (admin,) = choice(admins)
-                send(message.recipient, admin)
+                send(message.recipientID, admin)
         else:
             # Send message normally
-            send(message.recipient, message.sender)
+            send(message.recipientID, message.senderID)
                 
     # If a connection has not been provided use our own
     if custom_conn is None:
