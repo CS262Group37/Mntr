@@ -16,6 +16,7 @@ import {
   OutlinedInput,
   Select,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface skillRating {
   name: string;
@@ -31,6 +32,10 @@ function RegisterUser() {
   const [topics, setTopics] = React.useState<string[]>([]);
   const [areas, setAreas] = React.useState<string[]>([]);
   const [skills, setSkills] = React.useState<skillRating[]>([]);
+
+  const [psword, setPsword] = React.useState<string>("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get("/api/admin/get-skills").then((res: any) => {
@@ -48,46 +53,59 @@ function RegisterUser() {
     });
   }, []);
 
-  const [psword, setPsword] = React.useState<string>("");
-
   const register = () => {
     switch (role) {
       case "admin":
-        axios
-          .post("/api/auth/register-user", {
-            role: "admin",
-            adminPassword: psword,
-          })
-          .then((res: any) => {
-            console.log(res);
-          });
-          break;
+        try {
+          axios
+            .post("/api/auth/register-user", {
+              role: "admin",
+              adminPassword: psword,
+            })
+            .then((res: any) => {
+              navigate("/dashboard-admin");
+            });
+        } catch (e) {
+          console.log(e);
+        }
+
+        break;
 
       case "mentor":
-        axios
-          .post("/api/auth/register-user", {
-            role: "mentor",
-            businessArea: area,
-            topics: selectedTopics,
-          })
-          .then((res: any) => {
-            console.log(res);
-          });
-          break;
+        try {
+          axios
+            .post("/api/auth/register-user", {
+              role: "mentor",
+              businessArea: area,
+              topics: selectedTopics,
+            })
+            .then((res: any) => {
+              navigate("/dashboard-mentor");
+            });
+        } catch (e) {
+          console.log(e);
+        }
+
+        break;
 
       case "mentee":
-        axios
-          .post("/api/auth/register-user", {
-            role: "mentee",
-            businessArea: area,
-            topics: selectedTopics,
-            skills: skills.map((skill) => skill.name),
-            ratings: skills.map((skill) => skill.rating)
-          })
-          .then((res: any) => {
-            console.log(res);
-          });
-          break;
+        try {
+          axios
+            .post("/api/auth/register-user", {
+              role: "mentee",
+              businessArea: area,
+              topics: selectedTopics,
+              skills: skills.map((skill) => skill.name),
+              ratings: skills.map((skill) => skill.rating),
+            })
+            .then((res: any) => {
+              navigate('dashboard-mentee')
+            });
+        } catch (e) {
+          console.log(e);
+        }
+
+        break;
     }
   };
 
