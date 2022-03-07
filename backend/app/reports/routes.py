@@ -16,4 +16,7 @@ class CreateReport(AuthResource):
         else:
             return result[1], 403
 
+class SendReport(AuthResource):
+    
+
 reports_api.add_resource(CreateReport, '/create-report')
