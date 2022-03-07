@@ -36,7 +36,7 @@ def create_app():
         app.register_blueprint(plan.plan_bp, url_prefix='/api/plan')
         app.register_blueprint(users.users_bp, url_prefix='/api/users')
         app.register_blueprint(workshop.workshop_bp, url_prefix='/api/workshop')
-        app.register_blueprint(report.report_bp, url_prefix='/api/report')
+        app.register_blueprint(reports.reports_bp, url_prefix='/api/reports')
 
     # Put login doc on the front page for convenience
     @api.documentation
