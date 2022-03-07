@@ -1,5 +1,5 @@
 from datetime import datetime
-from re import L
+from random import choice
 
 from app.database import DatabaseConnection
 
@@ -77,24 +77,49 @@ def send_message(message, custom_conn = None):
     message_type = type(message).__name__
 
     def run_sql(conn):
-        # Add into main "message" table
-        sql = 'INSERT INTO "message" (recipientID, senderID, messageType, sentTime) VALUES (%s, %s, %s, %s) RETURNING messageID'
-        data = (message.recipientID, message.senderID, message_type, datetime.now())
-        [(messageID,)] = conn.execute(sql, data)
-    
-        if message_type == 'MeetingMessage':
-            sql = 'INSERT INTO message_meeting (messageID, meetingMessageType, meetingID) VALUES (%s, %s, %s)'
-            data = (messageID, message.message_type, message.meetingID)
-            conn.execute(sql, data)
-        elif message_type == 'Email':
-            sql = 'INSERT INTO message_email (messageID, "subject", content) VALUES (%s, %s, %s)'
-            data = (messageID, message.subject, message.content)
-            conn.execute(sql, data)
-        elif message_type == 'WorkshopInvite':
-            sql = 'INSERT INTO message_workshop_invite (messageID, content, workshopID) VALUES (%s, %s)'
-            data = (messageID, message.content, message.workshopID)
-            conn.execute(sql, data)
-    
+
+        def send(recipient, sender):
+            # Add into main "message" table
+            sql = 'INSERT INTO "message" (recipientID, senderID, messageType, sentTime) VALUES (%s, %s, %s, %s) RETURNING messageID'
+            data = (recipient, sender, message_type, datetime.now())
+            [(messageID,)] = conn.execute(sql, data)
+        
+            if message_type == 'MeetingMessage':
+                sql = 'INSERT INTO message_meeting (messageID, meetingMessageType, meetingID) VALUES (%s, %s, %s)'
+                data = (messageID, message.message_type, message.meetingID)
+                conn.execute(sql, data)
+            elif message_type == 'Email':
+                sql = 'INSERT INTO message_email (messageID, "subject", content) VALUES (%s, %s, %s)'
+                data = (messageID, message.subject, message.content)
+                conn.execute(sql, data)
+            elif message_type == 'WorkshopInvite':
+                sql = 'INSERT INTO message_workshop_invite (messageID, content, workshopID) VALUES (%s, %s)'
+                data = (messageID, message.content, message.workshopID)
+                conn.execute(sql, data)
+
+        if message.recipientID == -1 or message.senderID == -1:
+            # Get all admins on the system
+            sql = 'SELECT userID FROM "user" WHERE "role" = \'admin\''
+            admins = conn.execute(sql)
+            if not admins:
+                print("Failed to send message as there are no admins on the system")
+                return False
+            
+            if message.recipientID == -1 and message.senderID == -1:
+                # Admins can't send messages to each other
+                return False
+            elif message.recipientID == -1:
+                # Send the message to all admins
+                for (admin,) in admins:
+                    send(admin, message.sender)
+            elif message.senderID == -1:
+                # Send the message once from a random admin
+                (admin,) = choice(admins)
+                send(message.recipient, admin)
+        else:
+            # Send message normally
+            send(message.recipient, message.sender)
+                
     # If a connection has not been provided use our own
     if custom_conn is None:
         conn = DatabaseConnection()
