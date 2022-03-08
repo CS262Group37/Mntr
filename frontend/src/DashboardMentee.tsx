@@ -195,9 +195,10 @@ function DashboardMentee() {
       var newMentors: UserData[] = [];
 
       for (const relationship of res.data) {
-        console.log(relationship)
+        // console.log(relationship)
         let mentorTopics: string[];
 
+        // Get topics
         await axios
           .post("/api/users/get-user-topics", { userID: relationship.mentorid })
           .then((res: any) => {
@@ -206,6 +207,7 @@ function DashboardMentee() {
 
         let mentorMeetings: Meeting[] = [];
 
+        // Get meetings
         await axios
           .post("/api/meetings/get-meetings", {
             relationID: relationship.relationid,
@@ -227,7 +229,8 @@ function DashboardMentee() {
               return e2.startTime - e1.startTime;
             });
           });
-
+          
+        // Get mentor data
         await axios
           .post("/api/users/get-user-data", { userID: relationship.mentorid })
           .then((res: any) => {
@@ -249,7 +252,7 @@ function DashboardMentee() {
       }
 
       setMentors(newMentors);
-      setMentor(newMentors[0])
+      setMentor(newMentors[0]);
     });
   }, []);
 
@@ -272,6 +275,7 @@ function DashboardMentee() {
 
             <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
               {mentor.meetings.map((meeting) => {
+                // console.log(meeting);
                 return <MeetingCard meetingData={meeting} />;
               })}
             </div>
@@ -279,7 +283,7 @@ function DashboardMentee() {
         </div>
 
         {/* Plan of action */}
-        <PlanOfAction />
+        <PlanOfAction relationID={mentor.relationID} />
       </div>
     </div>
   );
