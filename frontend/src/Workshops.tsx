@@ -5,11 +5,30 @@ import { Link } from "react-router-dom";
 import NavBar from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
 
+interface UserData {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  role: string;
+  businessArea: string;
+  topics?: string[];
+  ratings?: Rating[];
+}
+
+interface Rating {
+  skill: string;
+  rating: number;
+}
+
 function Workshops() {
+  const [mentor, setMentor] = React.useState<UserData[]>([]);
   return(
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="Workshops"
+        setMentor={setMentor}
       />
 
       {/* Main flexbox */}

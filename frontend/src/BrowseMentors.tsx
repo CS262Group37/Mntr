@@ -86,6 +86,7 @@ const MentorCard: React.FC<CardProps> = (props) => {
 
 function BrowseMentors() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
+  const [mentor, setMentor] = React.useState<UserData[]>([]);
 
   // Get recommended mentors
   useEffect(() => {
@@ -167,7 +168,7 @@ function BrowseMentors() {
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar activeStr="Browse mentors" />
+      <NavBar activeStr="Browse mentors" setMentor={setMentor}/>
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display bg-cultured overflow-auto p-6 flex flex-col pb-40">

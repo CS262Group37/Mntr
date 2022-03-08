@@ -155,12 +155,6 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
   );
 };
 
-function useQuery() {
-  const { search } = useLocation();
-
-  return React.useMemo(() => new URLSearchParams(search), [search]);
-}
-
 function parseDate(d: string) {
   const [date, time] = d.split(" ");
   const [day, month, year] = date.split("/");
@@ -186,6 +180,17 @@ function parseDate(d: string) {
 
 function DashboardMentee() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
+  const [mentor, setMentor] = React.useState<UserData>({
+    relationID: -1,
+    email: "",
+    firstName: "",
+    lastName: "",
+    avatar: "",
+    role: "",
+    businessArea: "",
+    topics: [],
+    meetings: [],
+  });
 
   // Get mentee-mentor relations and mentees' data
   useEffect(() => {
@@ -246,47 +251,18 @@ function DashboardMentee() {
       }
 
       setMentors(newMentors);
+      setMentor(newMentors[0])
     });
   }, []);
 
-  // Read the query string to get the mentee to render
-  let query = useQuery();
-  const currentMentorId = query.get("mentor");
-  let currentMentorIdNum: number = -1;
-  let currentMentor: UserData = {
-    relationID: -1,
-    email: "",
-    firstName: "",
-    lastName: "",
-    avatar: "",
-    role: "",
-    businessArea: "",
-    topics: [],
-    meetings: [],
-  };
-
-  if (mentors.length > 0 && currentMentorId == null) {
-    return <Navigate to={"/dashboard-mentee?mentor=" + mentors[0].id} />;
-  }
-
-  for (let i = 0; i < mentors.length; i++) {
-    if (
-      currentMentorId != null &&
-      mentors[i].id === parseInt(currentMentorId)
-    ) {
-      currentMentorIdNum = parseInt(currentMentorId);
-      currentMentor = mentors[i];
-    }
-  }
-
-  console.log(currentMentor.meetings);
 
   return (
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="My mentors"
-        activeMentorId={currentMentorIdNum}
+        activeMentorId={mentor.id}
         mentors={mentors}
+        setMentor={setMentor}
       />
 
       {/* Main flexbox */}
@@ -294,10 +270,10 @@ function DashboardMentee() {
         {/* White half */}
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
-            <MentorDetails mentorData={currentMentor} />
+            <MentorDetails mentorData={mentor} />
 
             <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
-              {currentMentor.meetings.map((meeting) => {
+              {mentor.meetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;
               })}
             </div>

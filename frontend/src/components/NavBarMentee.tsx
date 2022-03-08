@@ -23,6 +23,7 @@ interface NavBarProps {
   activeStr: string;
   activeMentorId?: number;
   mentors?: UserData[];
+  setMentor: (value: any) => void;
 }
 interface LinkProps {
   text: string;
@@ -181,8 +182,8 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 <Link
                   to={"/dashboard-mentee?mentor=" + mentor.id}
                   className={css}
-                >
-                  {mentor.firstName + " " + mentor.lastName}
+                ><span onClick={() => props.setMentor(mentor)}>{mentor.firstName + " " + mentor.lastName}</span>
+                  
                 </Link>
               );
             })}
