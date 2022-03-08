@@ -6,6 +6,7 @@ import PlanOfAction from "./components/PlanOfAction";
 import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
 import { Avatar } from "@mui/material";
 import { Link, Navigate, useLocation } from "react-router-dom";
+import MeetingCard from "./components/MeetingCard";
 
 interface UserData {
   relationID: number;
@@ -30,17 +31,12 @@ interface Meeting {
   endTime: Date;
 }
 
-interface Mentor {
+interface MentorProps {
   mentorData: UserData;
 }
 
-interface MeetingProps {
-  date: Date;
-  feedback: string;
-}
-
 // Mentor details component
-const MentorDetails: React.FC<Mentor> = (props) => {
+const MentorDetails: React.FC<MentorProps> = (props) => {
   // TODO schedule a meeting function
   const schedule = () => {
     return;
@@ -118,6 +114,7 @@ const MentorDetails: React.FC<Mentor> = (props) => {
       </div>
 
       {/* Next meeting date */}
+      {/* //! BROKEN */}
       {hasNextMeeting &&
       <div className="flex flex-row text-lg font-body m-5 mr-2 mb-0">
         <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
@@ -126,33 +123,6 @@ const MentorDetails: React.FC<Mentor> = (props) => {
           <span className="font-bold">{date}</span>
         </p>
       </div>}
-    </div>
-  );
-};
-
-// Meeting component
-const Meeting: React.FC<MeetingProps> = (props) => {
-  const month = props.date.toLocaleString("default", { month: "long" });
-  const date =
-    month + " " + props.date.getDate() + ", " + props.date.getFullYear();
-
-  return (
-    <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md mt-5 mb-5 w-[100%] text-prussianBlue p-4 rounded-xl">
-      {/* Heading & date */}
-      <div className="flex flex-row text-2xl border-b-2 border-imperialRed justify-between">
-        <h1 className="font-semibold mt-1 mb-3 ml-3 text-left">
-          Individual meeting
-        </h1>
-        <div className="flex flex-row mr-3 mt-1 mb-3 text-right">
-          <BiCalendarCheck className="text-3xl mr-1" />
-          <h1>{date}</h1>
-        </div>
-      </div>
-
-      {/* Mentor feedback */}
-      <div className="font-body text-md text-justify m-3 mb-1">
-        <p>{props.feedback}</p>
-      </div>
     </div>
   );
 };
@@ -211,7 +181,11 @@ function DashboardMentee() {
               }
 
               mentorMeetings.push(newMeeting);
-            })
+            });
+
+            mentorMeetings.sort((e1: any, e2:any) => {
+              return e2.startTime - e1.startTime;
+            });
           });
 
         await axios
@@ -237,17 +211,6 @@ function DashboardMentee() {
       setMentors(newMentors);
     });
   }, []);
-
-  const dummyDate1 = new Date("2022-02-04");
-  const dummyDate2 = new Date("2022-01-27");
-  const dummyDate3 = new Date("2022-01-24");
-
-  const dummyText1 =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ornare in ut iaculis sapien, id orci, pulvinar dui. Dui pulvinar eget varius et, et elit vitae, blandit. Nam in risus laoreet tellus. Pellentesque id ultrices rhoncus viverra nullam pretium tristique quam. Nibh felis posuere in non lectus est. Quis nullam porta sed pellentesque dui. Sed phasellus in vitae mi amet enim blandit. Eu neque viverra aenean porta cras.";
-  const dummyText2 =
-    "Aliquam rhoncus, faucibus imperdiet elementum. Ac praesent condimentum massa nam eu. Duis tellus aenean nunc id interdum. Mattis imperdiet fringilla purus tortor, egestas interdum. Eget posuere vel semper maecenas aliquet vulputate mattis aliquet.";
-  const dummyText3 =
-    "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?";
 
   // Read the query string to get the mentee to render
   let query = useQuery();
@@ -279,6 +242,8 @@ function DashboardMentee() {
     }
   }
 
+  console.log(currentMentor.meetings);
+
   return (
     <div className="fixed h-full w-full">
       <NavBar
@@ -297,9 +262,11 @@ function DashboardMentee() {
             />
 
             <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
-              <Meeting date={dummyDate1} feedback={dummyText1.repeat(2)} />
-              <Meeting date={dummyDate2} feedback={dummyText2.repeat(3)} />
-              <Meeting date={dummyDate3} feedback={dummyText3.repeat(4)} />
+              {
+                currentMentor.meetings.map((meeting) => {
+                  return <MeetingCard meetingData={meeting} />
+                })
+              }
             </div>
           </div>
         </div>
