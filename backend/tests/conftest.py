@@ -2,7 +2,8 @@ import sys
 
 import pytest
 
-sys.path.append('/.../app/')
+import sys
+sys.path.append('../app')
 from app import create_app
 
 @pytest.fixture()
