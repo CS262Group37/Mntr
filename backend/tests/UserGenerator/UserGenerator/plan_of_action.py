@@ -31,7 +31,7 @@ def add_plan(relationID, title, description):
     authentication.active_cookie = response.cookies
     return True
 
-def add_random_plans(plan_count = 0):
+def add_random_plans(plan_count = None):
     if plan_count is None:
         plan_count = IntPrompt.ask('Enter the number of plans to add')
         console.line()
