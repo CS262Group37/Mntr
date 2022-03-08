@@ -3,7 +3,8 @@ from app.database import DatabaseConnection
 def get_data(userID):
     sql = 'SELECT userID, email, firstName, lastName, profilePicture, "role", businessArea FROM "user" NATURAL JOIN account WHERE userID = %s'
     data = (userID,)
-
+    user_data = None
+    
     conn = DatabaseConnection(real_dict=True)
     with conn:
         [user_data] = conn.execute(sql, data)
