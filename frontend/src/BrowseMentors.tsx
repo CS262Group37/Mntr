@@ -51,14 +51,14 @@ const MentorCard: React.FC<CardProps> = (props) => {
           </Link>
 
           {/* Topics */}
-          <p className="text-xl">
+          <p className="text-lg font-body">
             {mentor.topics?.map((topic, i, { length }) => {
               if (i === length - 1) {
                 return <span>{topic}</span>;
               } else return <span>{topic + ", "}</span>;
             })}
           </p>
-          <p>{mentor.businessArea}</p>
+          <p className="font-body">{mentor.businessArea}</p>
         </div>
 
         <button

@@ -8,6 +8,7 @@ import { Avatar } from "@mui/material";
 import { Link, Navigate, useLocation } from "react-router-dom";
 
 interface UserData {
+  relationId: number;
   id?: number;
   email: string;
   firstName: string;
@@ -18,13 +19,8 @@ interface UserData {
   topics: string[];
 }
 
-interface MentorDetailsProps {
-  id: number;
-  firstName: string;
-  lastName: string;
-  avatar: string;
-  topics: string[];
-  nextMeeting: Date;
+interface Mentor {
+  mentorData: UserData;
 }
 
 interface MeetingProps {
@@ -33,81 +29,92 @@ interface MeetingProps {
 }
 
 // Mentor details component
-const MentorDetails: React.FC<MentorDetailsProps> = (props) => {
+const MentorDetails: React.FC<Mentor> = (props) => {
   // TODO schedule a meeting function
   const schedule = () => {
     return;
   };
 
+  const mentor: UserData = props.mentorData;
+  const [nextMeeting, setNextMeeting] = React.useState<Date>(new Date());
+  let hasNextMeeting: Boolean = false;
+
+  useEffect(() => {
+    axios.post("/api/meetings/get-next-meeting", { relationID: mentor.relationId }).then(async (res: any) => {
+      console.log(res.data);
+
+      if (!res.data.hasOwnProperty('error')) {
+        hasNextMeeting = true;
+        setNextMeeting(new Date(res.data.starttime))
+      }
+    });
+  }, []);
+
   // Next meeting date formatting
-  const weekday = props.nextMeeting.toLocaleString("default", {
+  // TODO check formatting
+  const weekday = nextMeeting.toLocaleString("default", {
     weekday: "long",
   });
-  const month = props.nextMeeting.getMonth() + 1;
+  const month = nextMeeting.getMonth() + 1;
   const date =
     weekday +
     ", " +
-    props.nextMeeting.getDate() +
+    nextMeeting.getDate() +
     "." +
     month +
     "." +
-    props.nextMeeting.getFullYear();
+    nextMeeting.getFullYear();
 
   return (
-    <div className="flex flex-col m-10 mb-2 text-firebrick font-display">
+    <div className="flex flex-col m-10 mb-6 text-firebrick font-display">
       <div className="flex flex-row h-min">
-        <div className="flex">
-          {/* TODO Mentor profile pic */}
-          <Avatar
-            className="m-auto"
-            alt={props.firstName + " " + props.lastName}
-            src={props.avatar}
-            sx={{ width: 100, height: 100 }}
-          />
+        <div className="flex flex-row">
+          <div className="flex flex-row mr-4">
+            {/* TODO Mentor profile pic */}
+            <Avatar
+              className="m-auto"
+              alt={mentor.firstName + " " + mentor.lastName}
+              src={mentor.avatar}
+              sx={{ width: 100, height: 100 }}
+            />
 
-          {/* Mentor name & topic */}
-          <div className="flex flex-col text-left m-auto pl-4 space-y-1">
-            <Link
-              to={"/profile?id=" + props.id}
-              className="font-semibold text-3xl hover:font-bold"
-            >
-              {props.firstName + " " + props.lastName}
-            </Link>
-            <h3 className="text-xl">
-              {props.topics.map((topic, i, { length }) => {
-                if (i === length - 1) {
-                  return <span>{topic}</span>;
-                } else return <span>{topic + ", "}</span>;
-              })}
-            </h3>
+            {/* Mentor name & topic */}
+            <div className="flex flex-col text-left m-auto pl-4 space-y-1">
+              <Link
+                to={"/profile?id=" + mentor.id}
+                className="font-semibold text-3xl hover:font-bold"
+              >
+                {mentor.firstName + " " + mentor.lastName}
+              </Link>
+              <h3 className="text-xl">
+                {mentor.topics.map((topic, i, { length }) => {
+                  if (i === length - 1) {
+                    return <span>{topic}</span>;
+                  } else return <span>{topic + ", "}</span>;
+                })}
+              </h3>
+            </div>
           </div>
-        </div>
-
-        {/* Schedule meeting button */}
-        {/* <button
-          className="bg-prussianBlue text-cultured text-xl min-w-100 w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-2"
-          onClick={schedule}
-        >
-          Schedule a meeting
-        </button> */}
-      </div>
-
-      {/* Next meeting date */}
-      <div className="flex flex-row text-lg font-body m-5 mr-2">
-        <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
-        <p className="mt-auto mb-auto text-left">
-          Your next meeting with {props.firstName} is on{" "}
-          <span className="font-bold">{date}</span>
-        </p>
+          </div>
 
         {/* Schedule meeting button */}
         <button
-          className="bg-prussianBlue font-display text-cultured text-xl min-w-100 w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
+          className="bg-prussianBlue text-cultured text-xl min-w-100 flex-none w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
           onClick={schedule}
         >
           Schedule a meeting
         </button>
       </div>
+
+      {/* Next meeting date */}
+      {hasNextMeeting &&
+      <div className="flex flex-row text-lg font-body m-5 mr-2 mb-0">
+        <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
+        <p className="mt-auto mb-auto text-left">
+          Your next meeting with {mentor.firstName} is on{" "}
+          <span className="font-bold">{date}</span>
+        </p>
+      </div>}
     </div>
   );
 };
@@ -164,7 +171,8 @@ function DashboardMentee() {
         await axios
           .post("/api/users/get-user-data", { userID: relationship.mentorid })
           .then((res: any) => {
-            const mentor = {
+            const mentor: UserData = {
+              relationId: relationship.relationid,
               id: relationship.mentorid,
               email: res.data.email,
               firstName: res.data.firstname,
@@ -198,6 +206,7 @@ function DashboardMentee() {
   const currentMentorId = query.get("mentor");
   let currentMentorIdNum: number = -1;
   let currentMentor: UserData = {
+    relationId: -1,
     email: "",
     firstName: "",
     lastName: "",
@@ -235,12 +244,7 @@ function DashboardMentee() {
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
             <MentorDetails
-              id={currentMentorIdNum}
-              firstName={currentMentor.firstName}
-              lastName={currentMentor.lastName}
-              topics={currentMentor.topics}
-              avatar={currentMentor.avatar}
-              nextMeeting={new Date("2022-02-25")}
+              mentorData={currentMentor}
             />
 
             <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
