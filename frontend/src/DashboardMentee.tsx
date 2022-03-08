@@ -12,11 +12,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  fabClasses,
   Modal,
 } from "@mui/material";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import MeetingCard from "./components/MeetingCard";
-import { setSyntheticLeadingComments } from "typescript";
+import { collapseTextChangeRangesAcrossMultipleVersions, setSyntheticLeadingComments } from "typescript";
 
 interface UserData {
   relationID: number;
@@ -57,20 +58,22 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
 
   const mentor: UserData = props.mentorData;
   const [nextMeeting, setNextMeeting] = React.useState<Date>(new Date());
-  let hasNextMeeting: Boolean = false;
+  const [hasNextMeeting, setHasNextMeeting]=  React.useState<Boolean>(false);
 
   useEffect(() => {
+    console.log("here");
     axios
       .post("/api/meetings/get-next-meeting", { relationID: mentor.relationID })
       .then(async (res: any) => {
+        console.log(mentor.relationID)
         console.log(res.data);
 
         if (!res.data.hasOwnProperty("error")) {
-          hasNextMeeting = true;
-          setNextMeeting(new Date(res.data.starttime));
+          setHasNextMeeting(true);
+          setNextMeeting(new Date(parseDate(res.data.starttime)));
         }
       });
-  }, []);
+  }, [mentor]);
 
   // Next meeting date formatting
   // TODO check formatting
@@ -198,6 +201,7 @@ function DashboardMentee() {
       var newMentors: UserData[] = [];
 
       for (const relationship of res.data) {
+        console.log(relationship)
         let mentorTopics: string[];
 
         await axios
