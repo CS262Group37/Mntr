@@ -55,7 +55,7 @@ function Workshops() {
           </div>
         </div>
 
-        <PlanOfAction />
+        {/* <PlanOfAction /> */}
       </div>
     </div>
   );

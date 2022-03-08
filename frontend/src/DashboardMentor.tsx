@@ -230,7 +230,7 @@ function DashboardMentor() {
         </div>
 
         {/* Plan of action */}
-        <PlanOfAction />
+        {/* <PlanOfAction /> */}
       </div>
     </div>
   );
