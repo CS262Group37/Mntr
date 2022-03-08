@@ -37,6 +37,7 @@ function Profile() {
     role: "",
     businessArea: "",
   });
+  const [mentor, setMentor] = React.useState<UserData[]>([]);
 
   let query = useQuery();
   const userIdQuery = query.get("id");
@@ -107,7 +108,7 @@ function Profile() {
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar activeStr="Public profile" />
+      <NavBar activeStr="Public profile" setMentor={setMentor}/>
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display  bg-cultured overflow-auto p-6 flex flex-col pb-40">
