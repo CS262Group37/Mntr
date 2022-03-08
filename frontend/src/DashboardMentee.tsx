@@ -159,13 +159,7 @@ function parseDate(d: string) {
   const [date, time] = d.split(" ");
   const [day, month, year] = date.split("/");
   const [hour, min] = time.split(":");
-  let fullYear: string;
-
-  if (parseInt(year) < 30) {
-    fullYear = "20" + year;
-  } else {
-    fullYear = "19" + year;
-  }
+  const fullYear = "20" + year;
 
   return new Date(
     new Date(
