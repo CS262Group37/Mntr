@@ -8,7 +8,7 @@ import { Avatar } from "@mui/material";
 import { Link, Navigate, useLocation } from "react-router-dom";
 
 interface UserData {
-  relationId: number;
+  relationID: number;
   id?: number;
   email: string;
   firstName: string;
@@ -17,6 +17,17 @@ interface UserData {
   role: string;
   businessArea: string;
   topics: string[];
+  meetings: Meeting[];
+}
+
+interface Meeting {
+  meetingID: number;
+  title: string;
+  description: string;
+  feedback: string;
+  status: string;
+  startTime: Date;
+  endTime: Date;
 }
 
 interface Mentor {
@@ -40,7 +51,7 @@ const MentorDetails: React.FC<Mentor> = (props) => {
   let hasNextMeeting: Boolean = false;
 
   useEffect(() => {
-    axios.post("/api/meetings/get-next-meeting", { relationID: mentor.relationId }).then(async (res: any) => {
+    axios.post("/api/meetings/get-next-meeting", { relationID: mentor.relationID }).then(async (res: any) => {
       console.log(res.data);
 
       if (!res.data.hasOwnProperty('error')) {
@@ -152,6 +163,21 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
+function parseDate(d: string) {
+  const [date, time] = d.split(' ');
+  const [day, month, year] = date.split('/');
+  const [hour, min] = time.split(':');
+  let fullYear: string;
+
+  if (parseInt(year) < 30) {
+    fullYear = "20" + year;
+  } else {
+    fullYear = "19" + year;
+  }
+
+  return new Date(new Date(parseInt(fullYear), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(min)));
+}
+
 function DashboardMentee() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
 
@@ -162,6 +188,8 @@ function DashboardMentee() {
 
       for (const relationship of res.data) {
         let mentorTopics: string[];
+        let mentorMeetings: Meeting[] = [];
+
         await axios
           .post("/api/users/get-user-topics", { userID: relationship.mentorid })
           .then((res: any) => {
@@ -169,10 +197,28 @@ function DashboardMentee() {
           });
 
         await axios
+          .post("/api/meetings/get-meetings", { relationID: relationship.relationid })
+          .then((res: any) => {
+            res.data.map((m: any) => {
+              const newMeeting = {
+                meetingID: m.meetingid,
+                title: m.title,
+                description: m.description,
+                feedback: m.feedback,
+                status: m.status,
+                startTime: parseDate(m.starttime),
+                endTime: parseDate(m.starttime),
+              }
+
+              mentorMeetings.push(newMeeting);
+            })
+          });
+
+        await axios
           .post("/api/users/get-user-data", { userID: relationship.mentorid })
           .then((res: any) => {
             const mentor: UserData = {
-              relationId: relationship.relationid,
+              relationID: relationship.relationid,
               id: relationship.mentorid,
               email: res.data.email,
               firstName: res.data.firstname,
@@ -181,7 +227,9 @@ function DashboardMentee() {
               role: res.data.role,
               businessArea: res.data.businessarea,
               topics: mentorTopics,
+              meetings: mentorMeetings,
             };
+            
             newMentors.push(mentor);
           });
       }
@@ -206,7 +254,7 @@ function DashboardMentee() {
   const currentMentorId = query.get("mentor");
   let currentMentorIdNum: number = -1;
   let currentMentor: UserData = {
-    relationId: -1,
+    relationID: -1,
     email: "",
     firstName: "",
     lastName: "",
@@ -214,6 +262,7 @@ function DashboardMentee() {
     role: "",
     businessArea: "",
     topics: [],
+    meetings: [],
   };
 
   if (mentors.length > 0 && currentMentorId == null) {
