@@ -16,7 +16,12 @@ interface UserData {
   role: string;
   businessArea: string;
   topics: string[];
-  meetings: Meeting[];
+  goingAheadMeetings: Meeting[];
+  pendingMeetings: Meeting[];
+  completedMeetings: Meeting[];
+  cancelledMeetings: Meeting[];
+  missedMeetings: Meeting[];
+  runningMeetings: Meeting[];
   planOfAction: Goal[];
 }
 
@@ -82,6 +87,13 @@ function DashboardMentee() {
 
         // Get meetings
         let mentorMeetings: Meeting[] = [];
+        let goingAheadMeetings: Meeting[] = [];
+        let pendingMeetings: Meeting[] = [];
+        let completedMeetings: Meeting[] = [];
+        let cancelledMeetings: Meeting[] = [];
+        let missedMeetings: Meeting[] = [];
+        let runningMeetings: Meeting[] = [];
+
         await axios
           .post("/api/meetings/get-meetings", {
             relationID: relationship.relationid,
@@ -102,6 +114,29 @@ function DashboardMentee() {
             mentorMeetings.sort((e1: any, e2: any) => {
               return e2.startTime - e1.startTime;
             });
+
+            for (const meeting of mentorMeetings) {
+              switch (meeting.status) {
+                case "goingAhead":
+                  goingAheadMeetings.push(meeting);
+                  break;
+                case "pending":
+                  pendingMeetings.push(meeting);
+                  break;
+                case "completed":
+                  completedMeetings.push(meeting);
+                  break;
+                case "cancelled":
+                  cancelledMeetings.push(meeting);
+                  break;
+                case "missed":
+                  missedMeetings.push(meeting);
+                  break;
+                case "running":
+                  runningMeetings.push(meeting);
+                  break;
+              };
+            };
           });
 
         // Get plan of action
@@ -136,7 +171,12 @@ function DashboardMentee() {
               role: res.data.role,
               businessArea: res.data.businessarea,
               topics: mentorTopics,
-              meetings: mentorMeetings,
+              goingAheadMeetings: goingAheadMeetings,
+              pendingMeetings: pendingMeetings,
+              completedMeetings: completedMeetings,
+              cancelledMeetings: cancelledMeetings,
+              missedMeetings: missedMeetings,
+              runningMeetings: runningMeetings,
               planOfAction: goals,
             };
 
@@ -164,7 +204,12 @@ function DashboardMentee() {
     role: "",
     businessArea: "",
     topics: [],
-    meetings: [],
+    goingAheadMeetings: [],
+    pendingMeetings: [],
+    completedMeetings: [],
+    cancelledMeetings: [],
+    missedMeetings: [],
+    runningMeetings: [],
     planOfAction: [],
   };
 
@@ -182,7 +227,7 @@ function DashboardMentee() {
     }
   }
 
-  console.log(currentMentor.meetings);
+  console.log(currentMentor);
 
   return (
     <div className="fixed h-full w-full">
@@ -199,8 +244,18 @@ function DashboardMentee() {
           <div className="flex flex-col w-[100%]">
             <MentorDetails mentorData={currentMentor} handleNewMeeting={getMentors}/>
 
-            <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
-              {currentMentor.meetings.map((meeting) => {
+            <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
+              {/* <h2 className="text-left">Pending</h2> */}
+              {currentMentor.pendingMeetings.map((meeting) => {
+                return <MeetingCard meetingData={meeting} />;
+              })}
+
+              <h1 className="text-left pt-6 mt-6 pl-4 text-3xl text-firebrick border-t-[1.5px] border-gray-200"></h1>
+              {/* <hr className="border-[0.5px]"></hr> */}
+              {currentMentor.completedMeetings.map((meeting) => {
+                return <MeetingCard meetingData={meeting} />;
+              })}
+              {currentMentor.missedMeetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;
               })}
             </div>
