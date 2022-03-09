@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS workshop CASCADE;
 DROP TABLE IF EXISTS message_workshop_invite CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
 DROP TABLE IF EXISTS workshop_demand CASCADE;
+DROP TABLE IF EXISTS message_report CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
@@ -114,6 +115,11 @@ CREATE TABLE report (
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     content VARCHAR NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+);
+
+CREATE TABLE message_report(
+    messageID INTEGER REFERENCES "message"(messageID),
+    reportID INTEGER REFERENCES report(reportID)
 );
 
 CREATE TABLE workshop (
