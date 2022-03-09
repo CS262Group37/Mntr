@@ -40,6 +40,7 @@ def create_app():
         app.register_blueprint(plan.plan_bp, url_prefix='/api/plan')
         app.register_blueprint(users.users_bp, url_prefix='/api/users')
         app.register_blueprint(workshop.workshop_bp, url_prefix='/api/workshop')
+        app.register_blueprint(reports.reports_bp, url_prefix='/api/reports')
 
         apscheduler.scheduler.start()
         apscheduler.scheduler.add_job("update_workshop_demand", workshop.workshop.update_time_demand, trigger="interval", seconds=5, max_instances=1)

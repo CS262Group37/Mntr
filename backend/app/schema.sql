@@ -91,7 +91,7 @@ CREATE TABLE "message" (
     messageID SERIAL PRIMARY KEY,
     recipientID INTEGER NOT NULL REFERENCES "user"(userID),
     senderID INTEGER NOT NULL REFERENCES "user"(userID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage', 'Email', 'WorkshopInvite')),
+    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage', 'Email', 'WorkshopInvite', 'Report')),
     sentTime TIMESTAMP NOT NULL,
     CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
 );
@@ -106,6 +106,11 @@ CREATE TABLE message_email(
     messageID INTEGER REFERENCES "message"(messageID),
     "subject" VARCHAR NOT NULL,
     content VARCHAR NOT NULL
+);
+
+CREATE TABLE message_report(
+    messageID INTEGER REFERENCES "message"(messageID),
+    reportID INTEGER REFERENCES report(reportID)
 );
 
 CREATE TABLE report (

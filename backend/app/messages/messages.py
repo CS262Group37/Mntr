@@ -55,6 +55,11 @@ class Email(Message):
         self.subject = subject
         self.content = content
 
+class Report(Message):
+    def __init__(self, recipientID, senderID, reportID):
+        Message.__init__(self, recipientID, senderID)
+        self.reportID = reportID
+
 class WorkshopInvite(Message):
     # Message type can be: request, completed
     def __init__(self, recipientID, senderID, content, workshopID = None):
@@ -72,10 +77,11 @@ def send_message(message, custom_conn = None):
             break
 
     if not valid_message:
+        print("HERE")
         return False
 
     message_type = type(message).__name__
-
+    print(message_type)
     def run_sql(conn):
 
         def send(recipientID, senderID):
@@ -95,6 +101,10 @@ def send_message(message, custom_conn = None):
             elif message_type == 'WorkshopInvite':
                 sql = 'INSERT INTO message_workshop_invite (messageID, content, workshopID) VALUES (%s, %s, %s)'
                 data = (messageID, message.content, message.workshopID)
+                conn.execute(sql, data)
+            elif message_type == 'Report':
+                sql = 'INSERT INTO message_report (messageID, reportID) VALUES (%s, %s)'
+                data = (messageID, message.reportID)
                 conn.execute(sql, data)
 
         if message.recipientID == -1 or message.senderID == -1:
