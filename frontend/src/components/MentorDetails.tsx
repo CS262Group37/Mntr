@@ -28,6 +28,7 @@ interface UserData {
 
 interface MentorProps {
   mentorData: UserData;
+  handleNewMeeting: () => void;
 }
 
 function revParseDate(d: string) {
@@ -97,7 +98,7 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
         description: descrip,
       })
       .then((res: any) => {
-        window.location.reload();
+        props.handleNewMeeting()
         
       });
       setOpen(false)
@@ -114,7 +115,7 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
   const [end, setEnd] = useState<string>(currentDate());
 
   useEffect(() => {
-    // console.log("here");
+    console.log("here");
     axios
       .post("/api/meetings/get-next-meeting", { relationID: mentor.relationID })
       .then(async (res: any) => {

@@ -19,6 +19,7 @@ import {
 interface PlanProps {
   goals: Goal[];
   relationID: number;
+  handleNewGoal: () => void;
 }
 
 interface Goal {
@@ -88,7 +89,7 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
   const addGoal = () => {
     console.log(title + " " + desc);
     axios.post("/api/plan/add-plan", { relationID: props.relationID, title: title, description: desc }).then(() => {
-      window.location.reload();
+      props.handleNewGoal();
     });
     setOpen(false);
     

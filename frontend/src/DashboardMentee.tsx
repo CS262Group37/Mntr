@@ -38,7 +38,6 @@ interface Goal {
   status: string;
 }
 
-
 function useQuery() {
   const { search } = useLocation();
 
@@ -66,7 +65,8 @@ function DashboardMentee() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
 
   // Get mentee-mentor relations and mentees' data
-  useEffect(() => {
+
+  const getMentors = () => {
     axios.get("/api/relations/get-relations").then(async (res: any) => {
       var newMentors: UserData[] = [];
 
@@ -107,7 +107,9 @@ function DashboardMentee() {
         // Get plan of action
         let goals: Goal[] = [];
         await axios
-          .get("/api/plan/get-plan", { params: {relationID: relationship.relationid} })
+          .get("/api/plan/get-plan", {
+            params: { relationID: relationship.relationid },
+          })
           .then((res: any) => {
             console.log(res.data);
 
@@ -144,6 +146,10 @@ function DashboardMentee() {
 
       setMentors(newMentors);
     });
+  };
+
+  useEffect(() => {
+    getMentors();
   }, []);
 
   // Read the query string to get the mentee to render
@@ -191,7 +197,7 @@ function DashboardMentee() {
         {/* White half */}
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
-            <MentorDetails mentorData={currentMentor} />
+            <MentorDetails mentorData={currentMentor} handleNewMeeting={getMentors}/>
 
             <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
               {currentMentor.meetings.map((meeting) => {
@@ -202,7 +208,11 @@ function DashboardMentee() {
         </div>
 
         {/* Plan of action */}
-        <PlanOfAction goals={currentMentor.planOfAction} relationID={currentMentor.relationID} />
+        <PlanOfAction
+          goals={currentMentor.planOfAction}
+          relationID={currentMentor.relationID}
+          handleNewGoal={getMentors}
+        />
       </div>
     </div>
   );
