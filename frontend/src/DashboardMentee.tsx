@@ -99,6 +99,7 @@ function DashboardMentee() {
             relationID: relationship.relationid,
           })
           .then((res: any) => {
+            console.log(res.data);
             mentorMeetings = res.data.map((m: any) => {
               return {
                 meetingID: m.meetingid,
@@ -146,8 +147,6 @@ function DashboardMentee() {
             params: { relationID: relationship.relationid },
           })
           .then((res: any) => {
-            console.log(res.data);
-
             goals = res.data.map((g: any) => {
               return {
                 goalID: g.planofactionid,
@@ -242,15 +241,15 @@ function DashboardMentee() {
         {/* White half */}
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
-            <MentorDetails mentorData={currentMentor} handleNewMeeting={getMentors}/>
+            <MentorDetails mentorData={currentMentor} handleNewMeeting={getMentors} nextMeeting={currentMentor.goingAheadMeetings.length > 0 ? currentMentor.goingAheadMeetings[currentMentor.goingAheadMeetings.length-1].startTime : null}/>
 
             <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
-              {/* <h2 className="text-left">Pending</h2> */}
               {currentMentor.pendingMeetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;
               })}
 
-              <h1 className="text-left pt-6 mt-6 pl-4 text-3xl text-firebrick border-t-[1.5px] border-gray-200"></h1>
+              {(currentMentor.pendingMeetings.length > 0 && (currentMentor.missedMeetings.length > 0 || currentMentor.completedMeetings.length > 0)) &&
+                <h1 className="text-left pt-6 mt-6 pl-4 text-3xl text-firebrick border-t-[1.5px] border-gray-200"></h1>}
               {/* <hr className="border-[0.5px]"></hr> */}
               {currentMentor.completedMeetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;

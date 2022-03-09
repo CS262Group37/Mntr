@@ -110,7 +110,7 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
         </button>
 
         <Dialog onClose={() => setOpen(false)} open={open} fullWidth={true}>
-          <DialogTitle>Subscribe</DialogTitle>
+          <DialogTitle>Add a goal</DialogTitle>
           <DialogContent>
             <div className="flex flex-col space-y-3">
               <TextField
