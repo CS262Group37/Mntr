@@ -67,6 +67,8 @@ def create_random_meetings(meeting_count = None):
                 status = random.choice(['going-ahead', 'pending', 'cancelled', 'completed', 'missed', 'running'])
                 print("Setting id", meeting['meetingid'], "to", status)
                 update_data('UPDATE meeting SET "status" = %s WHERE meetingID = %s;', (status, meeting['meetingid']))
+                if status == 'completed':
+                    update_data('UPDATE meeting SET feedback = %s WHERE meetingID = %s;', (fake.paragraph(nb_sentences=10), meeting['meetingid']))
             progress.update(meeting_status_progress, advance=1)
             
 
