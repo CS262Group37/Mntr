@@ -202,7 +202,7 @@ function DashboardMentee() {
         </div>
 
         {/* Plan of action */}
-        <PlanOfAction goals={currentMentor.planOfAction} />
+        <PlanOfAction goals={currentMentor.planOfAction} relationID={currentMentor.relationID} />
       </div>
     </div>
   );

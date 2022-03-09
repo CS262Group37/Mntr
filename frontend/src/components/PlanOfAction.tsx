@@ -18,6 +18,7 @@ import {
 
 interface PlanProps {
   goals: Goal[];
+  relationID: number;
 }
 
 interface Goal {
@@ -30,10 +31,6 @@ interface Goal {
 
 interface ListElemProps {
   goal: Goal;
-}
-
-function addGoal() {
-
 }
 
 const ListElem: React.FC<ListElemProps> = (props) => {
@@ -85,6 +82,17 @@ const ListElem: React.FC<ListElemProps> = (props) => {
 // TODO fix ordering (complete first, incomplete first?)
 const PlanOfAction: React.FC<PlanProps> = (props) => {
   const [open, setOpen] = React.useState(false); // dialog open/closed
+  const [title, setTitle] = React.useState<string>("");
+  const [desc, setDesc] = React.useState<string>("");
+
+  const addGoal = () => {
+    console.log(title + " " + desc);
+    axios.post("/api/plan/add-plan", { relationID: props.relationID, title: title, description: desc }).then(() => {
+      window.location.reload();
+    });
+    setOpen(false);
+    
+  };
 
   return (
     <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured overflow-auto pb-44">
@@ -100,23 +108,20 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
           <BiPlus className="h-10 w-10 p-2" />
         </button>
 
-        <Dialog onClose={() => setOpen(false)} open={open}>
+        <Dialog onClose={() => setOpen(false)} open={open} fullWidth={true}>
           <DialogTitle>Subscribe</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Email Address"
-                type="email"
-                fullWidth
-                variant="standard"
-              />
-            </DialogContentText>
+            <div className="flex flex-col space-y-3">
+              <TextField label="Title" onChange={(e: any) => {
+                  setTitle(e.target.value);
+                }}></TextField>
+              <TextField label="Description" multiline onChange={(e: any) => {
+                  setDesc(e.target.value);
+                }}></TextField>
+            </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={addGoal}>Schedule</Button>
+            <Button onClick={addGoal} sx={{ color: "#0E2A47" }}>Add goal</Button>
           </DialogActions>
         </Dialog>
       </div>
