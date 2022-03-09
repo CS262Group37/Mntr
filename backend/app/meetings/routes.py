@@ -98,7 +98,7 @@ class GetMeetings(AuthResource):
 
     @meetings_api.doc(security='apiKey')
     @meetings_api.expect(parsers.relationID_parser)
-    def get(self):
+    def post(self):
         data = parsers.relationID_parser.parse_args()
         return meetings.get_meetings(data['relationID'])
 
@@ -107,7 +107,7 @@ class GetNextMeeting(AuthResource):
 
     @meetings_api.doc(security='apiKey')
     @meetings_api.expect(parsers.relationID_parser)
-    def get(self):
+    def post(self):
         data = parsers.relationID_parser.parse_args()
         return meetings.get_next_meeting(data['relationID'])
 

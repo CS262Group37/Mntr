@@ -2,7 +2,7 @@ from app.database import DatabaseConnection
 
 def calculate_compatibility(menteeUser, mentorUser, menteeRatings, mentorRatings, menteeTopics, mentorTopics):
     # Check if business areas match
-    if menteeUser[0]['businessarea'] != mentorUser[0]['businessarea']:
+    if menteeUser[0]['businessarea'] == mentorUser[0]['businessarea']:
         return 0
 
     # Calculate topic area factor

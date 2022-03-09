@@ -1,5 +1,3 @@
-import React from "react";
-
 interface DropdwonProps {
   onChange: any,
   values: string[],

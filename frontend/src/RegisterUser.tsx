@@ -6,7 +6,17 @@ import TextInput from "./components/TextInput";
 import Dropdown from "./components/Dropdown";
 import LoginButton from "./components/LoginButton";
 import axios from "axios";
-import { Slider, Typography } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  Chip,
+  Input,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface skillRating {
   name: string;
@@ -17,10 +27,15 @@ function RegisterUser() {
   const [role, setRole] = React.useState<string>("mentor");
 
   const [area, setArea] = React.useState<string>("");
+  const [selectedTopics, setSelectedTopics] = React.useState<string[]>([]);
+
   const [topics, setTopics] = React.useState<string[]>([]);
-  
   const [areas, setAreas] = React.useState<string[]>([]);
   const [skills, setSkills] = React.useState<skillRating[]>([]);
+
+  const [psword, setPsword] = React.useState<string>("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get("/api/admin/get-skills").then((res: any) => {
@@ -29,24 +44,72 @@ function RegisterUser() {
       );
     });
     axios.get("/api/admin/get-business-area").then((res: any) => {
-      console.log(res.data)
-      setAreas(
-        res.data.map((area: any) => (area.name)));
+      console.log(res.data);
+      setAreas(res.data.map((area: any) => area.name));
     });
     axios.get("/api/admin/get-topics").then((res: any) => {
-      console.log(res.data)
-      setTopics(
-        res.data.map((topic: any) => (topic.name)));
+      console.log(res.data);
+      setTopics(res.data.map((topic: any) => topic.name));
     });
   }, []);
 
-  const [psword, setPsword] = React.useState<string>("");
+  const register = () => {
+    switch (role) {
+      case "admin":
+        try {
+          axios
+            .post("/api/auth/register-user", {
+              role: "admin",
+              adminPassword: psword,
+            })
+            .then((res: any) => {
+              navigate("/dashboard-admin");
+            });
+        } catch (e) {
+          console.log(e);
+        }
 
-  const register = () => {};
+        break;
+
+      case "mentor":
+        try {
+          axios
+            .post("/api/auth/register-user", {
+              role: "mentor",
+              businessArea: area,
+              topics: selectedTopics,
+            })
+            .then((res: any) => {
+              navigate("/dashboard-mentor");
+            });
+        } catch (e) {
+          console.log(e);
+        }
+
+        break;
+
+      case "mentee":
+        try {
+          axios
+            .post("/api/auth/register-user", {
+              role: "mentee",
+              businessArea: area,
+              topics: selectedTopics,
+              skills: skills.map((skill) => skill.name),
+              ratings: skills.map((skill) => skill.rating),
+            })
+            .then((res: any) => {
+              navigate('/dashboard-mentee')
+            });
+        } catch (e) {
+          console.log(e);
+        }
+
+        break;
+    }
+  };
 
   const updateRating = (value: number, index: number) => {
-    console.log(skills);
-    console.log(value, index);
     const newSkills = [...skills];
     newSkills[index] = { name: skills[index].name, rating: value };
     setSkills(newSkills);
@@ -68,15 +131,38 @@ function RegisterUser() {
 
   const RegisterMentor = (
     <div>
-      <TextInput
-        type="password"
-        value={psword}
+      <Dropdown
+        values={areas}
+        labels={areas}
         onChange={(e: any) => {
-          setPsword(e.target.value);
+          setArea(e.target.value);
         }}
-        placeholder="Mentor Password"
-        icon={<BiUser className="text-4xl m-4 mr-0" />}
-      />
+        icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
+      ></Dropdown>
+      <Select
+        labelId="demo-multiple-chip-label"
+        id="demo-multiple-chip"
+        multiple
+        value={selectedTopics}
+        onChange={(e: any) => {
+          setSelectedTopics(e.target.value);
+        }}
+        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+        renderValue={(selected) => (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            {selected.map((value) => (
+              <Chip key={value} label={value} />
+            ))}
+          </Box>
+        )}
+      >
+        {topics.map((topic) => (
+          <MenuItem key={topic} value={topic}>
+            <Checkbox checked={selectedTopics.indexOf(topic) > -1} />
+            <ListItemText primary={topic} />
+          </MenuItem>
+        ))}
+      </Select>
     </div>
   );
 
@@ -90,20 +176,38 @@ function RegisterUser() {
         }}
         icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
       ></Dropdown>
-      <Dropdown
-        values={topics}
-        labels={topics}
+      <Select
+        labelId="demo-multiple-chip-label"
+        id="demo-multiple-chip"
+        multiple
+        value={selectedTopics}
         onChange={(e: any) => {
-          setArea(e.target.value);
+          setSelectedTopics(e.target.value);
         }}
-        icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
-      ></Dropdown>
+        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+        renderValue={(selected) => (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            {selected.map((value) => (
+              <Chip key={value} label={value} />
+            ))}
+          </Box>
+        )}
+      >
+        {topics.map((topic) => (
+          <MenuItem key={topic} value={topic}>
+            <Checkbox checked={selectedTopics.indexOf(topic) > -1} />
+            <ListItemText primary={topic} />
+          </MenuItem>
+        ))}
+      </Select>
       {skills.map((skill, index) => (
         <div>
           <label>{skill.name}</label>
           <input
             key={index}
             type="number"
+            min={0}
+            max={10}
             value={skill.rating}
             onChange={(e: any) => {
               updateRating(e.target.value, index);

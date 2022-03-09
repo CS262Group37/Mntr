@@ -22,14 +22,30 @@ MENTEES
     bio - customisable
   *Navbar
     dropdown - My mentors, Browse mentors, Workshops
-    
+    user menu
+      view profile
+      notifications
+      messages
+      upcoming events
+      settings + log out
+
 
 MENTORS
   Dashboard - my mentees
     main page
+    plan of action
+  Workshops
   Public profile
     details (name, business area)
     profile picture
     topics
     bio - customisable
-    ratings
+    ratings!
+  *Navbar
+    dropdown - My mentees
+    user menu
+      view profile
+      notifications
+      messages
+      upcoming events
+      settings + log out

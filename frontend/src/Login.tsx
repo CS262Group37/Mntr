@@ -8,6 +8,8 @@ import TextInput from "./components/TextInput";
 import LoginButton from "./components/LoginButton";
 import Dropdown from "./components/Dropdown";
 
+// TODO print error message when user enters wrong credentials
+
 function Login() {
   const [email, setEmail] = React.useState<string>("");
   const [psword, setPsword] = React.useState<string>("");
@@ -39,7 +41,7 @@ function Login() {
         <div className="bg-cultured h-full w-3/5 m-auto flex text-prussianBlue overflow-scroll overflow-x-auto">
           {/* Main center flexbox */}
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
-            <h2 className="text-4xl pt-[10%]">
+            <h2 className="text-4xl pt-[0%]">
               Welcome to <span className="font-bold text-firebrick">Mntr</span>
             </h2>
             <p className="text-2xl">
@@ -47,16 +49,7 @@ function Login() {
             </p>
 
             {/* Inputs */}
-            <div className="flex flex-col space-y-8 pt-[6%]">
-              {/* Role input */}
-              <Dropdown
-                values={["mentor", "mentee", "admin"]}
-                labels={["Mentor", "Mentee", "Admin"]}
-                onChange={(e: any) => {
-                  setRole(e.target.value);
-                }}
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
-              />
+            <div className="flex flex-col space-y-8 pt-[0%]">
 
               {/* E-mail address input */}
               <TextInput
@@ -70,29 +63,29 @@ function Login() {
               />
 
               {/* Password input */}
-              <div>
-                <TextInput
-                  type="password"
-                  value={psword}
-                  onChange={(e: any) => {
-                    setPsword(e.target.value);
-                  }}
-                  placeholder="Password"
-                  icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
-                />
+              <TextInput
+                type="password"
+                value={psword}
+                onChange={(e: any) => {
+                  setPsword(e.target.value);
+                }}
+                placeholder="Password"
+                icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+              />
 
-                <p className="text-right text-lg pt-1 underline">
-                  Forgot password?
-                </p>
-                <Dropdown
-                  values={["mentor", "mentee", "admin"]}
-                  labels={["Mentor", "Mentee", "Admin"]}
-                  onChange={(e: any) => {
-                    setRole(e.target.value);
-                  }}
-                  icon={<BiUser className="text-4xl m-4 mr-0" />}
-                />
-              </div>
+              {/* Role input */}
+              <Dropdown
+                values={["mentor", "mentee", "admin"]}
+                labels={["Mentor", "Mentee", "Admin"]}
+                onChange={(e: any) => {
+                  setRole(e.target.value);
+                }}
+                icon={<BiUser className="text-4xl m-4 mr-0" />}
+              />
+              {/* TODO Implement forget password feature. Might not be worth */}
+              {/* <p className="text-right text-lg pt-1 underline">
+                Forgot password?
+              </p> */}
             </div>
 
             <LoginButton value="Login" onClick={login} />

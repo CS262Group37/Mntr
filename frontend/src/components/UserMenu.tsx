@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
   BiUserCircle,
   BiEnvelope,
@@ -10,7 +11,9 @@ import {
 import { Link } from "react-router-dom";
 
 interface UserMenuProps {
-  visible: boolean;
+  firstName: string;
+  lastName: string;
+  id?: number;
 }
 
 interface EventProps {
@@ -46,7 +49,7 @@ const Event: React.FC<EventProps> = (props) => {
         </p>
       </div>
 
-      <p>
+      <p className="font-bold">
         {props.date.toLocaleDateString() +
           " at " +
           props.date.toLocaleTimeString()}
@@ -62,6 +65,14 @@ const Event: React.FC<EventProps> = (props) => {
       </p>
     </div>
   );
+};
+
+const logout = async () => {
+  try {
+    axios.get("/api/auth/logout");
+  } catch (error: any) {
+    console.log(error.response);
+  }
 };
 
 const Message: React.FC<MessageProps> = (props) => {
@@ -88,16 +99,15 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
   return (
     <div
       className={
-        "absolute bg-cultured text-prussianBlue w-1/3 max-h-[66%] overflow-auto top-20 right-6 z-10 pt-2 text-left rounded-3xl shadow-md animate-growDown origin-top-right inline-block text-xl font-display " +
-        (props.visible ? "visible" : "hidden")
+        "bg-cultured rounded-md text-prussianBlue flex-auto w-[500px] max-h-[640px] overflow-auto top-20 right-6 z-10 pt-2 text-left animate-growDown origin-top-right text-xl font-display"
       }
     >
       <Link
-        to="/dashboard-mentee"
-        className="flex flex-row hover:font-semibold pr-6 pl-6 pb-4 pt-4 border-b-[1px] border-gray-300"
+        to={"/profile?id=" + props.id}
+        className="flex flex-row font-semibold text-2xl hover:font-bold pr-6 pl-6 pb-4 pt-4 border-b-[1px] border-gray-300"
       >
-        <BiUserCircle className="text-2xl m-auto ml-0 mr-2" />
-        <h2>View public profile</h2>
+        <BiUserCircle className="text-3xl m-auto ml-0 mr-2" />
+        <h2>{props.firstName + " " + props.lastName}</h2>
       </Link>
 
       {/* Notifications */}
@@ -129,7 +139,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
       </div>
 
       {/* Events */}
-      <div className="pr-6 pl-6 pb-4 pt-4 border-b-[1px] border-gray-300">
+      <div className="pr-6 pl-6 pb-4 pt-4">
         <div className="flex flex-row">
           <BiCalendar className="text-2xl m-auto ml-0 mr-2" />
           <h2>Upcoming events</h2>
@@ -161,11 +171,8 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           <h2>Settings</h2>
         </Link>
 
-        <Link
-          to="/"
-          className="flex flex-row hover:font-semibold pr-6 pl-6 pb-4 pt-4"
-        >
-          <h2>Log out</h2>
+        <Link to="/" className="flex flex-row hover:font-semibold pr-6 pl-6 pb-4 pt-4">
+          <span onClick={logout}>Log out</span>
           <BiLogOut className="text-2xl m-auto mr-0 ml-2" />
         </Link>
       </div>

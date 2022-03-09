@@ -1,5 +1,3 @@
-import React from "react";
-
 function LeftPanel() {
   return (
     // Blue half (login + registration page)
