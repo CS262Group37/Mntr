@@ -30,6 +30,12 @@ interface MentorProps {
   mentorData: UserData;
 }
 
+function revParseDate(d: string) {
+  const [date, time] = d.split("T");
+  const [year, month, day] = date.split("-")
+  return (`${parseInt(day)}/${parseInt(month)}/${year.slice(-2)} ${time}`)
+}
+
 function parseDate(d: string) {
   const [date, time] = d.split(" ");
   const [day, month, year] = date.split("/");
@@ -65,7 +71,7 @@ const currentDate = () => {
       : dateNow.getHours();
 
   const mins =
-    dateNow.getHours().toString().length < 2
+    dateNow.getMinutes().toString().length < 2
       ? `0${dateNow.getMinutes()}`
       : dateNow.getMinutes();
 
@@ -79,20 +85,22 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
   // TODO schedule a meeting function
   const schedule = () => {
     console.log(
-      `title: ${title}, descrip: ${descrip}, start: ${start}, end: ${end}`
+      `title: ${title}, descrip: ${descrip}, start: ${revParseDate(start)}, end: ${revParseDate(end)}`
     );
 
     axios
       .post("/api/meetings/create-meeting", {
         relationID: mentor.relationID,
-        startTime: start,
-        endTime: end,
+        startTime: revParseDate(start),
+        endTime: revParseDate(end),
         title: title,
         description: descrip,
       })
       .then((res: any) => {
-        console.log(res.data);
+        window.location.reload();
+        
       });
+      setOpen(false)
     return;
   };
 
@@ -113,6 +121,7 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
         // console.log(mentor.relationID)
         // console.log(res.data);
         if (!res.data.hasOwnProperty("error")) {
+          console.log(res.data.starttime)
           setHasNextMeeting(true);
           setNextMeeting(new Date(parseDate(res.data.starttime)));
         }
