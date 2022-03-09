@@ -88,24 +88,11 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
 
   const addGoal = () => {
     console.log(title + " " + desc);
-<<<<<<< HEAD
     axios.post("/api/plan/add-plan", { relationID: props.relationID, title: title, description: desc }).then(() => {
       props.handleNewGoal();
     });
     setOpen(false);
     
-=======
-    axios
-      .post("/api/plan/add-plan", {
-        relationID: props.relationID,
-        title: title,
-        description: desc,
-      })
-      .then(() => {
-        window.location.reload();
-      });
-    // setOpen(false);
->>>>>>> a69325a06c94392cbb321ab9a2211699144166fa
   };
 
   return (
