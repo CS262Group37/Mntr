@@ -6,7 +6,7 @@ import axios from "axios";
 // TODO add a goal to the plan of action
 
 interface PlanProps {
-  relationID: number;
+  goals: Goal[];
 }
 
 interface Goal {
@@ -67,59 +67,37 @@ const ListElem: React.FC<ListElemProps> = (props) => {
 };
 
 const PlanOfAction: React.FC<PlanProps> = (props) => {
-  const [goals, setGoals] = React.useState<Goal[]>([]);
+  // const [goals, setGoals] = React.useState<Goal[]>([]);
 
   // useEffect(() => {
+  //   let newGoals: Goal[];
+
   //   axios
-  //     .post("/api/meetings/get-meetings", { relationID: props.relationID })
+  //     .get("/api/plan/get-plan", { params: { relationID: props.relationID } })
   //     .then((res: any) => {
-  //       console.log(props.relationID);
-  //       console.log(res.data);
-  //       // setGoals();
+  //       newGoals = res.data.map((g:any) => {
+  //         return {
+  //           goalID: g.goalid,
+  //           title: g.title,
+  //           description: g.description,
+  //           // creationDate?: Date;
+  //           status: g.status,
+  //         }
+  //       });
+  //       console.log(newGoals);  
+
+  //       // dummy data
+  //       setGoals([
+  //         {title: "goal 1", description: "just another goal", status: "complete"},
+  //         {title: "goal 2", description: "just another goal", status: "complete"},
+  //         {title: "goal 3", description: "just another goal", status: "incomplete"},
+  //         {title: "goal 4", description: "just another goal", status: "incomplete"},
+  //         {title: "goal 5", description: "just another goal", status: "incomplete"},
+  //       ]);
+
+  //       setGoals(newGoals);
   //     });
   // }, []);
-
-  useEffect(() => {
-    let newGoals: Goal[];
-
-    axios
-      .get("/api/plan/get-plan", { params: { relationID: props.relationID } })
-      .then((res: any) => {
-        // console.log(res.data);
-        // setGoals();
-
-        newGoals = res.data.map((e:any) => {
-          return {
-            goalID: res.data.goalid,
-            title: res.data.title,
-            description: res.data.description,
-            // creationDate?: Date;
-            status: res.data.status,
-          }
-        });
-
-        console.log(newGoals);  
-
-          // const newGoal: Goal = {
-          //   goalID: res.data.goalid,
-          //   title: res.data.title,
-          //   description: res.data.description,
-          //   // creationDate?: Date;
-          //   status: res.data.status,
-          // }
-
-        // dummy data
-        setGoals([
-          {title: "goal 1", description: "just another goal", status: "complete"},
-          {title: "goal 2", description: "just another goal", status: "complete"},
-          {title: "goal 3", description: "just another goal", status: "incomplete"},
-          {title: "goal 4", description: "just another goal", status: "incomplete"},
-          {title: "goal 5", description: "just another goal", status: "incomplete"},
-        ]);
-
-        setGoals(newGoals);
-      });
-  }, []);
 
   return (
     <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured">
@@ -128,7 +106,7 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
       </h1>
 
       <div className="flex flex-col">
-        {goals.map((goal: Goal) => {
+        {props.goals.map((goal: Goal) => {
           // console.log(meeting);
           return <ListElem goal={goal} />;
         })}

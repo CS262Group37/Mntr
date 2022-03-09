@@ -28,6 +28,7 @@ interface UserData {
   businessArea: string;
   topics: string[];
   meetings: Meeting[];
+  planOfAction: Goal[];
 }
 
 interface Meeting {
@@ -38,6 +39,14 @@ interface Meeting {
   status: string;
   startTime: Date;
   endTime: Date;
+}
+
+interface Goal {
+  goalID?: number;
+  title: string;
+  description: string;
+  creationDate?: Date;
+  status: string;
 }
 
 interface MentorProps {
@@ -189,14 +198,15 @@ function DashboardMentee() {
       for (const relationship of res.data) {
         let mentorTopics: string[];
 
+        // Get topics
         await axios
           .post("/api/users/get-user-topics", { userID: relationship.mentorid })
           .then((res: any) => {
             mentorTopics = res.data.map((t: any) => t.topic);
           });
 
+        // Get meetings
         let mentorMeetings: Meeting[] = [];
-
         await axios
           .post("/api/meetings/get-meetings", {
             relationID: relationship.relationid,
@@ -219,6 +229,24 @@ function DashboardMentee() {
             });
           });
 
+        // Get meetings
+        let goals: Goal[] = [];
+        await axios
+          .get("/api/plan/get-plan", { params: {relationID: relationship.relationid} })
+          .then((res: any) => {
+            console.log(res.data);
+
+            goals = res.data.map((g: any) => {
+              return {
+                goalID: g.planofactionid,
+                title: g.title,
+                description: g.description,
+                // creationDate: parseDate(g.creationdate),
+                status: g.status,
+              };
+            });
+          });
+
         await axios
           .post("/api/users/get-user-data", { userID: relationship.mentorid })
           .then((res: any) => {
@@ -232,6 +260,7 @@ function DashboardMentee() {
               businessArea: res.data.businessarea,
               topics: mentorTopics,
               meetings: mentorMeetings,
+              planOfAction: goals,
             };
 
             newMentors.push(mentor);
@@ -248,7 +277,6 @@ function DashboardMentee() {
   let currentMentorIdNum: number = -1;
   let currentMentor: UserData = {
     relationID: -1,
-
     firstName: "",
     lastName: "",
     avatar: "",
@@ -256,6 +284,7 @@ function DashboardMentee() {
     businessArea: "",
     topics: [],
     meetings: [],
+    planOfAction: [],
   };
 
   if (mentors.length > 0 && currentMentorId == null) {
@@ -298,7 +327,7 @@ function DashboardMentee() {
         </div>
 
         {/* Plan of action */}
-        <PlanOfAction relationID={currentMentor.relationID} />
+        <PlanOfAction goals={currentMentor.planOfAction} />
       </div>
     </div>
   );
