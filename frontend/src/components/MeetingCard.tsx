@@ -42,7 +42,7 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
   }
 
   return (
-    <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-5 text-prussianBlue p-4 rounded-xl">
+    <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-5 mr-6 ml-6 text-prussianBlue p-4 rounded-xl">
       {/* Heading & date */}
       <div className="flex flex-row text-2xl justify-between border-b-2 border-imperialRed">
         {/* Meeting title and date */}

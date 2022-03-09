@@ -231,7 +231,7 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
       {/* Next meeting date */}
       {/* //! BROKEN */}
       {hasNextMeeting && (
-        <div className="flex flex-row text-lg font-body m-5 mr-2 mb-0">
+        <div className="flex flex-row text-lg font-body m-5 mt-10 mb-0">
           <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
           <p className="mt-auto mb-auto text-left">
             Your next meeting with {mentor.firstName} is on{" "}
