@@ -132,8 +132,8 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
           <DialogTitle>Subscribe</DialogTitle>
           <DialogContent>
             <div className="flex flex-col space-y-3">
-            <TextField label="Title"></TextField>
-            <TextField label="Description" multiline></TextField>
+              <TextField label="Title"></TextField>
+              <TextField label="Description" multiline></TextField>
             </div>
           </DialogContent>
           <DialogActions>
