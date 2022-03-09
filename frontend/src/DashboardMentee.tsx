@@ -12,17 +12,15 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  fabClasses,
   Modal,
 } from "@mui/material";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import MeetingCard from "./components/MeetingCard";
-import { collapseTextChangeRangesAcrossMultipleVersions, setSyntheticLeadingComments } from "typescript";
+import { setSyntheticLeadingComments } from "typescript";
 
 interface UserData {
   relationID: number;
   id?: number;
-  email: string;
   firstName: string;
   lastName: string;
   avatar: string;
@@ -61,13 +59,12 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
   const [hasNextMeeting, setHasNextMeeting]=  React.useState<Boolean>(false);
 
   useEffect(() => {
-    console.log("here");
+    // console.log("here");
     axios
       .post("/api/meetings/get-next-meeting", { relationID: mentor.relationID })
       .then(async (res: any) => {
-        console.log(mentor.relationID)
-        console.log(res.data);
-
+        // console.log(mentor.relationID)
+        // console.log(res.data);
         if (!res.data.hasOwnProperty("error")) {
           setHasNextMeeting(true);
           setNextMeeting(new Date(parseDate(res.data.starttime)));
@@ -158,6 +155,12 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
   );
 };
 
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
 function parseDate(d: string) {
   const [date, time] = d.split(" ");
   const [day, month, year] = date.split("/");
@@ -177,17 +180,6 @@ function parseDate(d: string) {
 
 function DashboardMentee() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
-  const [mentor, setMentor] = React.useState<UserData>({
-    relationID: -1,
-    email: "",
-    firstName: "",
-    lastName: "",
-    avatar: "",
-    role: "",
-    businessArea: "",
-    topics: [],
-    meetings: [],
-  });
 
   // Get mentee-mentor relations and mentees' data
   useEffect(() => {
@@ -195,10 +187,8 @@ function DashboardMentee() {
       var newMentors: UserData[] = [];
 
       for (const relationship of res.data) {
-        // console.log(relationship)
         let mentorTopics: string[];
 
-        // Get topics
         await axios
           .post("/api/users/get-user-topics", { userID: relationship.mentorid })
           .then((res: any) => {
@@ -207,7 +197,6 @@ function DashboardMentee() {
 
         let mentorMeetings: Meeting[] = [];
 
-        // Get meetings
         await axios
           .post("/api/meetings/get-meetings", {
             relationID: relationship.relationid,
@@ -229,15 +218,13 @@ function DashboardMentee() {
               return e2.startTime - e1.startTime;
             });
           });
-          
-        // Get mentor data
+
         await axios
           .post("/api/users/get-user-data", { userID: relationship.mentorid })
           .then((res: any) => {
             const mentor: UserData = {
               relationID: relationship.relationid,
               id: relationship.mentorid,
-              email: res.data.email,
               firstName: res.data.firstname,
               lastName: res.data.lastname,
               avatar: res.data.profilepicture,
@@ -252,18 +239,47 @@ function DashboardMentee() {
       }
 
       setMentors(newMentors);
-      setMentor(newMentors[0]);
     });
   }, []);
 
+  // Read the query string to get the mentee to render
+  let query = useQuery();
+  const currentMentorId = query.get("mentor");
+  let currentMentorIdNum: number = -1;
+  let currentMentor: UserData = {
+    relationID: -1,
+
+    firstName: "",
+    lastName: "",
+    avatar: "",
+    role: "",
+    businessArea: "",
+    topics: [],
+    meetings: [],
+  };
+
+  if (mentors.length > 0 && currentMentorId == null) {
+    return <Navigate to={"/dashboard-mentee?mentor=" + mentors[0].id} />;
+  }
+
+  for (let i = 0; i < mentors.length; i++) {
+    if (
+      currentMentorId != null &&
+      mentors[i].id === parseInt(currentMentorId)
+    ) {
+      currentMentorIdNum = parseInt(currentMentorId);
+      currentMentor = mentors[i];
+    }
+  }
+
+  console.log(currentMentor);
 
   return (
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="My mentors"
-        activeMentorId={mentor.id}
+        activeMentorId={currentMentorIdNum}
         mentors={mentors}
-        setMentor={setMentor}
       />
 
       {/* Main flexbox */}
@@ -271,11 +287,10 @@ function DashboardMentee() {
         {/* White half */}
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
-            <MentorDetails mentorData={mentor} />
+            <MentorDetails mentorData={currentMentor} />
 
             <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
-              {mentor.meetings.map((meeting) => {
-                // console.log(meeting);
+              {currentMentor.meetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;
               })}
             </div>
@@ -283,7 +298,7 @@ function DashboardMentee() {
         </div>
 
         {/* Plan of action */}
-        <PlanOfAction relationID={mentor.relationID} />
+        <PlanOfAction relationID={currentMentor.relationID} />
       </div>
     </div>
   );

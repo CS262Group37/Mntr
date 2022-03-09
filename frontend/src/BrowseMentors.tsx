@@ -168,7 +168,7 @@ function BrowseMentors() {
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar activeStr="Browse mentors" setMentor={setMentor}/>
+      <NavBar activeStr="Browse mentors"/>
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display bg-cultured overflow-auto p-6 flex flex-col pb-40">

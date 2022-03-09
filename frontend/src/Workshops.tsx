@@ -28,7 +28,6 @@ function Workshops() {
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="Workshops"
-        setMentor={setMentor}
       />
 
       {/* Main flexbox */}
