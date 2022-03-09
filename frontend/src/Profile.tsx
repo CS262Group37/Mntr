@@ -98,7 +98,7 @@ function Profile() {
           ratings: newRatings,
         });
       });
-  }, []);
+  }, [userID]);
 
   // TODO connect to a mentor function
   const connectMentor = () => {
