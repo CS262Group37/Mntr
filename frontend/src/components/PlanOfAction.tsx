@@ -32,9 +32,12 @@ const ListElem: React.FC<ListElemProps> = (props) => {
   const [checked, setChecked] = React.useState(isChecked);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (checked)
+      axios.put("/api/plan/mark-plan-incomplete", { planID: goal.goalID });
+    else
+      axios.put("/api/plan/mark-plan-complete", { planID: goal.goalID });
+
     setChecked(event.target.checked);
-    axios.put("/api/plan/mark-plan-complete", { planID: goal.goalID });
-    console.log("plan complete");
   };
 
 
@@ -64,6 +67,7 @@ const ListElem: React.FC<ListElemProps> = (props) => {
   );
 };
 
+// TODO fix ordering (complete first, incomplete first?)
 const PlanOfAction: React.FC<PlanProps> = (props) => {
   return (
     <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured">

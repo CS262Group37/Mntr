@@ -27,6 +27,17 @@ def mark_plan_of_action_completed(planID):
         return (False, {'error': conn.error_message})
     return (True, {'message': 'Successfully marked plan of action as complete'})
 
+# Changes a plans status to incomplete
+def mark_plan_of_action_incompleted(planID):
+    sql = "UPDATE plan_of_action SET status = 'incomplete' WHERE planOfActionID = %s;"
+    data = (planID,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully marked plan of action as complete'})
+
 # Removes a the plan with a given ID
 def remove_plan_of_action(planID):
     sql = 'DELETE FROM plan_of_action WHERE planOfActionID=%s;' # ???
