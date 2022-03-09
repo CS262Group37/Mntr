@@ -176,7 +176,7 @@ function DashboardMentee() {
     }
   }
 
-  console.log(currentMentor);
+  console.log(currentMentor.meetings);
 
   return (
     <div className="fixed h-full w-full">
