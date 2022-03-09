@@ -68,32 +68,56 @@ const ListElem: React.FC<ListElemProps> = (props) => {
 
 const PlanOfAction: React.FC<PlanProps> = (props) => {
   const [goals, setGoals] = React.useState<Goal[]>([]);
-  console.log(props.relationID);
 
   useEffect(() => {
     axios
       .post("/api/meetings/get-meetings", { relationID: props.relationID })
       .then((res: any) => {
+        console.log(props.relationID);
         console.log(res.data);
         // setGoals();
       });
   }, []);
 
   useEffect(() => {
+    let newGoals: Goal[];
+
     axios
-      .get("/api/plan/get-plan", { params: { relationID: 118 } })
+      .get("/api/plan/get-plan", { params: { relationID: props.relationID } })
       .then((res: any) => {
-        console.log(res.data);
+        // console.log(res.data);
         // setGoals();
 
+        newGoals = res.data.map((e:any) => {
+          return {
+            goalID: res.data.goalid,
+            title: res.data.title,
+            description: res.data.description,
+            // creationDate?: Date;
+            status: res.data.status,
+          }
+        });
+
+        console.log(newGoals);  
+
+          // const newGoal: Goal = {
+          //   goalID: res.data.goalid,
+          //   title: res.data.title,
+          //   description: res.data.description,
+          //   // creationDate?: Date;
+          //   status: res.data.status,
+          // }
+
         // dummy data
-        setGoals([
-          {title: "goal 1", description: "just another goal", status: "complete"},
-          {title: "goal 2", description: "just another goal", status: "complete"},
-          {title: "goal 3", description: "just another goal", status: "incomplete"},
-          {title: "goal 4", description: "just another goal", status: "incomplete"},
-          {title: "goal 5", description: "just another goal", status: "incomplete"},
-        ]);
+        // setGoals([
+        //   {title: "goal 1", description: "just another goal", status: "complete"},
+        //   {title: "goal 2", description: "just another goal", status: "complete"},
+        //   {title: "goal 3", description: "just another goal", status: "incomplete"},
+        //   {title: "goal 4", description: "just another goal", status: "incomplete"},
+        //   {title: "goal 5", description: "just another goal", status: "incomplete"},
+        // ]);
+
+        setGoals(newGoals);
       });
   }, []);
 
