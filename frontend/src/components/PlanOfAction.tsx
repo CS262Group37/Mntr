@@ -12,6 +12,7 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  Tooltip,
 } from "@mui/material";
 
 // TODO add a goal to the plan of action
@@ -39,22 +40,20 @@ const ListElem: React.FC<ListElemProps> = (props) => {
   const goal: Goal = props.goal;
   let isChecked: boolean = false;
 
-  if (goal.status === "complete")
-    isChecked = true;
+  if (goal.status === "complete") isChecked = true;
 
   const [checked, setChecked] = React.useState(isChecked);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (checked)
       axios.put("/api/plan/mark-plan-incomplete", { planID: goal.goalID });
-    else
-      axios.put("/api/plan/mark-plan-complete", { planID: goal.goalID });
+    else axios.put("/api/plan/mark-plan-complete", { planID: goal.goalID });
 
     setChecked(event.target.checked);
   };
 
-
   return (
+    <Tooltip followCursor title={<h1 className="text-[14px] font-thin ">{goal.description}</h1>}>
     <div className="text-prussianBlue bg-cultured shadow-md w-[82%] rounded-lg m-auto mt-3 mb-3 opacity-80 p-1 pr-4 pl-4 hover:opacity-90 transition duration-150">
       <FormControlLabel
         className="w-[100%]"
@@ -77,6 +76,7 @@ const ListElem: React.FC<ListElemProps> = (props) => {
         labelPlacement="end"
       />
     </div>
+    </Tooltip>
   );
 };
 
@@ -88,11 +88,24 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
 
   const addGoal = () => {
     console.log(title + " " + desc);
+<<<<<<< HEAD
     axios.post("/api/plan/add-plan", { relationID: props.relationID, title: title, description: desc }).then(() => {
       props.handleNewGoal();
     });
     setOpen(false);
     
+=======
+    axios
+      .post("/api/plan/add-plan", {
+        relationID: props.relationID,
+        title: title,
+        description: desc,
+      })
+      .then(() => {
+        window.location.reload();
+      });
+    // setOpen(false);
+>>>>>>> a69325a06c94392cbb321ab9a2211699144166fa
   };
 
   return (
@@ -113,16 +126,25 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
           <DialogTitle>Subscribe</DialogTitle>
           <DialogContent>
             <div className="flex flex-col space-y-3">
-              <TextField label="Title" onChange={(e: any) => {
+              <TextField
+                label="Title"
+                onChange={(e: any) => {
                   setTitle(e.target.value);
-                }}></TextField>
-              <TextField label="Description" multiline onChange={(e: any) => {
+                }}
+              ></TextField>
+              <TextField
+                label="Description"
+                multiline
+                onChange={(e: any) => {
                   setDesc(e.target.value);
-                }}></TextField>
+                }}
+              ></TextField>
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={addGoal} sx={{ color: "#0E2A47" }}>Add goal</Button>
+            <Button onClick={addGoal} sx={{ color: "#0E2A47" }}>
+              Add goal
+            </Button>
           </DialogActions>
         </Dialog>
       </div>
