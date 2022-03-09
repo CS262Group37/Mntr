@@ -2,6 +2,17 @@ import React, { useEffect } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import axios from "axios";
+import { BiPlus } from "react-icons/bi";
+import {
+  Avatar,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 
 // TODO add a goal to the plan of action
 
@@ -19,6 +30,10 @@ interface Goal {
 
 interface ListElemProps {
   goal: Goal;
+}
+
+function addGoal() {
+
 }
 
 const ListElem: React.FC<ListElemProps> = (props) => {
@@ -69,11 +84,42 @@ const ListElem: React.FC<ListElemProps> = (props) => {
 
 // TODO fix ordering (complete first, incomplete first?)
 const PlanOfAction: React.FC<PlanProps> = (props) => {
+  const [open, setOpen] = React.useState(false); // dialog open/closed
+
   return (
-    <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured overflow-auto">
-      <h1 className="text-3xl font-semibold m-10 ml-12 mr-12 mb-8">
-        Plan of action
-      </h1>
+    <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured overflow-auto pb-44">
+      <div className="flex flex-row justify-between mt-2">
+        <h1 className="text-3xl font-semibold m-10 ml-12 mr-12 mb-8">
+          Plan of action
+        </h1>
+
+        <button
+          className="bg-firebrick text-cultured text-xl p-2 m-auto mr-10 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
+          onClick={() => setOpen(true)}
+        >
+          <BiPlus className="h-10 w-10 p-2" />
+        </button>
+
+        <Dialog onClose={() => setOpen(false)} open={open}>
+          <DialogTitle>Subscribe</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="standard"
+              />
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={addGoal}>Schedule</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
 
       <div className="flex flex-col">
         {props.goals.map((goal: Goal) => {

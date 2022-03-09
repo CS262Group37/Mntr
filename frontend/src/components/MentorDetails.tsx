@@ -10,6 +10,7 @@ import {
   DialogContentText,
   DialogTitle,
   Modal,
+  TextField,
 } from "@mui/material";
 import { BiCalendarEvent } from "react-icons/bi";
 
@@ -27,7 +28,6 @@ interface UserData {
 interface MentorProps {
   mentorData: UserData;
 }
-
 
 function parseDate(d: string) {
   const [date, time] = d.split(" ");
@@ -58,7 +58,7 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
 
   const mentor: UserData = props.mentorData;
   const [nextMeeting, setNextMeeting] = React.useState<Date>(new Date());
-  const [hasNextMeeting, setHasNextMeeting]=  React.useState<Boolean>(false);
+  const [hasNextMeeting, setHasNextMeeting] = React.useState<Boolean>(false);
 
   useEffect(() => {
     // console.log("here");
@@ -131,13 +131,15 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
         <Dialog onClose={() => setOpen(false)} open={open}>
           <DialogTitle>Subscribe</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              To subscribe to this website, please enter your email address
-              here. We will send updates occasionally.
-            </DialogContentText>
+            <div className="flex flex-col space-y-3">
+            <TextField label="Title"></TextField>
+            <TextField label="Description" multiline></TextField>
+            </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={schedule}>Schedule</Button>
+            <Button onClick={schedule} sx={{ color: "#0E2A47" }}>
+              Schedule
+            </Button>
           </DialogActions>
         </Dialog>
       </div>
