@@ -17,6 +17,10 @@ def add_topic(topicName):
 
     if conn.error:
         return (False, {'error': conn.error_message})
+
+    from app.workshop.workshop import add_demand
+    add_demand(topicName)
+    
     return (True, {'message': 'Successfully added topic'})
 
 # Removes the topics with the name passed as the argument

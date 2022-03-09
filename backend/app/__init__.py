@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_restx import Api, apidoc
 
+from . import database as db
+from . import apscheduler
 import config
 import app.auth as auth
 import app.matching as matching
@@ -11,7 +13,6 @@ import app.workshop as workshop
 import app.admin as admin
 import app.plan_of_action as plan
 import app.users as users
-from . import database as db
 
 # Good description of the pattern I'm trying to implement: http://exploreflask.com/en/latest/blueprints.html
 
@@ -21,8 +22,11 @@ def create_app():
     api = Api(app, authorizations=config.authorizations, doc='/docs/')
     app.config.from_object(config.DevConfig)
 
-    # Initialise database
+    apscheduler.create_scheduler()
+    apscheduler.scheduler.init_app(app)
+    
     with app.app_context():
+        # Initialise database
         db.init_db()
         db.load_schema()
     
@@ -36,6 +40,9 @@ def create_app():
         app.register_blueprint(plan.plan_bp, url_prefix='/api/plan')
         app.register_blueprint(users.users_bp, url_prefix='/api/users')
         app.register_blueprint(workshop.workshop_bp, url_prefix='/api/workshop')
+
+        apscheduler.scheduler.start()
+        apscheduler.scheduler.add_job("update_workshop_demand", workshop.workshop.update_time_demand, trigger="interval", seconds=5, max_instances=1)
 
     # Put login doc on the front page for convenience
     @api.documentation
