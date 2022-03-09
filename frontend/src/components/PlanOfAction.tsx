@@ -70,7 +70,7 @@ const ListElem: React.FC<ListElemProps> = (props) => {
 // TODO fix ordering (complete first, incomplete first?)
 const PlanOfAction: React.FC<PlanProps> = (props) => {
   return (
-    <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured">
+    <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured overflow-auto">
       <h1 className="text-3xl font-semibold m-10 ml-12 mr-12 mb-8">
         Plan of action
       </h1>
