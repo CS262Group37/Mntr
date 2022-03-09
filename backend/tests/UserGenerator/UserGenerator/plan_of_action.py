@@ -45,7 +45,7 @@ def add_random_plans(plan_count = None):
 
     start = perf_counter()
     with Progress() as progress:
-        plan_progress = progress.add_task('[cyan]Adding random relations...[/]', total=plan_count)
+        plan_progress = progress.add_task('[cyan]Adding random plans of action...[/]', total=plan_count)
         added_plans = 0
         for i in range(plan_count):
 

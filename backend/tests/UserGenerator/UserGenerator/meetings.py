@@ -10,7 +10,7 @@ from rich.prompt import IntPrompt
 from .console import add_option, console, hostname
 from .authentication import login_user
 from . import authentication
-from .database import get_data
+from .database import get_data, update_data
 from .fake_data import fake
 
 def add_meeting(relationID, startTime, endTime, title, description):
@@ -57,6 +57,19 @@ def create_random_meetings(meeting_count = None):
             if add_meeting(relation, random_time.strftime('%d/%m/%y %H:%M'), random_end_time.strftime('%d/%m/%y %H:%M'), fake.sentences(nb=1), fake.paragraph(nb_sentences=5)):
                 created_meetings += 1
             progress.update(meeting_progress, advance=1)
+        
+        meetings = get_data('SELECT * FROM meeting')
+        meeting_status_progress = progress.add_task('[cyan]Giving meetings random statuses...[/]', total=len(meetings))
+        last_meeting = None
+        for meeting in meetings:
+            # 50% chance of changing status
+            if random.randrange(2) == 0:
+                status = random.choice(['going-ahead', 'pending', 'cancelled', 'completed', 'missed', 'running'])
+                print("Setting id", meeting['meetingid'], "to", status)
+                update_data('UPDATE meeting SET "status" = %s WHERE meetingID = %s;', (status, meeting['meetingid']))
+            progress.update(meeting_status_progress, advance=1)
+            
+
     stop = perf_counter()
     console.print(f'\n[green]Successfully created {created_meetings} meetings in {stop - start} seconds[/]')
 
