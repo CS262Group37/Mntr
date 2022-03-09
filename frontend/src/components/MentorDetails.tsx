@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Avatar,
@@ -12,6 +12,7 @@ import {
   Modal,
   TextField,
 } from "@mui/material";
+
 import { BiCalendarEvent } from "react-icons/bi";
 
 interface UserData {
@@ -46,19 +47,63 @@ function parseDate(d: string) {
   );
 }
 
+const currentDate = () => {
+  const dateNow = new Date(); // Creating a new date object with the current date and time
+  const year = dateNow.getFullYear(); // Getting current year from the created Date object
+  const monthWithOffset = dateNow.getUTCMonth() + 1; // January is 0 by default in JS. Offsetting +1 to fix date for calendar.
+  const month = // Setting current Month number from current Date object
+    monthWithOffset.toString().length < 2 // Checking if month is < 10 and pre-prending 0 to adjust for date input.
+      ? `0${monthWithOffset}`
+      : monthWithOffset;
+  const day =
+    dateNow.getUTCDate().toString().length < 2 // Checking if date is < 10 and pre-prending 0 if not to adjust for date input.
+      ? `0${dateNow.getUTCDate()}`
+      : dateNow.getUTCDate();
+  const hour =
+    dateNow.getHours().toString().length < 2
+      ? `0${dateNow.getHours()}`
+      : dateNow.getHours();
+
+  const mins =
+    dateNow.getHours().toString().length < 2
+      ? `0${dateNow.getMinutes()}`
+      : dateNow.getMinutes();
+
+  return `${year}-${month}-${day}T${hour}:${mins}`;
+};
+
 // Mentor details component
 const MentorDetails: React.FC<MentorProps> = (props) => {
   const [open, setOpen] = React.useState(false);
 
   // TODO schedule a meeting function
   const schedule = () => {
-    console.log("SCHEDULE");
+    console.log(
+      `title: ${title}, descrip: ${descrip}, start: ${start}, end: ${end}`
+    );
+
+    axios
+      .post("/api/meetings/create-meeting", {
+        relationID: mentor.relationID,
+        startTime: start,
+        endTime: end,
+        title: title,
+        description: descrip,
+      })
+      .then((res: any) => {
+        console.log(res.data);
+      });
     return;
   };
 
   const mentor: UserData = props.mentorData;
-  const [nextMeeting, setNextMeeting] = React.useState<Date>(new Date());
-  const [hasNextMeeting, setHasNextMeeting] = React.useState<Boolean>(false);
+  const [nextMeeting, setNextMeeting] = useState<Date>(new Date());
+  const [hasNextMeeting, setHasNextMeeting] = useState<Boolean>(false);
+
+  const [title, setTitle] = useState<string>("");
+  const [descrip, setDescrip] = useState<string>("");
+  const [start, setStart] = useState<string>(currentDate());
+  const [end, setEnd] = useState<string>(currentDate());
 
   useEffect(() => {
     // console.log("here");
@@ -128,19 +173,49 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
         >
           Schedule a meeting
         </button>
-        <Dialog onClose={() => setOpen(false)} open={open}>
-          <DialogTitle>Subscribe</DialogTitle>
-          <DialogContent>
-            <div className="flex flex-col space-y-3">
-            <TextField label="Title"></TextField>
-            <TextField label="Description" multiline></TextField>
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={schedule} sx={{ color: "#0E2A47" }}>
-              Schedule
-            </Button>
-          </DialogActions>
+        <Dialog
+          fullWidth
+          maxWidth="sm"
+          onClose={() => setOpen(false)}
+          open={open}
+        >
+          <div>
+            <DialogTitle>Schedule Meeting</DialogTitle>
+            <DialogContent>
+              <div className="flex flex-col space-y-3 pt-2">
+                <TextField
+                  label="Title"
+                  value={title}
+                  onChange={(e: any) => setTitle(e.target.value)}
+                ></TextField>
+                <TextField
+                  label="Description"
+                  value={descrip}
+                  multiline
+                  onChange={(e: any) => setDescrip(e.target.value)}
+                ></TextField>
+                <TextField
+                  label="Start time"
+                  type="datetime-local"
+                  value={start}
+                  defaultValue={currentDate()}
+                  onChange={(e: any) => setStart(e.target.value)}
+                ></TextField>
+                <TextField
+                  label="End time"
+                  type="datetime-local"
+                  value={end}
+                  defaultValue={currentDate()}
+                  onChange={(e: any) => setEnd(e.target.value)}
+                ></TextField>
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={schedule} sx={{ color: "#0E2A47" }}>
+                Schedule
+              </Button>
+            </DialogActions>
+          </div>
         </Dialog>
       </div>
 
