@@ -19,7 +19,8 @@ def get_messages(userID):
                 m_extra = conn.execute('SELECT * FROM message_meeting WHERE messageID=%s', (message['messageid'],))
             elif message['messagetype'] == 'Email':
                 m_extra = conn.execute('SELECT * FROM message_email WHERE messageID=%s', (message['messageid'],))
-            
+            elif message['messagetype'] == 'Report':
+                m_extra = conn.execute('SELECT * FROM message_report NATURAL JOIN report WHERE messageID=%s', (message['messageid'],))
             for key, value in m_extra[0].items():
                 message_data[key] = value
             
