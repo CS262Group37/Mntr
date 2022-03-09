@@ -2,7 +2,7 @@ from app.database import DatabaseConnection
 
 
 def get_topics():
-    """Return all topics in the database as an array of dicts."""
+    """Return all topics in database as an array of dicts."""
     topics = None
     conn = DatabaseConnection(real_dict=True)
     with conn:
@@ -12,7 +12,7 @@ def get_topics():
 
 
 def add_topic(topic_name):
-    """Add given topic to the database. Return tuple (success, error or message)."""
+    """Add given topic to database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
         sql = 'INSERT INTO system_topic ("name") VALUES (%s);'
@@ -30,7 +30,7 @@ def add_topic(topic_name):
 
 
 def remove_topic(topic_name):
-    """Remove given topic from the database. Return tuple (success, error or message)."""
+    """Remove given topic from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
         sql = 'DELETE FROM system_topic WHERE "name" = %s;'
@@ -42,7 +42,7 @@ def remove_topic(topic_name):
 
 
 def clear_topics():
-    """Remove all topics from the database. Return tuple (success, error or message)."""
+    """Remove all topics from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
         sql = "TRUNCATE system_topic;"
@@ -53,7 +53,7 @@ def clear_topics():
 
 
 def get_reports():
-    """Return all reports in the database as an array of dicts."""
+    """Return all reports in database as an array of dicts."""
     reports = None
     conn = DatabaseConnection(real_dict=True)
     with conn:
@@ -85,7 +85,7 @@ def mark_report_as_read(report_ID):
 
 
 def get_skills():
-    """Return all skills in the database as an array of dicts."""
+    """Return all skills in database as an array of dicts."""
     skills = None
     conn = DatabaseConnection(real_dict=True)
     with conn:
@@ -95,7 +95,7 @@ def get_skills():
 
 
 def add_skill(skill_name):
-    """Add given skill to the database. Return tuple (success, error or message)."""
+    """Add given skill to database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
         sql = 'INSERT INTO system_skill ("name") VALUES (%s);'
@@ -107,7 +107,7 @@ def add_skill(skill_name):
 
 
 def remove_skill(skill_name):
-    """Remove given skill from the database. Return tuple (success, error or message)."""
+    """Remove given skill from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
         sql = 'DELETE FROM system_skill WHERE "name" = %s;'
@@ -119,7 +119,7 @@ def remove_skill(skill_name):
 
 
 def clear_skills():
-    """Remove all skills from the database. Return tuple (success, error or message)."""
+    """Remove all skills from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
         sql = "TRUNCATE system_skill CASCADE;"
@@ -130,7 +130,7 @@ def clear_skills():
 
 
 def add_business_area(business_area_name):
-    """Add given business area to the database. Return tuple (success, error or message)."""
+    """Add given area to database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
         sql = 'INSERT INTO system_business_area ("name") VALUES (%s);'
@@ -142,7 +142,7 @@ def add_business_area(business_area_name):
 
 
 def remove_business_area(business_area_name):
-    """Remove given business area from the database. Return tuple (success, error or message)."""
+    """Remove given area from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
         sql = 'DELETE FROM system_business_area WHERE "name"=%s;'
@@ -157,7 +157,7 @@ def remove_business_area(business_area_name):
 
 
 def clear_business_areas():
-    """Remove all business areas from the database. Return tuple (success, error or message)."""
+    """Remove all areas from database. Return tuple (success, error or message)."""
     sql = "TRUNCATE system_business_area CASCADE;"
     conn = DatabaseConnection()
     with conn:
@@ -168,7 +168,7 @@ def clear_business_areas():
 
 
 def get_business_areas():
-    """Get all business areas from the database as an array of dicts."""
+    """Get all areas from database as an array of dicts."""
     businessAreas = None
     conn = DatabaseConnection(real_dict=True)
     with conn:
