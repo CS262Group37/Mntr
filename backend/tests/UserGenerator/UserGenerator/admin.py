@@ -7,7 +7,7 @@ from rich.progress import Progress
 from rich.prompt import IntPrompt
 
 from .console import hostname, console
-from .fake_data import skills, fake
+from .fake_data import skills, topics, fake
 from . import authentication
 
 def add_skill(skill_name):
@@ -57,7 +57,7 @@ def add_random_topics(topic_count = None):
         topic_progress = progress.add_task('[cyan]Adding topics...[/]', total=topic_count)
 
         for i in range(topic_count):
-            topic = fake.job()
+            topic = choice(topics)
             # Create an account
             if add_topic(topic):
                 added_topics += 1
@@ -85,7 +85,7 @@ def add_random_areas(area_count = None):
         area_progress = progress.add_task('[cyan]Adding business areas...[/]', total=area_count)
 
         for i in range(area_count):
-            area = fake.street_address()
+            area = fake.job()
             # Create an account
             if add_area(area):
                 add_areas += 1

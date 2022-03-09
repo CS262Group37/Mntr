@@ -1,164 +1,177 @@
 from app.database import DatabaseConnection
 
+
 def get_topics():
-    sql = 'SELECT * FROM system_topic;'
+    """Return all topics in database as an array of dicts."""
+    topics = None
     conn = DatabaseConnection(real_dict=True)
     with conn:
+        sql = "SELECT * FROM system_topic;"
         topics = conn.execute(sql)
     return topics
 
-def add_topic(topicName):
-    sql = 'INSERT INTO system_topic ("name") VALUES (%s);'
-    data = (topicName,)
 
+def add_topic(topic_name):
+    """Add given topic to database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
+        sql = 'INSERT INTO system_topic ("name") VALUES (%s);'
+        data = (topic_name,)
         conn.execute(sql, data)
-
     if conn.error:
-        return (False, {'error': conn.error_message})
+        return (False, {"error": conn.error_message})
 
     from app.workshop.workshop import add_demand
-    add_demand(topicName)
-    
-    return (True, {'message': 'Successfully added topic'})
 
-# Removes the topics with the name passed as the argument
-def remove_topic(topicName):
-    sql = 'DELETE FROM system_topic WHERE "name" = %s;'
-    data = (topicName,)
+    # Add topic to workshop demand
+    add_demand(topic_name)
+
+    return (True, {"message": f"Successfully added topic {topic_name}"})
+
+
+def remove_topic(topic_name):
+    """Remove given topic from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
+        sql = 'DELETE FROM system_topic WHERE "name" = %s;'
+        data = (topic_name,)
         conn.execute(sql, data)
-    
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully removed topic'})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": f"Successfully removed topic {topic_name}"})
 
-# Removes all topics from the table
+
 def clear_topics():
-    sql = 'TRUNCATE system_topic;'
+    """Remove all topics from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
+        sql = "TRUNCATE system_topic;"
         conn.execute(sql)
-    
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully cleared topics'})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully cleared system topics"})
 
-    
+
 def get_reports():
-    sql = 'SELECT * FROM report;'
-    conn = DatabaseConnection()
+    """Return all reports in database as an array of dicts."""
+    reports = None
+    conn = DatabaseConnection(real_dict=True)
     with conn:
-        result = conn.execute(sql)
-        if not conn.error:
-            return result
-        else:
-            return None
+        sql = "SELECT * FROM report;"
+        reports = conn.execute(sql)
+    return reports
+
 
 def ban_account(accountID):
+    # TODO: Implement account banning
     pass
 
+
 def remove_user(userID):
-    sql = "INSERT INTO banned_users () VALUES (%s)"
-    # TODO: Implement proper user removal here
-    data = (userID)
+    # TODO: Implement user removal
+    pass
+
+
+def mark_report_as_read(report_ID):
+    """Mark given report as read. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
-        conn.execute(sql, data)
-    
-    if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully cleared topics'})
-
-# Changes the status of the reprt with the given ID to read
-def mark_report_as_read(reportID):
-    sql = "UPDATE report SET status = 'read' WHERE reportID = %s"
-    data = (reportID,)
-    conn = DatabaseConnection()
-
-    with conn:
+        sql = "UPDATE report SET status = 'read' WHERE reportID = %s;"
+        data = (report_ID,)
         conn.execute(sql, data)
     if conn.error:
-        return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
-    return (True, {'message': 'Successfully marked report as read'})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": f"Successfully marked report {report_ID} as read"})
 
 
 def get_skills():
-    sql = 'SELECT * FROM system_skill;'
+    """Return all skills in database as an array of dicts."""
+    skills = None
     conn = DatabaseConnection(real_dict=True)
     with conn:
+        sql = "SELECT * FROM system_skill;"
         skills = conn.execute(sql)
     return skills
 
-def add_skill(skillName):
-    sql = 'INSERT INTO system_skill ("name") VALUES (%s);'
-    data = (skillName,)
+
+def add_skill(skill_name):
+    """Add given skill to database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
+        sql = 'INSERT INTO system_skill ("name") VALUES (%s);'
+        data = (skill_name,)
         conn.execute(sql, data)
-
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully added skill'})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": f"Successfully added skill {skill_name}"})
 
-def remove_skill(skillName):
-    sql = 'DELETE FROM system_skill WHERE "name"=%s;'
-    data = (skillName,)
+
+def remove_skill(skill_name):
+    """Remove given skill from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
+        sql = 'DELETE FROM system_skill WHERE "name" = %s;'
+        data = (skill_name,)
         conn.execute(sql, data)
-    
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': "Successfully removed skill"})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": f"Successfully removed skill {skill_name}"})
+
 
 def clear_skills():
-    sql = 'TRUNCATE system_skill CASCADE;'
+    """Remove all skills from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
+        sql = "TRUNCATE system_skill CASCADE;"
         conn.execute(sql)
-    
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': "Successfully cleared skills"})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully cleared skills"})
 
-def add_business_area(businessAreaName):
-    sql = 'INSERT INTO system_business_area ("name") VALUES (%s);'
-    data = (businessAreaName,)
+
+def add_business_area(business_area_name):
+    """Add given area to database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
+        sql = 'INSERT INTO system_business_area ("name") VALUES (%s);'
+        data = (business_area_name,)
         conn.execute(sql, data)
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully added business area'})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": f"Successfully added business area {business_area_name}"})
 
-def remove_business_area(businessAreaName):
-    sql = 'DELETE FROM system_business_area WHERE "name"=%s;'
-    data = (businessAreaName,)
+
+def remove_business_area(business_area_name):
+    """Remove given area from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
+        sql = 'DELETE FROM system_business_area WHERE "name"=%s;'
+        data = (business_area_name,)
         conn.execute(sql, data)
-    
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': "Successfully removed business area"})
+        return (False, {"error": conn.error_message})
+    return (
+        True,
+        {"message": f"Successfully removed business area {business_area_name}"},
+    )
+
 
 def clear_business_areas():
-    sql = 'TRUNCATE system_business_area CASCADE;'
+    """Remove all areas from database. Return tuple (success, error or message)."""
+    sql = "TRUNCATE system_business_area CASCADE;"
     conn = DatabaseConnection()
     with conn:
         conn.execute(sql)
-    
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': "Successfully cleared business areas"})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully cleared business areas"})
+
 
 def get_business_areas():
-    sql = 'SELECT * FROM system_business_area;'
+    """Get all areas from database as an array of dicts."""
+    businessAreas = None
     conn = DatabaseConnection(real_dict=True)
     with conn:
+        sql = "SELECT * FROM system_business_area;"
         businessAreas = conn.execute(sql)
-    
     return businessAreas

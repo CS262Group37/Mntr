@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
+import axios from "axios";
 import { BiMenu, BiMenuAltRight, BiUserCircle } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import Avatar from "@mui/material/Avatar";
+import { Avatar, Popover } from "@mui/material";
 import UserMenu from "./UserMenu";
 
-interface NavBarProps {
+interface UserData {
+  id?: number;
+  email: string;
   firstName: string;
   lastName: string;
   avatar: string;
+  role: string;
+  businessArea: string;
+  topics?: string[];
+}
+
+interface NavBarProps {
+  // firstName: string;
+  // lastName: string;
+  // avatar: string;
   activeStr: string;
+  activeMentorId?: number;
+  mentors?: UserData[];
+  setMentor: (value: any) => void;
 }
 interface LinkProps {
   text: string;
@@ -32,10 +47,36 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
 
 const NavBar: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
-  const [menu, setMenu] = React.useState(false);
-  const [settings, setSettings] = React.useState(true);
+  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
+  const [menu, setMenu] = React.useState<boolean>(false);
+  const [userMenu, setUserMenu] = React.useState<HTMLDivElement | null>(null);
 
-  const mentors: string[] = ["Mentor 1", "Mentor 2", "Mentor 3", "Mentor 4"];
+  // Get user data
+  useEffect(() => {
+    axios.get("/api/users/get-own-data").then((res) => {
+      const newUser: UserData = {
+        id: res.data.userid,
+        email: res.data.email,
+        firstName: res.data.firstname,
+        lastName: res.data.lastname,
+        avatar: res.data.profilepicture,
+        role: res.data.role,
+        businessArea: res.data.businessarea,
+      }
+      setUser(newUser);
+    });
+  }, []);
+
+  const userMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setUserMenu(event.currentTarget);
+  };
+
+  const userMenuClose = () => {
+    setUserMenu(null);
+  };
+
+  const userMenuOpen = Boolean(userMenu);
+  const userMenuID = userMenuOpen ? "simple-popover" : undefined;
 
   // Renders the dropdown menu button in the page title
   const renderButton = (menu: boolean) => {
@@ -50,7 +91,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
 
   return (
     <div>
-      <UserMenu visible={settings} />
+      {/* <UserMenu visible={userMenu} /> */}
 
       <div className="text-cultured font-display select-none overflow-visible h-auto">
         {/* Blue main navbar */}
@@ -80,18 +121,34 @@ const NavBar: React.FC<NavBarProps> = (props) => {
               path="/workshops"
               activeStr={props.activeStr}
             />
-            {/* Profile picture */}
+            {/* Profile picture - display user menu on click */}
             <div
-              className="m-auto rounded-full cursor-pointer"
-              onClick={() => setSettings(!settings)}
+              className="m-auto mr-6 ml-4 rounded-full box-content cursor-pointer hover:border-imperialRed hover:border-2 hover:ml-[14px] hover:mr-[22px]"
+              onClick={userMenuClick}
             >
               <Avatar
-                className="m-auto mr-6 ml-4"
-                alt={props.firstName + " " + props.lastName}
-                src={props.avatar}
+                className="m-auto"
+                alt={user.firstName + " " + user.lastName}
+                src={user.avatar}
                 sx={{ width: 50, height: 50 }}
               />
             </div>
+            <Popover
+              id={userMenuID}
+              open={userMenuOpen}
+              anchorEl={userMenu}
+              onClose={userMenuClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <UserMenu firstName={user.firstName} lastName={user.lastName} id={user.id} />
+            </Popover>
           </div>
         </div>
 
@@ -111,15 +168,22 @@ const NavBar: React.FC<NavBarProps> = (props) => {
             (menu ? "visible" : "hidden")
           }
         >
-          {/* // TODO animate + implement functionality */}
+
           {props.activeStr === "My mentors" &&
-            mentors.map((mentor) => {
+            props.mentors?.map((mentor) => {
+              let css: string;
+              if (mentor.id === props.activeMentorId) {
+                css = "p-auto ml-8 mt-3 mb-3 font-bold"
+              } else {
+                css = "p-auto ml-8 mt-3 mb-3 hover:font-bold"
+              }
+
               return (
                 <Link
-                  to="/dashboard-mentee"
-                  className="p-auto ml-8 mt-3 mb-3 hover:font-bold"
-                >
-                  {mentor}
+                  to={"/dashboard-mentee?mentor=" + mentor.id}
+                  className={css}
+                ><span onClick={() => props.setMentor(mentor)}>{mentor.firstName + " " + mentor.lastName}</span>
+                  
                 </Link>
               );
             })}
