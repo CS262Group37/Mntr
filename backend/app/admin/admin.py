@@ -62,12 +62,12 @@ def get_reports():
     return reports
 
 
-def ban_account(account_ID):
+def ban_account(accountID):
     # TODO: Implement account banning
     pass
 
 
-def remove_user(user_ID):
+def remove_user(userID):
     # TODO: Implement user removal
     pass
 
