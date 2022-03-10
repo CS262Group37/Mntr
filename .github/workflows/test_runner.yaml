@@ -70,5 +70,7 @@ jobs:
         run: docker compose up -d
       - name: Check running containers
         run: docker ps -a
+      - name: Generate users
+        run: py -m backend\tests\UserGenerator
       - name: Exit
         run: docker compose down
