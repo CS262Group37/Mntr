@@ -70,10 +70,8 @@ function DashboardMentee() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
 
   // Get mentee-mentor relations and mentees' data
-
   const getMentors = () => {
     axios.get("/api/relations/get-relations").then(async (res: any) => {
-      console.log(res.data);
       var newMentors: UserData[] = [];
 
       for (const relationship of res.data) {
@@ -219,7 +217,7 @@ function DashboardMentee() {
 
   for (let i = 0; i < mentors.length; i++) {
     if (
-      currentMentorId != null &&
+      currentMentorId !== null &&
       mentors[i].id === parseInt(currentMentorId)
     ) {
       currentMentorIdNum = parseInt(currentMentorId);
