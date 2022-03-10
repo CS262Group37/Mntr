@@ -6,9 +6,6 @@ topics_parser.add_argument('topicName', required=True, type=str)
 skill_parser = reqparse.RequestParser(bundle_errors=True)
 skill_parser.add_argument('skillName', required = True, type=str)
 
-report_parser = reqparse.RequestParser(bundle_errors=True)
-report_parser.add_argument('reportID', required = True, type=int)
-
 user_parser = reqparse.RequestParser(bundle_errors=True)
 user_parser.add_argument('userID', required = True, type = int)
 
@@ -20,3 +17,9 @@ feedbackID_parser.add_argument('feedbackID', required = True, type=int)
 
 feedback_content_parser = reqparse.RequestParser(bundle_errors=True)
 feedback_content_parser.add_argument('content', required = True, type=str)
+
+create_report_parser = reqparse.RequestParser(bundle_errors=True)
+create_report_parser.add_argument('content', required=True, type=str)
+
+reportID_parser = reqparse.RequestParser(bundle_errors=True)
+reportID_parser.add_argument('reportID', required = True, type=int)

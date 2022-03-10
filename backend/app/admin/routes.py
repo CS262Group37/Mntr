@@ -3,6 +3,7 @@ from flask_restx import Resource
 from . import admin_api
 from . import admin
 from . import parsers
+from app.messages.messages import send_message, Report
 
 # Topic routes
 class GetTopics(Resource):
@@ -78,24 +79,6 @@ class ClearSkills(AuthResource):
             return result[1], 200
         return result[1], 404
 
-# Report routes
-
-class GetReports(AuthResource):
-    roles = ['admin']
-    @admin_api.doc(security='apiKey')
-    def get(self):
-        return admin.get_reports(), 200
-
-class MarkReportAsRead(AuthResource):
-    roles = ['admin']
-    @admin_api.expect(parsers.report_parser)
-    @admin_api.doc(security='apiKey')
-    def put(self):
-        data = parsers.report_parser.parse_args()
-        result = admin.mark_report_as_read(data['reportID'])
-        if result[0]:
-            return result[1], 200
-        return result[1], 404
 
 # Business area routes
 class GetBusinessAreas(Resource):
@@ -177,13 +160,57 @@ class MarkAppFeedbackAsRead(AuthResource):
         return result[1], 404
 
 
+class CreateReport(AuthResource):
+    roles = ['mentee', 'mentor']
+    @admin_api.doc(security='apiKey')
+    @admin_api.expect(parsers.create_report_parser)
+    def post(self):
+        data = parsers.create_report_parser.parse_args()
+        result = admin.create_report(self.payload['userID'], data['content'])
+        if result[0]:
+            return result[1], 201
+        else:
+            return result[1], 403
+
+
+class MarkReportAsRead(AuthResource):
+    roles = ['admin']
+    @admin_api.expect(parsers.reportID_parser)
+    @admin_api.doc(security='apiKey')
+    def put(self):
+        data = parsers.reportID_parser.parse_args()
+        result = admin.mark_report_as_read(data['reportID'])
+        if result[0]:
+            return result[1], 200
+        return result[1], 404
+
+class GetReports(AuthResource):
+    roles = ['admin']
+    @admin_api.doc(security='apiKey')
+    def get(self):
+        return admin.get_reports(), 200
+
+class SendReport(AuthResource):
+    roles = ['mentor', 'mentee']
+    @admin_api.doc(security='apiKey')
+    @admin_api.expect(parsers.reportID_parser)
+    def post(self):
+        data = parsers.reportID_parser.parse_args()
+
+        message = Report(-1, self.payload['userID'], data['reportID'])
+        if send_message(message):
+            return {'message': 'Report sent successfully.'}, 200
+        return {'error': 'Failed to send report'}, 405
+
+
+
+
 admin_api.add_resource(GetTopics, '/get-topics')
 admin_api.add_resource(AddTopic, '/add-topic')
 admin_api.add_resource(RemoveTopic, '/remove-topic')
 admin_api.add_resource(ClearTopics, '/clear-topics')
 admin_api.add_resource(GetReports, '/view-reports')
 admin_api.add_resource(RemoveUser, '/remove-user')
-admin_api.add_resource(MarkReportAsRead, '/mark-report-as-read')
 admin_api.add_resource(GetSkills, '/get-skills')
 admin_api.add_resource(AddSkill, '/add-skill')
 admin_api.add_resource(RemoveSkill, '/remove-skill')
@@ -192,8 +219,11 @@ admin_api.add_resource(AddBusinessArea, '/add-business-area')
 admin_api.add_resource(RemoveBusinessArea, '/remove-business-area')
 admin_api.add_resource(ClearBusinessAreas, '/clear-business-area')
 admin_api.add_resource(GetBusinessAreas, '/get-business-area')
-
 admin_api.add_resource(GetAppFeedback, '/get-app-feedback')
 admin_api.add_resource(CreateAppFeedback, '/create-app-feedback')
 admin_api.add_resource(MarkAppFeedbackAsRead, '/mark-app-feeback-as-read')
+admin_api.add_resource(MarkReportAsRead, '/mark-report-as-read')
+admin_api.add_resource(GetReports, '/view-reports')
+admin_api.add_resource(CreateReport, '/create-report')
+admin_api.add_resource(SendReport, '/send-report')
 

@@ -46,19 +46,10 @@ def clear_topics():
         return (False, {'error': conn.error_message})
     return (True, {'message': 'Successfully cleared topics'})
 
-    
-def get_reports():
-    sql = 'SELECT * FROM report;'
-    conn = DatabaseConnection()
-    with conn:
-        result = conn.execute(sql)
-        if not conn.error:
-            return result
-        else:
-            return None
 
 def ban_account(accountID):
     pass
+
 
 def remove_user(userID):
     sql = "INSERT INTO banned_users () VALUES (%s)"
@@ -73,16 +64,16 @@ def remove_user(userID):
     return (True, {'message': 'Successfully cleared topics'})
 
 # Changes the status of the reprt with the given ID to read
-def mark_report_as_read(reportID):
-    sql = "UPDATE report SET status = 'read' WHERE reportID = %s"
-    data = (reportID,)
-    conn = DatabaseConnection()
+# def mark_report_as_read(reportID):
+#     sql = "UPDATE report SET status = 'read' WHERE reportID = %s"
+#     data = (reportID,)
+#     conn = DatabaseConnection()
 
-    with conn:
-        conn.execute(sql, data)
-    if conn.error:
-        return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
-    return (True, {'message': 'Successfully marked report as read'})
+#     with conn:
+#         conn.execute(sql, data)
+#     if conn.error:
+#         return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
+#     return (True, {'message': 'Successfully marked report as read'})
 
 
 def get_skills():
@@ -189,3 +180,32 @@ def mark_app_feedback_as_read(appFeedbackID):
     if conn.error:
         return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
     return (True, {'message': 'Successfully marked feedback as read'})
+
+
+def create_report(userID, contents):
+    sql = 'INSERT INTO report (userID, content, "status") VALUES (%s, %s, %s);'
+    data = (userID, contents, "unread")
+
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully created report'})
+# Send the report to all of the admins 
+
+def mark_report_as_read(reportID):
+    sql = "UPDATE report SET status = 'read' WHERE reportID = %s;"
+    data = (reportID,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully marked report as read'})
+
+def get_reports():
+    sql = "SELECT * FROM report;"
+    conn = DatabaseConnection()
+    with conn:
+        return conn.execute(sql)
