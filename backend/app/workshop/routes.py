@@ -29,11 +29,8 @@ class GetWorkshops(AuthResource):
     @workshop_api.expect(parsers.get_workshops_parser)
     def get(self):
         data = parsers.get_workshops_parser.parse_args()
-        result = workshop.get_workshops(data['userID'], data['role'])
-        if result[0]:
-            return result[1], 201
-        else:
-            return result[1], 500
+        return workshop.get_workshops(data['userID'], data['role']), 201
+
 class ViewWorkshopAttendee(AuthResource):
     @workshop_api.doc(security='apiKey')
     @workshop_api.expect(parsers.view_workshop_attendee_parser)
