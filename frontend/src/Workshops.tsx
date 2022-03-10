@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -6,8 +6,7 @@ import NavBar from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
 
 interface UserData {
-  id: number;
-  email: string;
+  id?: number;
   firstName: string;
   lastName: string;
   avatar: string;
@@ -23,7 +22,31 @@ interface Rating {
 }
 
 function Workshops() {
-  const [mentor, setMentor] = React.useState<UserData[]>([]);
+  const [user, setUser] = React.useState<UserData>({firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
+  const [workshops, setWorkshops] = React.useState([]);
+
+  // Get user data
+  useEffect(() => {
+    axios.get("/api/users/get-own-data").then((res) => {
+      const newUser: UserData = {
+        id: res.data.userid,
+        firstName: res.data.firstname,
+        lastName: res.data.lastname,
+        avatar: res.data.profilepicture,
+        role: res.data.role,
+        businessArea: res.data.businessarea,
+      }
+      console.log(newUser);
+      setUser(newUser);
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get("/api/workshop/get-workshops", {params: { userID: user.id, role: user.role } }).then((res) => {
+      console.log(res.data);
+    });    
+  }, []);
+
   return(
     <div className="fixed h-full w-full">
       <NavBar
