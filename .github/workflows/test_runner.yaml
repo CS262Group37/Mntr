@@ -72,7 +72,7 @@ jobs:
         run: docker ps -a
       - name: Generate users
         run: |
-            {echo "preset"; echo "exit";}
+            {echo "preset"; echo "exit";} |
             docker exec -i mntr-backend-1 sh -c "cd tests/UserGenerator && python3 -m UserGenerator"
       - name: Run pytest
         run: pytest
