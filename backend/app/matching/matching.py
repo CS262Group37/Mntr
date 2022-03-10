@@ -39,7 +39,9 @@ def calculate_compatibility(
     for menteeRating in menteeRatings:
         for mentorRating in mentorRatings:
             if mentorRating["skill"] == menteeRating["skill"]:
-                feedback_factor += menteeRating["rating"] * mentorRating["rating"]
+                feedback_factor += float(menteeRating["rating"]) * float(
+                    mentorRating["rating"]
+                )
                 break
     feedback_factor = feedback_factor / (100 * len(menteeRatings))
 
