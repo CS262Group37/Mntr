@@ -71,7 +71,7 @@ jobs:
       - name: Check running containers
         run: docker ps -a
       - name: Generate users
-        run: docker exec -it softwareengproject-backend-1 sh -c "cd tests/UserGenerator && python3 -m UserGenerator"
+        run: docker exec -it mntr-backend-1 sh -c "cd tests/UserGenerator && python3 -m UserGenerator"
       - name: Run pytest
         run: pytest
       - name: Exit
