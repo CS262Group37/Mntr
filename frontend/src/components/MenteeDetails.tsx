@@ -181,12 +181,12 @@ const MenteeDetails: React.FC<MenteeProps> = (props) => {
         </div>
 
         {/* Schedule meeting button */}
-        <button
+        {/* <button
           className="bg-prussianBlue text-cultured text-xl min-w-100 flex-none w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
           onClick={() => setOpen(true)}
         >
           Schedule a meeting
-        </button>
+        </button> */}
         <Dialog
           fullWidth
           maxWidth="sm"

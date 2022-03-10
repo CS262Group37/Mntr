@@ -216,7 +216,7 @@ function DashboardMentor() {
     planOfAction: [],
   };
 
-  if (mentees.length > 0 && currentMenteeId == null) {
+  if (mentees.length > 0 && currentMenteeId === null) {
     return <Navigate to={"/dashboard-mentor?mentee=" + mentees[0].id} />;
   }
 

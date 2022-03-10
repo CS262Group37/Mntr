@@ -57,12 +57,20 @@ function Profile() {
     role: "",
     businessArea: "",
   });
+  const [loggedInRole, setLoggedInRole] = useState<string>("");
 
   let query = useQuery();
   const userIdQuery = query.get("id");
   let userID: number = -1;
 
-  if (userIdQuery != null) userID = parseInt(userIdQuery);
+  if (userIdQuery !== null) userID = parseInt(userIdQuery);
+
+  // Get logged in user role
+  useEffect(() => {
+    axios.get("/api/users/get-own-data").then((res) => {
+      setLoggedInRole(res.data.role);
+    });
+  }, []);
 
   useEffect(() => {
     // Get user data
@@ -129,8 +137,8 @@ function Profile() {
   return (
     <div className="fixed h-full w-full">
       {/* //! doesn't work as expected - FIX */}
-      {user.role === "mentee" && <NavBarMentee activeStr="Public profile" />}
-      {user.role === "mentor" && <NavBarMentor activeStr="Public profile" />}
+      {loggedInRole === "mentee" && <NavBarMentee activeStr="Public profile" />}
+      {loggedInRole === "mentor" && <NavBarMentor activeStr="Public profile" />}
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display  bg-cultured overflow-auto p-6 flex flex-col pb-40">
