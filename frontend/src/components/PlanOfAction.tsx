@@ -1,23 +1,26 @@
 import React, { useEffect } from "react";
-import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import axios from "axios";
 import { BiPlus } from "react-icons/bi";
 import {
   Avatar,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   TextField,
+  Tooltip,
 } from "@mui/material";
 
 // TODO add a goal to the plan of action
 
 interface PlanProps {
   goals: Goal[];
+  relationID: number;
+  handleNewGoal: () => void;
 }
 
 interface Goal {
@@ -32,31 +35,25 @@ interface ListElemProps {
   goal: Goal;
 }
 
-function addGoal() {
-
-}
-
 const ListElem: React.FC<ListElemProps> = (props) => {
   // TODO add onChange functionality
   const goal: Goal = props.goal;
   let isChecked: boolean = false;
 
-  if (goal.status === "complete")
-    isChecked = true;
+  if (goal.status === "complete") isChecked = true;
 
   const [checked, setChecked] = React.useState(isChecked);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (checked)
       axios.put("/api/plan/mark-plan-incomplete", { planID: goal.goalID });
-    else
-      axios.put("/api/plan/mark-plan-complete", { planID: goal.goalID });
+    else axios.put("/api/plan/mark-plan-complete", { planID: goal.goalID });
 
     setChecked(event.target.checked);
   };
 
-
   return (
+    <Tooltip followCursor title={<h1 className="text-[14px] font-thin ">{goal.description}</h1>}>
     <div className="text-prussianBlue bg-cultured shadow-md w-[82%] rounded-lg m-auto mt-3 mb-3 opacity-80 p-1 pr-4 pl-4 hover:opacity-90 transition duration-150">
       <FormControlLabel
         className="w-[100%]"
@@ -79,12 +76,24 @@ const ListElem: React.FC<ListElemProps> = (props) => {
         labelPlacement="end"
       />
     </div>
+    </Tooltip>
   );
 };
 
 // TODO fix ordering (complete first, incomplete first?)
 const PlanOfAction: React.FC<PlanProps> = (props) => {
   const [open, setOpen] = React.useState(false); // dialog open/closed
+  const [title, setTitle] = React.useState<string>("");
+  const [desc, setDesc] = React.useState<string>("");
+
+  const addGoal = () => {
+    console.log(title + " " + desc);
+    axios.post("/api/plan/add-plan", { relationID: props.relationID, title: title, description: desc }).then(() => {
+      props.handleNewGoal();
+    });
+    setOpen(false);
+    
+  };
 
   return (
     <div className="flex h-full bg-blueBg bg-cover w-1/3 flex-col text-left fixed right-0 text-cultured overflow-auto pb-44">
@@ -100,23 +109,29 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
           <BiPlus className="h-10 w-10 p-2" />
         </button>
 
-        <Dialog onClose={() => setOpen(false)} open={open}>
-          <DialogTitle>Subscribe</DialogTitle>
+        <Dialog onClose={() => setOpen(false)} open={open} fullWidth={true}>
+          <DialogTitle>Add a goal</DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            <div className="flex flex-col space-y-3">
               <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Email Address"
-                type="email"
-                fullWidth
-                variant="standard"
-              />
-            </DialogContentText>
+                label="Title"
+                onChange={(e: any) => {
+                  setTitle(e.target.value);
+                }}
+              ></TextField>
+              <TextField
+                label="Description"
+                multiline
+                onChange={(e: any) => {
+                  setDesc(e.target.value);
+                }}
+              ></TextField>
+            </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={addGoal}>Schedule</Button>
+            <Button onClick={addGoal} sx={{ color: "#0E2A47" }}>
+              Add goal
+            </Button>
           </DialogActions>
         </Dialog>
       </div>

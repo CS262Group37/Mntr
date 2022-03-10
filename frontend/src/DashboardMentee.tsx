@@ -16,7 +16,12 @@ interface UserData {
   role: string;
   businessArea: string;
   topics: string[];
-  meetings: Meeting[];
+  goingAheadMeetings: Meeting[];
+  pendingMeetings: Meeting[];
+  completedMeetings: Meeting[];
+  cancelledMeetings: Meeting[];
+  missedMeetings: Meeting[];
+  runningMeetings: Meeting[];
   planOfAction: Goal[];
 }
 
@@ -37,7 +42,6 @@ interface Goal {
   creationDate?: Date;
   status: string;
 }
-
 
 function useQuery() {
   const { search } = useLocation();
@@ -66,7 +70,8 @@ function DashboardMentee() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
 
   // Get mentee-mentor relations and mentees' data
-  useEffect(() => {
+
+  const getMentors = () => {
     axios.get("/api/relations/get-relations").then(async (res: any) => {
       var newMentors: UserData[] = [];
 
@@ -82,11 +87,19 @@ function DashboardMentee() {
 
         // Get meetings
         let mentorMeetings: Meeting[] = [];
+        let goingAheadMeetings: Meeting[] = [];
+        let pendingMeetings: Meeting[] = [];
+        let completedMeetings: Meeting[] = [];
+        let cancelledMeetings: Meeting[] = [];
+        let missedMeetings: Meeting[] = [];
+        let runningMeetings: Meeting[] = [];
+
         await axios
           .post("/api/meetings/get-meetings", {
             relationID: relationship.relationid,
           })
           .then((res: any) => {
+            console.log(res.data);
             mentorMeetings = res.data.map((m: any) => {
               return {
                 meetingID: m.meetingid,
@@ -102,15 +115,38 @@ function DashboardMentee() {
             mentorMeetings.sort((e1: any, e2: any) => {
               return e2.startTime - e1.startTime;
             });
+
+            for (const meeting of mentorMeetings) {
+              switch (meeting.status) {
+                case "goingAhead":
+                  goingAheadMeetings.push(meeting);
+                  break;
+                case "pending":
+                  pendingMeetings.push(meeting);
+                  break;
+                case "completed":
+                  completedMeetings.push(meeting);
+                  break;
+                case "cancelled":
+                  cancelledMeetings.push(meeting);
+                  break;
+                case "missed":
+                  missedMeetings.push(meeting);
+                  break;
+                case "running":
+                  runningMeetings.push(meeting);
+                  break;
+              };
+            };
           });
 
         // Get plan of action
         let goals: Goal[] = [];
         await axios
-          .get("/api/plan/get-plan", { params: {relationID: relationship.relationid} })
+          .get("/api/plan/get-plan", {
+            params: { relationID: relationship.relationid },
+          })
           .then((res: any) => {
-            console.log(res.data);
-
             goals = res.data.map((g: any) => {
               return {
                 goalID: g.planofactionid,
@@ -134,7 +170,12 @@ function DashboardMentee() {
               role: res.data.role,
               businessArea: res.data.businessarea,
               topics: mentorTopics,
-              meetings: mentorMeetings,
+              goingAheadMeetings: goingAheadMeetings,
+              pendingMeetings: pendingMeetings,
+              completedMeetings: completedMeetings,
+              cancelledMeetings: cancelledMeetings,
+              missedMeetings: missedMeetings,
+              runningMeetings: runningMeetings,
               planOfAction: goals,
             };
 
@@ -144,6 +185,10 @@ function DashboardMentee() {
 
       setMentors(newMentors);
     });
+  };
+
+  useEffect(() => {
+    getMentors();
   }, []);
 
   // Read the query string to get the mentee to render
@@ -158,7 +203,12 @@ function DashboardMentee() {
     role: "",
     businessArea: "",
     topics: [],
-    meetings: [],
+    goingAheadMeetings: [],
+    pendingMeetings: [],
+    completedMeetings: [],
+    cancelledMeetings: [],
+    missedMeetings: [],
+    runningMeetings: [],
     planOfAction: [],
   };
 
@@ -176,7 +226,7 @@ function DashboardMentee() {
     }
   }
 
-  console.log(currentMentor.meetings);
+  console.log(currentMentor);
 
   return (
     <div className="fixed h-full w-full">
@@ -191,10 +241,20 @@ function DashboardMentee() {
         {/* White half */}
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
-            <MentorDetails mentorData={currentMentor} />
+            <MentorDetails mentorData={currentMentor} handleNewMeeting={getMentors} nextMeeting={currentMentor.goingAheadMeetings.length > 0 ? currentMentor.goingAheadMeetings[currentMentor.goingAheadMeetings.length-1].startTime : null}/>
 
-            <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
-              {currentMentor.meetings.map((meeting) => {
+            <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
+              {currentMentor.pendingMeetings.map((meeting) => {
+                return <MeetingCard meetingData={meeting} />;
+              })}
+
+              {(currentMentor.pendingMeetings.length > 0 && (currentMentor.missedMeetings.length > 0 || currentMentor.completedMeetings.length > 0)) &&
+                <h1 className="text-left pt-6 mt-6 pl-4 text-3xl text-firebrick border-t-[1.5px] border-gray-200"></h1>}
+              {/* <hr className="border-[0.5px]"></hr> */}
+              {currentMentor.completedMeetings.map((meeting) => {
+                return <MeetingCard meetingData={meeting} />;
+              })}
+              {currentMentor.missedMeetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;
               })}
             </div>
@@ -202,7 +262,11 @@ function DashboardMentee() {
         </div>
 
         {/* Plan of action */}
-        <PlanOfAction goals={currentMentor.planOfAction} />
+        <PlanOfAction
+          goals={currentMentor.planOfAction}
+          relationID={currentMentor.relationID}
+          handleNewGoal={getMentors}
+        />
       </div>
     </div>
   );
