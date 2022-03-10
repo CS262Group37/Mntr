@@ -181,6 +181,14 @@ def mark_app_feedback_as_read(appFeedbackID):
         return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
     return (True, {'message': 'Successfully marked feedback as read'})
 
+def clear_feedback():
+    sql = 'TRUNCATE app_feedback CASCADE;'
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': "Successfully cleared application feedback"})
 
 def create_report(userID, contents):
     sql = 'INSERT INTO report (userID, content, "status") VALUES (%s, %s, %s);'
@@ -209,3 +217,12 @@ def get_reports():
     conn = DatabaseConnection()
     with conn:
         return conn.execute(sql)
+
+def clear_reports():
+    sql = 'TRUNCATE report CASCADE;'
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': "Successfully cleared reports"})

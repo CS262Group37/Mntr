@@ -160,6 +160,16 @@ class MarkAppFeedbackAsRead(AuthResource):
         return result[1], 404
 
 
+class ClearAppFeedback(AuthResource):
+    roles = ['admin']
+    @admin_api.doc(security='apiKey')
+    def delete(self):
+        result = admin.clear_feedback()
+        if result[0]:
+            return result[1], 200
+        return result[1], 404
+
+
 class CreateReport(AuthResource):
     roles = ['mentee', 'mentor']
     @admin_api.doc(security='apiKey')
@@ -202,6 +212,15 @@ class SendReport(AuthResource):
             return {'message': 'Report sent successfully.'}, 200
         return {'error': 'Failed to send report'}, 405
 
+class ClearReports(AuthResource):
+    roles = ['admin']
+    @admin_api.doc(security='apiKey')
+    def delete(self):
+        result = admin.clear_reports()
+        if result[0]:
+            return result[1], 200
+        return result[1], 404
+
 
 
 
@@ -222,8 +241,10 @@ admin_api.add_resource(GetBusinessAreas, '/get-business-area')
 admin_api.add_resource(GetAppFeedback, '/get-app-feedback')
 admin_api.add_resource(CreateAppFeedback, '/create-app-feedback')
 admin_api.add_resource(MarkAppFeedbackAsRead, '/mark-app-feeback-as-read')
+admin_api.add_resource(ClearAppFeedback, '/clear-app-feedback')
 admin_api.add_resource(MarkReportAsRead, '/mark-report-as-read')
 admin_api.add_resource(GetReports, '/view-reports')
 admin_api.add_resource(CreateReport, '/create-report')
 admin_api.add_resource(SendReport, '/send-report')
+admin_api.add_resource(ClearReports, '/clear-reports')
 
