@@ -29,4 +29,5 @@ class GetMessages(AuthResource):
         return messages.get_messages(self.payload["userID"])
 
 
-messages_api.add_resource(GetMessages, "/get_messages")
+messages_api.add_resource(GetMessages, "/get-messages")
+messages_api.add_resource(GetEmails, "/get-emails")
