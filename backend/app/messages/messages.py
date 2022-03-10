@@ -42,6 +42,24 @@ def get_messages(userID):
     return messages
 
 
+def get_emails(userID):
+    """Get all emails for a given userID. Return array of dicts."""
+
+    email_messages = None
+    conn = DatabaseConnection(real_dict=True)
+    with conn:
+        sql = "SELECT * FROM \"message\" NATURAL JOIN message_email WHERE recipientID = %s AND messageType = 'Email'"
+        email_messages = conn.execute(sql, (userID,))
+
+    if email_messages is None:
+        return []
+
+    for email in email_messages:
+        email["senttime"] = email["senttime"].strftime("%d/%m/%y %H:%M")
+
+    return email_messages
+
+
 def send_message(message, custom_conn=None):
     """Send a message provided as an object class. Returns True or False."""
     # Check that the passed object is a message object
