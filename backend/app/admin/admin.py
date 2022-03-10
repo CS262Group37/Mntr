@@ -52,7 +52,6 @@ def clear_topics():
     return (True, {"message": "Successfully cleared system topics"})
 
 
-
 def ban_account(accountID):
     # TODO: Implement account banning
     pass
@@ -61,6 +60,7 @@ def ban_account(accountID):
 def remove_user(userID):
     # TODO: Implement user removal
     pass
+
 
 # Changes the status of the reprt with the given ID to read
 # def mark_report_as_read(reportID):
@@ -167,75 +167,81 @@ def get_business_areas():
         businessAreas = conn.execute(sql)
     return businessAreas
 
+
 def get_app_feedback():
-    sql = 'SELECT * FROM app_feedback;'
     conn = DatabaseConnection(real_dict=True)
     with conn:
+        sql = "SELECT * FROM app_feedback;"
         feeback = conn.execute(sql)
     return feeback
 
+
 def create_app_feedback(content):
-    sql = 'INSERT INTO app_feedback (content, "status") VALUES (%s, %s);'
-    data = (content, "unread")
     conn = DatabaseConnection()
     with conn:
+        sql = 'INSERT INTO app_feedback (content, "status") VALUES (%s, %s);'
+        data = (content, "unread")
         conn.execute(sql, data)
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully added feedback'})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully added feedback"})
+
 
 def mark_app_feedback_as_read(appFeedbackID):
-    sql = "UPDATE app_feedback SET status = 'read' WHERE feedbackID = %s"
-    data = (appFeedbackID,)
     conn = DatabaseConnection()
     with conn:
+        sql = "UPDATE app_feedback SET status = 'read' WHERE feedbackID = %s"
+        data = (appFeedbackID,)
         conn.execute(sql, data)
     if conn.error:
-        return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
-    return (True, {'message': 'Successfully marked feedback as read'})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully marked feedback as read"})
+
 
 def clear_feedback():
-    sql = 'TRUNCATE app_feedback CASCADE;'
     conn = DatabaseConnection()
     with conn:
+        sql = "TRUNCATE app_feedback CASCADE;"
         conn.execute(sql)
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': "Successfully cleared application feedback"})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully cleared application feedback"})
+
 
 def create_report(userID, contents):
-    sql = 'INSERT INTO report (userID, content, "status") VALUES (%s, %s, %s);'
-    data = (userID, contents, "unread")
-
     conn = DatabaseConnection()
     with conn:
+        sql = 'INSERT INTO report (userID, content, "status") VALUES (%s, %s, %s);'
+        data = (userID, contents, "unread")
         conn.execute(sql, data)
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully created report'})
-# Send the report to all of the admins 
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully created report"})
+
 
 def mark_report_as_read(reportID):
-    sql = "UPDATE report SET status = 'read' WHERE reportID = %s;"
-    data = (reportID,)
     conn = DatabaseConnection()
     with conn:
+        sql = "UPDATE report SET status = 'read' WHERE reportID = %s;"
+        data = (reportID,)
         conn.execute(sql, data)
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': 'Successfully marked report as read'})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully marked report as read"})
+
 
 def get_reports():
-    sql = "SELECT * FROM report;"
     conn = DatabaseConnection()
     with conn:
+        sql = "SELECT * FROM report;"
         return conn.execute(sql)
 
+
 def clear_reports():
-    sql = 'TRUNCATE report CASCADE;'
     conn = DatabaseConnection()
     with conn:
+        sql = "TRUNCATE report CASCADE;"
         conn.execute(sql)
     if conn.error:
-        return (False, {'error': conn.error_message})
-    return (True, {'message': "Successfully cleared reports"})
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully cleared reports"})
