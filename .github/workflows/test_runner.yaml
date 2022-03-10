@@ -71,7 +71,7 @@ jobs:
       - name: Check running containers
         run: docker ps -a
       - name: Generate users
-        run: backend/tests/run_ug
+        run: sudo backend/tests/run_ug
       - name: Run pytest
         run: pytest
       - name: Exit
