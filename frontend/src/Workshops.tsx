@@ -55,9 +55,10 @@ function Workshops() {
   }, []);
 
   useEffect(() => {
-    axios.get("/api/workshop/get-workshops", {params: { userID: user.id, role: user.role } }).then((res) => {
-      console.log(res.data);
-    });    
+    if (user.id != -1 && user.role != "")
+      axios.get("/api/workshop/get-workshops", {params: { userID: user.id, role: user.role } }).then((res) => {
+        console.log(res.data);
+      });    
   }, [user]);
 
   return(

@@ -73,6 +73,7 @@ function DashboardMentee() {
 
   const getMentors = () => {
     axios.get("/api/relations/get-relations").then(async (res: any) => {
+      console.log(res.data);
       var newMentors: UserData[] = [];
 
       for (const relationship of res.data) {
