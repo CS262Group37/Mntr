@@ -1,4 +1,4 @@
-from app.auth.routes import AuthResource
+from app.auth.auth import AuthResource
 from . import plan_api
 from . import plan_of_action as plan
 from . import parsers

@@ -1,4 +1,4 @@
-from app.auth.routes import AuthResource
+from app.auth.auth import AuthResource
 from . import messages_api
 from . import messages
 
