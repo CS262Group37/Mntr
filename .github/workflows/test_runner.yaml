@@ -80,8 +80,8 @@ jobs:
           
       - name: Generate users
         run: |
-          docker exec mntr-backend-1 sh -c "touch tests/preset.json"
-          docker exec mntr-backend-1 sh -c 'echo {\"accounts\" : 100,\"topics\" : 10,\"skills\" : 10,\"businessAreas\" : 10,\"relations\": 300,\"meetings\": 1200,\"plansOfAction\": 1200} >> tests/preset.json'
+          docker exec mntr-backend-1 sh -c "touch preset.json"
+          docker exec mntr-backend-1 sh -c 'echo {\"accounts\" : 100,\"topics\" : 10,\"skills\" : 10,\"businessAreas\" : 10,\"relations\": 300,\"meetings\": 1200,\"plansOfAction\": 1200} >> preset.json'
           docker exec mntr-backend-1 sh -c "python3 tests/lightweight_usergen.py"
       - name: Run pytest
         run: pytest
