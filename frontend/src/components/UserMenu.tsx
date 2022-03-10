@@ -99,7 +99,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
   return (
     <div
       className={
-        "bg-cultured rounded-md text-prussianBlue flex-auto w-[500px] max-h-[640px] overflow-auto top-20 right-6 z-10 pt-2 text-left animate-growDown origin-top-right text-xl font-display"
+        "bg-cultured rounded-xl text-prussianBlue flex-auto w-[500px] max-h-[640px] overflow-auto top-20 right-6 z-10 pt-2 text-left animate-growDown origin-top-right text-xl font-display"
       }
     >
       <Link

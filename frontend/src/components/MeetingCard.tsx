@@ -47,7 +47,7 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
       <div className="flex flex-row text-2xl justify-between border-b-2 border-imperialRed">
         {/* Meeting title and date */}
         <div className="flex flex-col ml-3 mb-3 w-[100%]">
-          {/* Title and badge */}
+          {/* Title and label */}
           <div className="flex flex-row justify-between">
             <h1 className="font-semibold mt-1 mb-3 text-left">
               {meeting.title}
@@ -55,7 +55,7 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
 
             <p
               className={
-                "text-cultured rounded-full text-sm m-auto mr-2 p-1 pl-3 pr-3 " + labelColour
+                "text-cultured rounded-full font-body text-sm m-auto mr-2 p-1 pl-3 pr-3 " + labelColour
               }
             >
               {meeting.status.toUpperCase()}

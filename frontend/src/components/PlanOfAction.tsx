@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import axios from "axios";
 import { BiPlus } from "react-icons/bi";
 import {
   Avatar,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
