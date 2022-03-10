@@ -76,7 +76,7 @@ def cancel_meeting(meetingID):
         sql = 'SELECT "status" FROM meeting WHERE meetingID = %s;'
         [(status,)] = conn.execute(sql, (meetingID,))
 
-        if status != "going-ahead" or status != "pending":
+        if status != "going-ahead" and status != "pending":
             return (False, {"error": "Cannot cancel meeting."})
 
         # Update status to cancelled
