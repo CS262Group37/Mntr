@@ -17,7 +17,6 @@ DROP TABLE IF EXISTS workshop CASCADE;
 DROP TABLE IF EXISTS message_workshop_invite CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
 DROP TABLE IF EXISTS workshop_demand CASCADE;
-DROP TABLE IF EXISTS message_report CASCADE;
 DROP TABLE IF EXISTS app_feedback CASCADE;
 
 -- Constraint functions --
