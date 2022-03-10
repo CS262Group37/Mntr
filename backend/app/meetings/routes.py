@@ -119,7 +119,7 @@ class CompleteMeeting(AuthResource):
             return {"error": "You do no have access to this meeting"}, 401
 
         result = meetings.complete_meeting(
-            self.payload["userID"], data["meetingID"], data["feedback"]
+            data["meetingID"], data["feedback"]
         )
         if result[0]:
             return result[1], 201

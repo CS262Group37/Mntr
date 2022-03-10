@@ -196,7 +196,7 @@ def get_next_meeting(relationID):
     return next_meeting
 
 
-def complete_meeting(userID, meetingID, feedback):
+def complete_meeting(meetingID, feedback):
     """Update the status of a user's meeting to 'completed'.
     Meetings can only be 'completed' if they are currently 'running'.
 
