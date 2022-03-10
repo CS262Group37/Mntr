@@ -48,8 +48,15 @@ def get_emails(userID):
     email_messages = None
     conn = DatabaseConnection(real_dict=True)
     with conn:
-        sql = "SELECT * FROM \"message\" NATURAL JOIN message_email WHERE recipient = %s AND messageType = 'Email'"
+        sql = "SELECT * FROM \"message\" NATURAL JOIN message_email WHERE recipientID = %s AND messageType = 'Email'"
         email_messages = conn.execute(sql, (userID,))
+
+    if email_messages is None:
+        return []
+
+    for email in email_messages:
+        email["senttime"] = email["senttime"].strftime("%d/%m/%y %H:%M")
+
     return email_messages
 
 
