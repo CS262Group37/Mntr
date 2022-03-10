@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS plan_of_action CASCADE;
 DROP TABLE IF EXISTS meeting CASCADE;
 DROP TABLE IF EXISTS message_meeting CASCADE;
 DROP TABLE IF EXISTS message_email CASCADE;
+DROP TABLE IF EXISTS message_report CASCADE;
 DROP TABLE IF EXISTS workshop CASCADE;
 DROP TABLE IF EXISTS message_workshop_invite CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
@@ -108,16 +109,16 @@ CREATE TABLE message_email(
     content VARCHAR NOT NULL
 );
 
-CREATE TABLE message_report(
-    messageID INTEGER REFERENCES "message"(messageID),
-    reportID INTEGER REFERENCES report(reportID)
-);
-
 CREATE TABLE report (
     reportID SERIAL PRIMARY KEY,
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     content VARCHAR NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+);
+
+CREATE TABLE message_report(
+    messageID INTEGER REFERENCES "message"(messageID),
+    reportID INTEGER REFERENCES report(reportID)
 );
 
 CREATE TABLE workshop (
