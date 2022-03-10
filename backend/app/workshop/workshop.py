@@ -142,13 +142,17 @@ def get_workshops(userID, role):
     if role == "mentor":
         sql = "SELECT * FROM workshop WHERE mentorID = %s"
     else:
-        sql = "SELECT * FROM user_workshop WHERE menteeID = %s"
+        sql = "SELECT * FROM workshop NATURAL JOIN user_workshop WHERE workshop.workshopid=user_workshop.workshopid AND user_Workshop.menteeid= %s"
 
     data = (userID,)
 
     conn = DatabaseConnection(real_dict=True)
     with conn:
         result = conn.execute(sql, data)
+    for row in result:
+        row['starttime'] = row['starttime'].strftime('%d/%m/%y %H:%M')
+        row['endtime'] = row['endtime'].strftime('%d/%m/%y %H:%M')
+
     if conn.error:
         return None
     return result

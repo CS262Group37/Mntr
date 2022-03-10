@@ -7,7 +7,6 @@ import UserMenu from "./UserMenu";
 
 interface UserData {
   id?: number;
-  email: string;
   firstName: string;
   lastName: string;
   avatar: string;
@@ -23,7 +22,6 @@ interface NavBarProps {
   activeStr: string;
   activeMentorId?: number;
   mentors?: UserData[];
-  setMentor: (value: any) => void;
 }
 interface LinkProps {
   text: string;
@@ -47,7 +45,7 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
 
 const NavBar: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
-  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
+  const [user, setUser] = React.useState<UserData>({firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
   const [menu, setMenu] = React.useState<boolean>(false);
   const [userMenu, setUserMenu] = React.useState<HTMLDivElement | null>(null);
 
@@ -56,7 +54,6 @@ const NavBar: React.FC<NavBarProps> = (props) => {
     axios.get("/api/users/get-own-data").then((res) => {
       const newUser: UserData = {
         id: res.data.userid,
-        email: res.data.email,
         firstName: res.data.firstname,
         lastName: res.data.lastname,
         avatar: res.data.profilepicture,
@@ -182,8 +179,8 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 <Link
                   to={"/dashboard-mentee?mentor=" + mentor.id}
                   className={css}
-                ><span onClick={() => props.setMentor(mentor)}>{mentor.firstName + " " + mentor.lastName}</span>
-                  
+                >
+                  {mentor.firstName + " " + mentor.lastName}
                 </Link>
               );
             })}

@@ -1,5 +1,5 @@
 from flask_restx import Resource
-from app.auth.routes import AuthResource
+from app.auth.auth import AuthResource
 from . import users_api
 from . import parsers
 from . import users

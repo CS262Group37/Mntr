@@ -55,10 +55,10 @@ def get_recommended_mentors(menteeID):
     recommended_mentors = []
     conn = DatabaseConnection()
     with conn:
-        # Get a all mentors on the system
-        sql = "SELECT * FROM \"user\" WHERE role = 'mentor';"
-        mentors = conn.execute(sql)
-
+        # First get all mentors on the system that the mentee is not in a relation with
+        sql = "SELECT * FROM \"user\" INNER JOIN relation ON \"user\".userID = relation.mentorID WHERE role = 'mentor' AND relation.mentorID NOT IN (SELECT mentorID FROM relation WHERE menteeID = %s);"
+        mentors = conn.execute(sql, (menteeID,))
+        
         # Get mentee data structs from db
         menteeUser = conn.execute(
             'SELECT * FROM "user" WHERE userID = %s;', (menteeID,)

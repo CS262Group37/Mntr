@@ -1,9 +1,9 @@
-from app.auth.routes import AuthResource
+from app.auth.auth import AuthResource
 from . import messages_api
 from . import messages
 
 class GetMessages(AuthResource):
-    roles = ['mentee', 'mentor']
+    roles = ['mentee', 'mentor', 'admin']
 
     @messages_api.doc(security='apiKey')
     def get(self):

@@ -108,7 +108,7 @@ function Register() {
               />
             </div>
 
-            <div className="pt-[32px]">
+            <div className="pt-[32px] m-auto">
               <LoginButton 
                 value="Register"
                 onClick={register}

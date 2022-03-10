@@ -3,33 +3,26 @@ import "./App.css";
 import axios from "axios";
 import NavBar from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
-import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
-import {
-  Avatar,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  fabClasses,
-  Modal,
-} from "@mui/material";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import MeetingCard from "./components/MeetingCard";
-import { collapseTextChangeRangesAcrossMultipleVersions, setSyntheticLeadingComments } from "typescript";
+import MentorDetails from "./components/MentorDetails";
 
 interface UserData {
   relationID: number;
   id?: number;
-  email: string;
   firstName: string;
   lastName: string;
   avatar: string;
   role: string;
   businessArea: string;
   topics: string[];
-  meetings: Meeting[];
+  goingAheadMeetings: Meeting[];
+  pendingMeetings: Meeting[];
+  completedMeetings: Meeting[];
+  cancelledMeetings: Meeting[];
+  missedMeetings: Meeting[];
+  runningMeetings: Meeting[];
+  planOfAction: Goal[];
 }
 
 interface Meeting {
@@ -42,121 +35,19 @@ interface Meeting {
   endTime: Date;
 }
 
-interface MentorProps {
-  mentorData: UserData;
+interface Goal {
+  goalID?: number;
+  title: string;
+  description: string;
+  creationDate?: Date;
+  status: string;
 }
 
-// Mentor details component
-const MentorDetails: React.FC<MentorProps> = (props) => {
-  const [open, setOpen] = React.useState(false);
+function useQuery() {
+  const { search } = useLocation();
 
-  // TODO schedule a meeting function
-  const schedule = () => {
-    console.log("SCHEDULE");
-    return;
-  };
-
-  const mentor: UserData = props.mentorData;
-  const [nextMeeting, setNextMeeting] = React.useState<Date>(new Date());
-  const [hasNextMeeting, setHasNextMeeting]=  React.useState<Boolean>(false);
-
-  useEffect(() => {
-    console.log("here");
-    axios
-      .post("/api/meetings/get-next-meeting", { relationID: mentor.relationID })
-      .then(async (res: any) => {
-        console.log(mentor.relationID)
-        console.log(res.data);
-
-        if (!res.data.hasOwnProperty("error")) {
-          setHasNextMeeting(true);
-          setNextMeeting(new Date(parseDate(res.data.starttime)));
-        }
-      });
-  }, [mentor]);
-
-  // Next meeting date formatting
-  // TODO check formatting
-  const weekday = nextMeeting.toLocaleString("default", {
-    weekday: "long",
-  });
-  const month = nextMeeting.getMonth() + 1;
-  const date =
-    weekday +
-    ", " +
-    nextMeeting.getDate() +
-    "." +
-    month +
-    "." +
-    nextMeeting.getFullYear();
-
-  return (
-    <div className="flex flex-col m-10 mb-6 text-firebrick font-display">
-      <div className="flex flex-row h-min">
-        <div className="flex flex-row">
-          <div className="flex flex-row mr-4">
-            {/* TODO Mentor profile pic */}
-            <Avatar
-              className="m-auto"
-              alt={mentor.firstName + " " + mentor.lastName}
-              src={mentor.avatar}
-              sx={{ width: 100, height: 100 }}
-            />
-
-            {/* Mentor name & topic */}
-            <div className="flex flex-col text-left m-auto pl-4 space-y-1">
-              <Link
-                to={"/profile?id=" + mentor.id}
-                className="font-semibold text-3xl hover:font-bold"
-              >
-                {mentor.firstName + " " + mentor.lastName}
-              </Link>
-              <h3 className="text-xl">
-                {mentor.topics.map((topic, i, { length }) => {
-                  if (i === length - 1) {
-                    return <span>{topic}</span>;
-                  } else return <span>{topic + ", "}</span>;
-                })}
-              </h3>
-            </div>
-          </div>
-        </div>
-
-        {/* Schedule meeting button */}
-        <button
-          className="bg-prussianBlue text-cultured text-xl min-w-100 flex-none w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
-          onClick={() => setOpen(true)}
-        >
-          Schedule a meeting
-        </button>
-        <Dialog onClose={() => setOpen(false)} open={open}>
-          <DialogTitle>Subscribe</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              To subscribe to this website, please enter your email address
-              here. We will send updates occasionally.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={schedule}>Schedule</Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-
-      {/* Next meeting date */}
-      {/* //! BROKEN */}
-      {hasNextMeeting && (
-        <div className="flex flex-row text-lg font-body m-5 mr-2 mb-0">
-          <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
-          <p className="mt-auto mb-auto text-left">
-            Your next meeting with {mentor.firstName} is on{" "}
-            <span className="font-bold">{date}</span>
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 function parseDate(d: string) {
   const [date, time] = d.split(" ");
@@ -177,25 +68,14 @@ function parseDate(d: string) {
 
 function DashboardMentee() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
-  const [mentor, setMentor] = React.useState<UserData>({
-    relationID: -1,
-    email: "",
-    firstName: "",
-    lastName: "",
-    avatar: "",
-    role: "",
-    businessArea: "",
-    topics: [],
-    meetings: [],
-  });
 
   // Get mentee-mentor relations and mentees' data
-  useEffect(() => {
+
+  const getMentors = () => {
     axios.get("/api/relations/get-relations").then(async (res: any) => {
       var newMentors: UserData[] = [];
 
       for (const relationship of res.data) {
-        // console.log(relationship)
         let mentorTopics: string[];
 
         // Get topics
@@ -205,14 +85,21 @@ function DashboardMentee() {
             mentorTopics = res.data.map((t: any) => t.topic);
           });
 
-        let mentorMeetings: Meeting[] = [];
-
         // Get meetings
+        let mentorMeetings: Meeting[] = [];
+        let goingAheadMeetings: Meeting[] = [];
+        let pendingMeetings: Meeting[] = [];
+        let completedMeetings: Meeting[] = [];
+        let cancelledMeetings: Meeting[] = [];
+        let missedMeetings: Meeting[] = [];
+        let runningMeetings: Meeting[] = [];
+
         await axios
           .post("/api/meetings/get-meetings", {
             relationID: relationship.relationid,
           })
           .then((res: any) => {
+            console.log(res.data);
             mentorMeetings = res.data.map((m: any) => {
               return {
                 meetingID: m.meetingid,
@@ -228,23 +115,68 @@ function DashboardMentee() {
             mentorMeetings.sort((e1: any, e2: any) => {
               return e2.startTime - e1.startTime;
             });
+
+            for (const meeting of mentorMeetings) {
+              switch (meeting.status) {
+                case "goingAhead":
+                  goingAheadMeetings.push(meeting);
+                  break;
+                case "pending":
+                  pendingMeetings.push(meeting);
+                  break;
+                case "completed":
+                  completedMeetings.push(meeting);
+                  break;
+                case "cancelled":
+                  cancelledMeetings.push(meeting);
+                  break;
+                case "missed":
+                  missedMeetings.push(meeting);
+                  break;
+                case "running":
+                  runningMeetings.push(meeting);
+                  break;
+              };
+            };
           });
-          
-        // Get mentor data
+
+        // Get plan of action
+        let goals: Goal[] = [];
+        await axios
+          .get("/api/plan/get-plan", {
+            params: { relationID: relationship.relationid },
+          })
+          .then((res: any) => {
+            goals = res.data.map((g: any) => {
+              return {
+                goalID: g.planofactionid,
+                title: g.title,
+                description: g.description,
+                // creationDate: parseDate(g.creationdate),
+                status: g.status,
+              };
+            });
+          });
+
         await axios
           .post("/api/users/get-user-data", { userID: relationship.mentorid })
           .then((res: any) => {
             const mentor: UserData = {
               relationID: relationship.relationid,
               id: relationship.mentorid,
-              email: res.data.email,
               firstName: res.data.firstname,
               lastName: res.data.lastname,
               avatar: res.data.profilepicture,
               role: res.data.role,
               businessArea: res.data.businessarea,
               topics: mentorTopics,
-              meetings: mentorMeetings,
+              goingAheadMeetings: goingAheadMeetings,
+              pendingMeetings: pendingMeetings,
+              completedMeetings: completedMeetings,
+              cancelledMeetings: cancelledMeetings,
+              missedMeetings: missedMeetings,
+              runningMeetings: runningMeetings,
+              planOfAction: goals,
             };
 
             newMentors.push(mentor);
@@ -252,18 +184,56 @@ function DashboardMentee() {
       }
 
       setMentors(newMentors);
-      setMentor(newMentors[0]);
     });
+  };
+
+  useEffect(() => {
+    getMentors();
   }, []);
 
+  // Read the query string to get the mentee to render
+  let query = useQuery();
+  const currentMentorId = query.get("mentor");
+  let currentMentorIdNum: number = -1;
+  let currentMentor: UserData = {
+    relationID: -1,
+    firstName: "",
+    lastName: "",
+    avatar: "",
+    role: "",
+    businessArea: "",
+    topics: [],
+    goingAheadMeetings: [],
+    pendingMeetings: [],
+    completedMeetings: [],
+    cancelledMeetings: [],
+    missedMeetings: [],
+    runningMeetings: [],
+    planOfAction: [],
+  };
+
+  if (mentors.length > 0 && currentMentorId == null) {
+    return <Navigate to={"/dashboard-mentee?mentor=" + mentors[0].id} />;
+  }
+
+  for (let i = 0; i < mentors.length; i++) {
+    if (
+      currentMentorId != null &&
+      mentors[i].id === parseInt(currentMentorId)
+    ) {
+      currentMentorIdNum = parseInt(currentMentorId);
+      currentMentor = mentors[i];
+    }
+  }
+
+  console.log(currentMentor);
 
   return (
     <div className="fixed h-full w-full">
       <NavBar
         activeStr="My mentors"
-        activeMentorId={mentor.id}
+        activeMentorId={currentMentorIdNum}
         mentors={mentors}
-        setMentor={setMentor}
       />
 
       {/* Main flexbox */}
@@ -271,11 +241,20 @@ function DashboardMentee() {
         {/* White half */}
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
-            <MentorDetails mentorData={mentor} />
+            <MentorDetails mentorData={currentMentor} handleNewMeeting={getMentors} nextMeeting={currentMentor.goingAheadMeetings.length > 0 ? currentMentor.goingAheadMeetings[currentMentor.goingAheadMeetings.length-1].startTime : null}/>
 
-            <div className="w-[90%] flex flex-col mr-auto ml-auto pb-44">
-              {mentor.meetings.map((meeting) => {
-                // console.log(meeting);
+            <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
+              {currentMentor.pendingMeetings.map((meeting) => {
+                return <MeetingCard meetingData={meeting} />;
+              })}
+
+              {(currentMentor.pendingMeetings.length > 0 && (currentMentor.missedMeetings.length > 0 || currentMentor.completedMeetings.length > 0)) &&
+                <h1 className="text-left pt-6 mt-6 pl-4 text-3xl text-firebrick border-t-[1.5px] border-gray-200"></h1>}
+              {/* <hr className="border-[0.5px]"></hr> */}
+              {currentMentor.completedMeetings.map((meeting) => {
+                return <MeetingCard meetingData={meeting} />;
+              })}
+              {currentMentor.missedMeetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;
               })}
             </div>
@@ -283,7 +262,11 @@ function DashboardMentee() {
         </div>
 
         {/* Plan of action */}
-        <PlanOfAction relationID={mentor.relationID} />
+        <PlanOfAction
+          goals={currentMentor.planOfAction}
+          relationID={currentMentor.relationID}
+          handleNewGoal={getMentors}
+        />
       </div>
     </div>
   );
