@@ -14,3 +14,9 @@ user_parser.add_argument('userID', required = True, type = int)
 
 business_area_parser = reqparse.RequestParser(bundle_errors=True)
 business_area_parser.add_argument('businessAreaName', required = True, type = str)
+
+feedbackID_parser = reqparse.RequestParser(bundle_errors=True)
+feedbackID_parser.add_argument('feedbackID', required = True, type=int)
+
+feedback_content_parser = reqparse.RequestParser(bundle_errors=True)
+feedback_content_parser.add_argument('content', required = True, type=str)

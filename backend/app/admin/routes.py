@@ -148,6 +148,35 @@ class RemoveUser(AuthResource):
             return result[1], 200
         return result[1], 404
 
+class GetAppFeedback(AuthResource):
+    roles = ['admin']
+    @admin_api.doc(security='apiKey')
+    def get(self):
+        return admin.get_app_feedback(), 200
+
+class CreateAppFeedback(AuthResource):
+    roles = ['mentee', 'mentor']
+    @admin_api.expect(parsers.feedback_content_parser)
+    @admin_api.doc(security='apiKey')
+    def post(self):
+        data = parsers.feedback_content_parser.parse_args()
+        result = admin.create_app_feedback(data['content'])
+        if result[0]:
+            return result[1], 201
+        return result[1], 400
+
+class MarkAppFeedbackAsRead(AuthResource):
+    roles = ['admin']
+    @admin_api.expect(parsers.feedbackID_parser)
+    @admin_api.doc(security='apiKey')
+    def put(self):
+        data = parsers.feedbackID_parser.parse_args()
+        result = admin.mark_app_feedback_as_read(data['feedbackID'])
+        if result[0]:
+            return result[1], 200
+        return result[1], 404
+
+
 admin_api.add_resource(GetTopics, '/get-topics')
 admin_api.add_resource(AddTopic, '/add-topic')
 admin_api.add_resource(RemoveTopic, '/remove-topic')
@@ -163,3 +192,8 @@ admin_api.add_resource(AddBusinessArea, '/add-business-area')
 admin_api.add_resource(RemoveBusinessArea, '/remove-business-area')
 admin_api.add_resource(ClearBusinessAreas, '/clear-business-area')
 admin_api.add_resource(GetBusinessAreas, '/get-business-area')
+
+admin_api.add_resource(GetAppFeedback, '/get-app-feedback')
+admin_api.add_resource(CreateAppFeedback, '/create-app-feedback')
+admin_api.add_resource(MarkAppFeedbackAsRead, '/mark-app-feeback-as-read')
+

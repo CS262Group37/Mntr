@@ -162,3 +162,30 @@ def get_business_areas():
         businessAreas = conn.execute(sql)
     
     return businessAreas
+
+def get_app_feedback():
+    sql = 'SELECT * FROM app_feedback;'
+    conn = DatabaseConnection(real_dict=True)
+    with conn:
+        feeback = conn.execute(sql)
+    return feeback
+
+def create_app_feedback(content):
+    sql = 'INSERT INTO app_feedback (content, "status") VALUES (%s, %s);'
+    data = (content, "unread")
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully added feedback'})
+
+def mark_app_feedback_as_read(appFeedbackID):
+    sql = "UPDATE app_feedback SET status = 'read' WHERE feedbackID = %s"
+    data = (appFeedbackID,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
+    return (True, {'message': 'Successfully marked feedback as read'})
