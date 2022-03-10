@@ -1,151 +1,212 @@
+from datetime import datetime
+import random
+
 from app.database import DatabaseConnection
+from app.messages.messages import send_message, WorkshopInvite
+import app.apscheduler as apscheduler
 
-from datetime import datetime, timedelta
-from time import time
+demand_threshold = 5
 
-# Function to insert workshop details into database 
-def schedule_workshop(mentorID, title, topic, desc, time, duration, location):
-    sql= 'SELECT demand FROM workshopdemand WHERE mentorID = %s'
-    data = (mentorID,)
+# Function to insert workshop details into database
+def create_workshop(mentorID, title, topic, desc, time, duration, location):
+    sql = 'INSERT INTO workshop (topic, mentorID, title, "description", startTime, endTime, "location",status) VALUES (%s, %s, %s, %s, %s,%s,%s,\'going-ahead\') RETURNING workshopID;'
+    data = (
+        topic,
+        mentorID,
+        title,
+        desc,
+        time,
+        duration,
+        location,
+    )
     conn = DatabaseConnection()
     with conn:
-        [(demandResult,)]=conn.execute(sql, data)
-
-    sql = 'INSERT INTO workshop (topic,mentorID,title,"description","time",duration,"location",demand) VALUES (%s, %s, %s, %s, %s,%s,%s, %s) RETURNING workshopID;'
-    data = (topic,mentorID,title,desc,time,duration,location,demandResult,)
-    with conn:
-        [(workshopID,)]=conn.execute(sql, data)
-
-    sql = 'UPDATE workshopdemand SET demand = 0 WHERE mentorID = %s'
-    data = (mentorID,)
-    with conn:
-        conn.execute(sql, data)
+        [(workshopID,)] = conn.execute(sql, data)
 
     if conn.error:
-        return (False, {'message': 'Failed creating workshop', 'error': conn.error_message})
-    addMenteeToWorkshop(mentorID,workshopID)
-    return (True, {'message': 'Successfully created workshop'})
+        return (
+            False,
+            {"message": "Failed creating workshop", "error": conn.error_message},
+        )
 
-def addMenteeToWorkshop(mentorID,workshopID):
-    sql='SELECT menteeID FROM relation WHERE mentorID = %s'
-    data = (mentorID,)
+    if not invite_mentees_to_workshop(topic, workshopID, mentorID):
+        return (False, {"error": "Failed to send workshop invites"})
+    return (True, {"message": "Successfully created workshop"})
 
+
+def invite_mentees_to_workshop(topic, workshopID, mentorID):
     conn = DatabaseConnection()
     with conn:
-        result=conn.execute(sql,data)
-    for menteeID in result:
-        sql = 'INSERT into user_workshop (workshopID,menteeID) VALUES (%s,%s)'
-        data = (workshopID,menteeID[0])
-        with conn:
-            conn.execute(sql,data)
+        sql = 'SELECT userID FROM user_topic NATURAL JOIN "user" WHERE topic = %s AND "user".role = \'mentee\''
+        data = (topic,)
+        mentees = conn.execute(sql, data)
+
+        sql = "SELECT mentorID FROM workshop WHERE "
+
+        for mentee in mentees:
+            invite = WorkshopInvite(
+                mentee["userid"],
+                mentorID,
+                f"You have been invited a {topic} workshop",
+                workshopID,
+            )
+            send_message(invite, conn)
+    if conn.error:
+        return False
+    return True
+
+
+# Restrict this to mentees only
+def join_workshop(menteeID, workshopID):
+    conn = DatabaseConnection()
+    with conn:
+        sql = "INSERT INTO user_workshop (menteeID, workshopID) VALUES (%s, %s)"
+        data = (menteeID, workshopID)
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {"error": conn.error_message})
+    return (True, {"Successfully joined workshop"})
+
+
+def invite_mentor_to_create_workshop(topic):
+    conn = DatabaseConnection()
+    with conn:
+        sql = 'SELECT userID FROM user_topic NATURAL JOIN "user" WHERE topic = %s AND "user".role = \'mentor\''
+        data = (topic,)
+        mentors = conn.execute(sql, data)
+        if not mentors:
+            return True
+
+        random_mentor = random.choice(mentors)
+        invite = WorkshopInvite(
+            random_mentor["userid"],
+            -1,
+            f"You have been invited to create a workshop on {topic}"
+        )
+        send_message(invite, conn)
+    if conn.error:
+        return False
+    return True
+
 
 # Function to cancel workshops
 def cancel_workshop(workshopID):
     conn = DatabaseConnection()
-
-    sql = 'SELECT demand, mentorID FROM workshop WHERE workshopID = %s'
-    data = (workshopID,)
     with conn:
-        [(demand,mentorID)]=conn.execute(sql, data)
-
-    sql = 'DELETE FROM workshop WHERE workshopID=%s'
-    data = (workshopID,)
-    with conn:
-        conn.execute(sql, data)
-    
-    sql = 'UPDATE workshopdemand SET demand = %s WHERE mentorID = %s'
-    data = (demand,mentorID)
-    with conn:
+        sql = "UPDATE workshop SET status = 'cancelled' WHERE workshopID=%s"
+        data = (workshopID,)
         conn.execute(sql, data)
 
     if conn.error:
-        return (False, {'message': 'Failed to cancel workshop', 'error': conn.error_message})
-    return (True, {'message': 'Successfully cancelled workshop'})
+        return (
+            False,
+            {"message": "Failed to cancel workshop", "error": conn.error_message},
+        )
+    return (True, {"message": "Successfully cancelled workshop"})
 
 
-
-
-def getWorkshops(userID,role):
-    if role == 'mentor':
-        sql = 'SELECT * FROM workshop WHERE mentorID = %s'
-    else:
-        sql = 'SELECT * FROM user_workshop WHERE menteeID = %s'
-
-    data =(userID,)
-
+def update_workshop_status():
+    current_time = datetime.now()
     conn = DatabaseConnection()
     with conn:
-        result = conn.execute(sql, data)
-    if not conn.error:
-        return result
+        sql = "SELECT * FROM workshop"
+        workshops = conn.execute(sql)
+        for workshop in workshops:
+            status = workshop["status"]
+            new_status = status
+            if status != "cancelled":
+                if (
+                    current_time >= workshop["starttime"]
+                    and current_time <= workshop["endtime"]
+                ):
+                    new_status = "running"
+                elif current_time > workshop["endtime"]:
+                    new_status = "completed"
+
+            if status != new_status:
+                # Reset demand
+                topic = workshop["topic"]
+                sql = "UPDATE workshop_demand SET demand = 0 WHERE topic = %s"
+                data = (topic,)
+                conn.execute(sql, data)
+
+                sql = "UPDATE workshop SET status = %s WHERE workshopID = %s"
+                data = (new_status, workshop["workshopid"])
+                conn.execute(sql, data)
+    if conn.error:
+        return False
+    return True
+
+
+def get_workshops(userID, role):
+    if role == "mentor":
+        sql = "SELECT * FROM workshop WHERE mentorID = %s"
     else:
+        sql = "SELECT * FROM user_workshop WHERE menteeID = %s"
+
+    data = (userID,)
+
+    conn = DatabaseConnection(real_dict=True)
+    with conn:
+        result = conn.execute(sql, data)
+    if conn.error:
         return None
+    return result
+
 
 # Function to view list of attendees for workshop
-def viewWorkshopAttendee(workshopID):
-    sql = 'SELECT menteeID FROM user_workshop WHERE workshopID = %s'
-    data = (workshopID,)
-
+def view_workshop_attendee(workshopID):
     conn = DatabaseConnection()
     with conn:
+        sql = "SELECT menteeID FROM user_workshop WHERE workshopID = %s"
+        data = (workshopID,)
         result = conn.execute(sql, data)
-    if not conn.error:
-        return result
-    else:
-        return None
-
-# TODO
-def check_demand():
-    x=5
-    conn = DatabaseConnection()
-    sql = 'SELECT mentorID FROM workshopdemand'
-    with conn:
-        mentors=conn.execute(sql)
-
-    for mentorID in mentors:
-        increaseDemandByTime(mentorID[0])
-    
-
-    sql = 'SELECT mentorID, demand FROM workshopdemand'
-    data=(mentorID,)
-
-    with conn:
-        result = conn.execute(sql, data)
-
-    for row in result:
-        mentorID=row[0]
-        demand=row[1]    
-        if demand >= x:
-            # TODO message mentor with given mentorID
-            pass
-#TODO
-def increaseDemandByTime(mentorID):
-    today=datetime.today()
-    sql = 'SELECT startTime FROM workshopDemand WHERE mentorID=%s'
-    data = (mentorID,)
-    conn = DatabaseConnection()
-    with conn:
-        [(date,)] = conn.execute(sql, data)
-    if date==None:
-        return None
-    else:
-        diff = (abs(date-today).days())//5
-        sql = 'UPDATE workshopdemand set demand = demand + %s WHERE mentorID = %s'
-        data=(diff,mentorID)
-        with conn:
-            conn.execute(sql, data)
-
-
-def increaseDemandByUser(topicID):
-    sql='UPDATE workshopdemand SET demand = demand + 1 WHERE topicID = %s'
-    data=(topicID,)
-    conn = DatabaseConnection()
-
-    with conn:
-        conn.execute(sql, data)
-
     if conn.error:
-        return (False, {'message': 'Failed to increased demand', 'error': conn.error_message})
-    return (True, {'message': 'Successfully increased demand'})
- 
-   
+        return None
+    return result
+
+
+def check_demand(conn):
+    sql = "SELECT * FROM workshop_demand"
+    demands = conn.execute(sql)
+
+    for demand in demands:
+        if demand["demand"] >= demand_threshold:
+            if not invite_mentor_to_create_workshop(demand["topic"]):
+                return False
+    return True
+
+# Function called every hour
+def update_time_demand():
+    with apscheduler.scheduler.app.app_context():
+        print("Updating workshop demands")
+        conn = DatabaseConnection()
+        with conn:
+            sql = "UPDATE workshop_demand SET demand = demand + 0.1"
+            conn.execute(sql)
+            check_demand(conn)
+        if conn.error:
+            print("Failed to update time demand")
+
+# Called when a user is added to the system
+def update_demand(userID, role, conn):
+    if role != "mentee":
+        return (False, {"message": "Only mentees can update workshop demand"})
+
+    # First get all of the user's topics
+    sql = "SELECT topic FROM user_topic WHERE userID = %s"
+    data = (userID,)
+    topics = conn.execute(sql, data)
+    for topic in topics:
+        sql = "UPDATE workshop_demand SET demand = demand + 1 WHERE topic = %s"
+        data = topic
+        conn.execute(sql, data)
+    check_demand(conn)
+
+# Called when a topic is added to the system
+def add_demand(topic):
+    conn = DatabaseConnection()
+    with conn:
+        sql = "INSERT INTO workshop_demand (topic, demand) VALUES (%s, 0);"
+        data = (topic,)
+        conn.execute(sql, data)
