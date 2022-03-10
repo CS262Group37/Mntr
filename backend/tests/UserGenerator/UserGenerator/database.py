@@ -9,9 +9,6 @@ conn = None
 def create_connection():
     global conn
     try:
-        print(
-            f'POSTGRES_DB IS {os.getenv("POSTGRES_DB")} POSTGRES_USER IS {os.getenv("POSTGRES_USER")} POSTGRES_PASSWORD IS {os.getenv("POSTGRES_PASSWORD")} DB_HOST IS {os.getenv("DB_HOST")} POSTGRES_PORT IS {os.getenv("POSTGRES_PORT")}'
-        )
         conn = psycopg2.connect(
             dbname=os.getenv("POSTGRES_DB"),
             user=os.getenv("POSTGRES_USER"),

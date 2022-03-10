@@ -72,9 +72,13 @@ jobs:
       - name: Wait / Sleep
         uses: jakejarvis/wait-action@v0.1.1
         with:
-          time: '60s'
+          time: '20s'
       - name: Check running containers
         run: docker ps -a
+      - name: Create user preset file
+        run: |
+          touch tests/preset.json
+          echo {"accounts" : 100,"topics" : 10,"skills" : 10,"businessAreas" : 10,"relations": 300,"meetings": 1200,"plansOfAction": 1200} >> tests/preset.json
       - name: Generate users
         run: docker exec mntr-backend-1 sh -c "python3 tests/lightweight_usergen.py"
       - name: Run pytest
