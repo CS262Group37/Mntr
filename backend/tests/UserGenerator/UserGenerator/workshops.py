@@ -10,12 +10,11 @@ from rich.prompt import IntPrompt
 from .console import add_option, console, hostname
 from .authentication import login_user
 from . import authentication
-from .database import get_data, update_data
+from .database import get_data
 from .fake_data import fake
 
 
 def add_workshop(mentorID, title, topic, description, startTime, endTime, location):
-
     response = requests.post(
         f"{hostname}/api/workshop/create-workshop",
         data={
@@ -33,6 +32,20 @@ def add_workshop(mentorID, title, topic, description, startTime, endTime, locati
 
     data = json.loads(response.content)
 
+    if "error" in data:
+        return False
+    return True
+
+
+def add_mentee_to_workshop(workshopID):
+    response = requests.post(
+        f"{hostname}/api/workshop/join-workshop",
+        data={"workshopID": workshopID},
+        timeout=10,
+        cookies=authentication.active_cookie,
+    )
+
+    data = json.loads(response.content)
     if "error" in data:
         return False
     return True
@@ -81,6 +94,24 @@ def create_random_workshops(workshop_count=None):
             ):
                 created_workshops += 1
             progress.update(workshop_progress, advance=1)
+
+        # Now assign mentees to each workshop
+        workshops = get_data("SELECT * FROM workshop")
+        mentees = get_data('SELECT * FROM "user" WHERE "role" = \'mentee\'')
+        for workshop in workshops:
+            mentee_count = random.randrange(10)
+            for i in range(mentee_count):
+                random_mentee = random.choice(mentees)
+                login_details = get_data(
+                    'SELECT email, password FROM "user" NATURAL JOIN account WHERE "user".userID = %s',
+                    (random_mentee["userid"],),
+                )
+                if not login_user(
+                    login_details[0]["email"], login_details[0]["password"], "mentee"
+                ):
+                    continue
+                add_mentee_to_workshop(workshop["workshopid"])
+
     stop = perf_counter()
     console.print(
         f"\n[green]Successfully created {created_workshops} workshops in {stop - start} seconds[/]"

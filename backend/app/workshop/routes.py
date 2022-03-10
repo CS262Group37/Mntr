@@ -65,11 +65,7 @@ class ViewWorkshopAttendee(AuthResource):
     @workshop_api.expect(parsers.view_workshop_attendee_parser)
     def get(self):
         data = parsers.view_workshop_attendee_parser.parse_args()
-        result = workshop.view_workshop_attendee(data["workshopID"])
-        if result:
-            return result, 201
-        else:
-            return result, 500
+        return workshop.view_workshop_attendee(data["workshopID"])
 
 
 class JoinWorkshop(AuthResource):
@@ -77,13 +73,13 @@ class JoinWorkshop(AuthResource):
 
     @workshop_api.doc(security="apiKey")
     @workshop_api.expect(parsers.join_workshop_parser)
-    def get(self):
+    def post(self):
         data = parsers.join_workshop_parser.parse_args()
         result = workshop.join_workshop(self.payload["userID"], data["workshopID"])
-        if result:
-            return result, 201
+        if result[0]:
+            return result[1], 201
         else:
-            return result, 500
+            return result[1], 500
 
 
 workshop_api.add_resource(CreateWorkshop, "/create-workshop")

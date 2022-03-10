@@ -83,7 +83,7 @@ def join_workshop(menteeID, workshopID):
         conn.execute(sql, data)
     if conn.error:
         return (False, {"error": conn.error_message})
-    return (True, {"Successfully joined workshop"})
+    return (True, {"message": "Successfully joined workshop"})
 
 
 def invite_mentors_to_create_workshop(topic):

@@ -50,6 +50,24 @@ class SendEmail(AuthResource):
         return {"error": "Failed to send email"}, 405
 
 
+class RateMentor(AuthResource):
+    roles = ["mentee"]
+
+    @relations_api.doc(security="apiKey")
+    @relations_api.expect(parsers.rate_mentor_parser)
+    def post(self):
+
+        data = parsers.rate_mentor_parser.parse_args()
+        result = relations.rate_mentor(
+            self.payload["userID"], data["mentorID"], data["skills"], data["ratings"]
+        )
+        if result[0]:
+            return result[1], 200
+        else:
+            return result[1], 403
+
+
 relations_api.add_resource(CreateRelation, "/create-relation")
 relations_api.add_resource(GetRelations, "/get-relations")
 relations_api.add_resource(SendEmail, "/send-email")
+relations_api.add_resource(RateMentor, "/rate-mentor")

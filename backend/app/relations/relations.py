@@ -39,3 +39,34 @@ def get_relations(userID, role):
         relations = conn.execute(sql, (userID,))
 
     return relations
+
+
+def rate_mentor(menteeID, mentorID, skills, ratings):
+
+    if len(skills) != len(ratings):
+        return (False, {"error": "Invalid skills or ratings provided"})
+
+    conn = DatabaseConnection()
+    with conn:
+        # Check mentor and mentee are in a relation
+        exists = False
+        sql = "SELECT EXISTS (SELECT 1 FROM relation WHERE mentorID = %s and menteeID = %s);"
+        [(exists,)] = conn.execute(sql, (mentorID, menteeID))
+        if not exists:
+            return (
+                False,
+                {"error", "You can only rate mentors you are in a relation with"},
+            )
+
+        # Update mentor rating
+        for skill, rating in zip(skills, ratings):
+            if rating < 0 or rating > 10:
+                conn.error = True
+                return (False, {"error": "Invalid rating value provided"})
+
+            sql = "UPDATE user_rating SET rating = rating + ((%s - rating) / (reviewCount + 1)), reviewCount = reviewCount + 1 WHERE userID = %s AND skill = %s;"
+            data = (rating, mentorID, skill)
+            conn.execute(sql, data)
+    if conn.error:
+        return (False, {"error": conn.error_message})
+    return (True, {"message": "Successfully updated mentor rating"})
