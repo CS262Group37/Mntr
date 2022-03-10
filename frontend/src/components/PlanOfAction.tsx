@@ -92,7 +92,6 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
       props.handleNewGoal();
     });
     setOpen(false);
-    
   };
 
   return (

@@ -4,9 +4,9 @@ import axios from "axios";
 import NavBarMentor from "./components/NavBarMentor";
 import PlanOfAction from "./components/PlanOfAction";
 import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
-import { Avatar } from "@mui/material";
+import { Avatar, Divider } from "@mui/material";
 import { Navigate, useLocation } from "react-router-dom";
-import MeetingCard from "./components/MeetingCard";
+import MeetingCardMentor from "./components/MeetingCardMentor";
 import MenteeDetails from "./components/MenteeDetails";
 
 interface UserData {
@@ -101,7 +101,6 @@ function DashboardMentor() {
             relationID: relationship.relationid,
           })
           .then((res: any) => {
-            console.log(res.data);
             menteeMeetings = res.data.map((m: any) => {
               return {
                 meetingID: m.meetingid,
@@ -117,6 +116,8 @@ function DashboardMentor() {
             menteeMeetings.sort((e1: any, e2: any) => {
               return e2.startTime - e1.startTime;
             });
+
+            console.log(menteeMeetings);
 
             for (const meeting of menteeMeetings) {
               switch (meeting.status) {
@@ -141,6 +142,8 @@ function DashboardMentor() {
               }
             }
           });
+
+          console.log(goingAheadMeetings);
 
         // Get plan of action
         let goals: Goal[] = [];
@@ -180,7 +183,6 @@ function DashboardMentor() {
               runningMeetings: runningMeetings,
               planOfAction: goals,
             };
-            console.log(mentee);
 
             newMentees.push(mentee);
           });
@@ -227,9 +229,10 @@ function DashboardMentor() {
     ) {
       currentMenteeIdNum = parseInt(currentMenteeId);
       currentMentee = mentees[i];
-      console.log(currentMentee);
     }
   }
+
+  console.log(currentMentee.goingAheadMeetings);
 
   return (
     <div className="fixed h-full w-full">
@@ -258,20 +261,19 @@ function DashboardMentor() {
 
             <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
               {currentMentee.pendingMeetings.map((meeting) => {
-                return <MeetingCard meetingData={meeting} />;
+                return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
               })}
 
               {currentMentee.pendingMeetings.length > 0 &&
                 (currentMentee.missedMeetings.length > 0 ||
                   currentMentee.completedMeetings.length > 0) && (
-                  <h1 className="text-left pt-6 mt-6 pl-4 text-3xl text-firebrick border-t-[1.5px] border-gray-200"></h1>
+                  <Divider sx={{marginTop: 3, marginBottom: 3}} />
                 )}
-              {/* <hr className="border-[0.5px]"></hr> */}
               {currentMentee.completedMeetings.map((meeting) => {
-                return <MeetingCard meetingData={meeting} />;
+                return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
               })}
               {currentMentee.missedMeetings.map((meeting) => {
-                return <MeetingCard meetingData={meeting} />;
+                return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
               })}
             </div>
           </div>
