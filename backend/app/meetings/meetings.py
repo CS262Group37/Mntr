@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import app.messages.messages as messages
+from app.messages.parsers import MeetingMessage
 from app.database import DatabaseConnection
 
 
@@ -39,9 +40,7 @@ def create_meeting(relationID, start_time, end_time, title, description):
         [(menteeID, mentorID)] = conn.execute(sql, data)
 
         # Send meeting request message
-        meeting_message = messages.MeetingMessage(
-            mentorID, menteeID, "request", meetingID
-        )
+        meeting_message = MeetingMessage(mentorID, menteeID, "request", meetingID)
         if not messages.send_message(meeting_message, conn):
             conn.error = True  # Force transaction rollback
             return (
@@ -234,9 +233,9 @@ def complete_meeting(meetingID, feedback):
             return (False, {"error": "Meeting does not exist"})
 
         if not messages.send_message(
-            messages.MeetingMessage(menteeID, -1, "complete", meetingID), conn
+            MeetingMessage(menteeID, -1, "complete", meetingID), conn
         ) or not messages.send_message(
-            messages.MeetingMessage(mentorID, -1, "complete", meetingID), conn
+            MeetingMessage(mentorID, -1, "complete", meetingID), conn
         ):
             conn.error = True  # Force transaction rollback
             return (False, {"error": "Failed to send meeting complete message"})

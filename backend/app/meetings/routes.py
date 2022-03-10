@@ -26,7 +26,7 @@ class CreateMeeting(AuthResource):
         # First parse and check start and end times
         start_time = meetings.str_to_datetime(data["startTime"])
         end_time = meetings.str_to_datetime(data["endTime"])
-        if (not start_time or not end_time) or (end_time > start_time):
+        if (not start_time or not end_time) or (end_time < start_time):
             return {"error": "Invalid time provided"}, 400
 
         result = meetings.create_meeting(
@@ -118,9 +118,7 @@ class CompleteMeeting(AuthResource):
         if not check_relationID(self.payload["userID"], relationID):
             return {"error": "You do no have access to this meeting"}, 401
 
-        result = meetings.complete_meeting(
-            data["meetingID"], data["feedback"]
-        )
+        result = meetings.complete_meeting(data["meetingID"], data["feedback"])
         if result[0]:
             return result[1], 201
         else:
