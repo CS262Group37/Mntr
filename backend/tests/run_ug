@@ -1,0 +1,1 @@
+docker exec -it softwareengproject-backend-1 sh -c "cd tests/UserGenerator && python3 -m UserGenerator"
