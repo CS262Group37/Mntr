@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   BiUserCircle,
@@ -25,7 +25,8 @@ interface EventProps {
 }
 
 interface MessageProps {
-  contents: string;
+  subject: string;
+  content: string;
   sender: string;
   // date: Date;
 }
@@ -82,7 +83,8 @@ const Message: React.FC<MessageProps> = (props) => {
         <span className="font-normal">From: </span>
         {props.sender}
       </p>
-      <p>{props.contents}</p>
+      <p className="font-semibold">{props.subject}</p>
+      <p>{props.content}</p>
     </div>
   );
 };
@@ -96,11 +98,27 @@ const Notification: React.FC<NotifProps> = (props) => {
 };
 
 const UserMenu: React.FC<UserMenuProps> = (props) => {
+  const [messages, setMessages] = useState<MessageProps[]>([]);
+
   useEffect(() => {
-    axios.get("api/messages/get_messages").then((res) => {
+    axios.get("api/messages/get-emails").then(async (res) => {
       console.log(res.data);
-    })
-  },[])
+      const newMessages : MessageProps[] = [];
+      for (const msg of res.data) {
+        await axios
+          .post("api/users/get-user-data", { userID: msg.senderid })
+          .then((res) => {
+            const newMsg = {
+              sender: `${res.data.firstname} ${res.data.lastname}`,
+              subject: msg.subject,
+              content: msg.content
+            }
+            newMessages.push(newMsg)
+          });
+      }
+      setMessages(newMessages);
+    });
+  }, []);
   return (
     <div
       className={
@@ -137,9 +155,15 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
         </div>
 
         <div className="flex flex-col mt-1">
-          <Message sender="Bruh Bruh" contents="Sample message" />
-          <Message sender="Bruh Moment" contents="Sample message 2" />
-          <Message sender="Bruh Bruh" contents="Sample message 3" />
+          {messages.map((msg) => {
+            return (
+              <Message
+                sender={msg.sender}
+                subject={msg.subject}
+                content={msg.content}
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -176,7 +200,10 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           <h2>Settings</h2>
         </Link>
 
-        <Link to="/" className="flex flex-row hover:font-semibold pr-6 pl-6 pb-4 pt-4">
+        <Link
+          to="/"
+          className="flex flex-row hover:font-semibold pr-6 pl-6 pb-4 pt-4"
+        >
           <span onClick={logout}>Log out</span>
           <BiLogOut className="text-2xl m-auto mr-0 ml-2" />
         </Link>
