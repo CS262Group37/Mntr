@@ -3,6 +3,10 @@ from . import messages_api
 from . import messages
 
 class GetMessages(AuthResource):
+    """Get all types of messages for the logged in user.
+    
+    Must be logged in as a mentor or mentee.
+    """
     roles = ['mentee', 'mentor']
 
     @messages_api.doc(security='apiKey')
