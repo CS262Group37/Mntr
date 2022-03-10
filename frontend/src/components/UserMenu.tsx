@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import {
   BiUserCircle,
@@ -96,6 +96,11 @@ const Notification: React.FC<NotifProps> = (props) => {
 };
 
 const UserMenu: React.FC<UserMenuProps> = (props) => {
+  useEffect(() => {
+    axios.get("api/messages/get_messages").then((res) => {
+      console.log(res.data);
+    })
+  },[])
   return (
     <div
       className={
