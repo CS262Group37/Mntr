@@ -19,12 +19,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import NavBar from "./components/NavBarMentee";
+import NavBarMentee from "./components/NavBarMentee";
+import NavBarMentor from "./components/NavBarMentor";
 import MentorDetails from "./components/MentorDetails";
 
 interface UserData {
   id?: number;
-  email: string;
   firstName: string;
   lastName: string;
   avatar: string;
@@ -51,7 +51,6 @@ function Profile() {
   const [content, setContent] = useState<string>("");
 
   const [user, setUser] = useState<UserData>({
-    email: "",
     firstName: "",
     lastName: "",
     avatar: "",
@@ -74,7 +73,6 @@ function Profile() {
         var newTopics: string[] = [];
         var newRatings: Rating[] = [];
         const newUser = {
-          email: res.data.email,
           firstName: res.data.firstname,
           lastName: res.data.lastname,
           avatar: res.data.profilepicture,
@@ -109,7 +107,6 @@ function Profile() {
         }
         setUser({
           id: userID,
-          email: newUser.email,
           firstName: newUser.firstName,
           lastName: newUser.lastName,
           avatar: newUser.avatar,
@@ -131,7 +128,9 @@ function Profile() {
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar activeStr="Public profile" />
+      {/* //! doesn't work as expected - FIX */}
+      {user.role === "mentee" && <NavBarMentee activeStr="Public profile" />}
+      {user.role === "mentor" && <NavBarMentor activeStr="Public profile" />}
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display  bg-cultured overflow-auto p-6 flex flex-col pb-40">

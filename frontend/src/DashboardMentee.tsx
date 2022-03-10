@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
-import NavBar from "./components/NavBarMentee";
+import NavBarMentee from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import MeetingCard from "./components/MeetingCard";
@@ -229,7 +229,7 @@ function DashboardMentee() {
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar
+      <NavBarMentee
         activeStr="My mentors"
         activeMentorId={currentMentorIdNum}
         mentors={mentors}

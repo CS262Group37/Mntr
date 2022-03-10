@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import NavBar from "./components/NavBarMentee";
+import NavBarMentee from "./components/NavBarMentee";
 import { Avatar, Rating, Typography } from "@mui/material";
 import { BiPlus } from "react-icons/bi";
 
@@ -180,7 +180,7 @@ function BrowseMentors() {
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar activeStr="Browse mentors" />
+      <NavBarMentee activeStr="Browse mentors" />
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display bg-cultured overflow-auto p-6 flex flex-col pb-40">
