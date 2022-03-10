@@ -1,1 +1,0 @@
-docker exec -it mntr-backend-1 sh -c "cd tests/UserGenerator && python3 -m UserGenerator"
