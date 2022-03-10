@@ -222,9 +222,10 @@ def encode_token(email, role=None):
         sql = "SELECT accountID FROM account WHERE email = %s;"
         [(accountID,)] = conn.execute(sql, (email,))
 
-        sql = 'SELECT userID FROM "user" WHERE role = %s AND accountID = %s;'
-        data = (role, accountID)
-        [(userID,)] = conn.execute(sql, data)
+        if role != None:
+            sql = 'SELECT userID FROM "user" WHERE role = %s AND accountID = %s;'
+            data = (role, accountID)
+            [(userID,)] = conn.execute(sql, data)
 
     if accountID is None:
         return (False, {"error": f"Account with email {email} does not exist"})

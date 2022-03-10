@@ -1,5 +1,6 @@
 -- Get login details for a given userID
 SELECT * FROM "user" NATURAL JOIN account WHERE userID = 15;
+SELECT * FROM "user" INNER JOIN relation ON "user".userID = relation.mentorID WHERE role = 'mentor' AND relation.mentorID NOT IN (SELECT mentorID FROM relation WHERE menteeID = 57);
 
 SELECT 
     * 

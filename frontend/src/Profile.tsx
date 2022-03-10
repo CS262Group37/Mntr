@@ -37,7 +37,6 @@ function Profile() {
     role: "",
     businessArea: "",
   });
-  const [mentor, setMentor] = React.useState<UserData[]>([]);
 
   let query = useQuery();
   const userIdQuery = query.get("id");
@@ -99,7 +98,7 @@ function Profile() {
           ratings: newRatings,
         });
       });
-  }, []);
+  }, [userID]);
 
   // TODO connect to a mentor function
   const connectMentor = () => {
@@ -108,7 +107,7 @@ function Profile() {
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar activeStr="Public profile" setMentor={setMentor}/>
+      <NavBar activeStr="Public profile" />
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display  bg-cultured overflow-auto p-6 flex flex-col pb-40">

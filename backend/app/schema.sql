@@ -12,10 +12,13 @@ DROP TABLE IF EXISTS plan_of_action CASCADE;
 DROP TABLE IF EXISTS meeting CASCADE;
 DROP TABLE IF EXISTS message_meeting CASCADE;
 DROP TABLE IF EXISTS message_email CASCADE;
+DROP TABLE IF EXISTS message_report CASCADE;
 DROP TABLE IF EXISTS workshop CASCADE;
 DROP TABLE IF EXISTS message_workshop_invite CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
 DROP TABLE IF EXISTS workshop_demand CASCADE;
+DROP TABLE IF EXISTS message_report CASCADE;
+DROP TABLE IF EXISTS app_feedback CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
@@ -108,16 +111,16 @@ CREATE TABLE message_email(
     content VARCHAR NOT NULL
 );
 
-CREATE TABLE message_report(
-    messageID INTEGER REFERENCES "message"(messageID),
-    reportID INTEGER REFERENCES report(reportID)
-);
-
 CREATE TABLE report (
     reportID SERIAL PRIMARY KEY,
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     content VARCHAR NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+);
+
+CREATE TABLE message_report(
+    messageID INTEGER REFERENCES "message"(messageID),
+    reportID INTEGER REFERENCES report(reportID)
 );
 
 CREATE TABLE workshop (
@@ -156,6 +159,12 @@ CREATE TABLE plan_of_action (
     creationDate TIMESTAMP NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
 );
+
+CREATE TABLE app_feedback(
+    feedbackID SERIAL PRIMARY KEY,
+    content VARCHAR NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+    );
 
 -------------------- Relation Trigger --------------------
 

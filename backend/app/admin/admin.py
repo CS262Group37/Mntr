@@ -52,15 +52,6 @@ def clear_topics():
     return (True, {"message": "Successfully cleared system topics"})
 
 
-def get_reports():
-    """Return all reports in database as an array of dicts."""
-    reports = None
-    conn = DatabaseConnection(real_dict=True)
-    with conn:
-        sql = "SELECT * FROM report;"
-        reports = conn.execute(sql)
-    return reports
-
 
 def ban_account(accountID):
     # TODO: Implement account banning
@@ -71,17 +62,17 @@ def remove_user(userID):
     # TODO: Implement user removal
     pass
 
+# Changes the status of the reprt with the given ID to read
+# def mark_report_as_read(reportID):
+#     sql = "UPDATE report SET status = 'read' WHERE reportID = %s"
+#     data = (reportID,)
+#     conn = DatabaseConnection()
 
-def mark_report_as_read(report_ID):
-    """Mark given report as read. Return tuple (success, error or message)."""
-    conn = DatabaseConnection()
-    with conn:
-        sql = "UPDATE report SET status = 'read' WHERE reportID = %s;"
-        data = (report_ID,)
-        conn.execute(sql, data)
-    if conn.error:
-        return (False, {"error": conn.error_message})
-    return (True, {"message": f"Successfully marked report {report_ID} as read"})
+#     with conn:
+#         conn.execute(sql, data)
+#     if conn.error:
+#         return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
+#     return (True, {'message': 'Successfully marked report as read'})
 
 
 def get_skills():
@@ -175,3 +166,76 @@ def get_business_areas():
         sql = "SELECT * FROM system_business_area;"
         businessAreas = conn.execute(sql)
     return businessAreas
+
+def get_app_feedback():
+    sql = 'SELECT * FROM app_feedback;'
+    conn = DatabaseConnection(real_dict=True)
+    with conn:
+        feeback = conn.execute(sql)
+    return feeback
+
+def create_app_feedback(content):
+    sql = 'INSERT INTO app_feedback (content, "status") VALUES (%s, %s);'
+    data = (content, "unread")
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully added feedback'})
+
+def mark_app_feedback_as_read(appFeedbackID):
+    sql = "UPDATE app_feedback SET status = 'read' WHERE feedbackID = %s"
+    data = (appFeedbackID,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message, 'constraint': conn.constraint_violated})
+    return (True, {'message': 'Successfully marked feedback as read'})
+
+def clear_feedback():
+    sql = 'TRUNCATE app_feedback CASCADE;'
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': "Successfully cleared application feedback"})
+
+def create_report(userID, contents):
+    sql = 'INSERT INTO report (userID, content, "status") VALUES (%s, %s, %s);'
+    data = (userID, contents, "unread")
+
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully created report'})
+# Send the report to all of the admins 
+
+def mark_report_as_read(reportID):
+    sql = "UPDATE report SET status = 'read' WHERE reportID = %s;"
+    data = (reportID,)
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql, data)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': 'Successfully marked report as read'})
+
+def get_reports():
+    sql = "SELECT * FROM report;"
+    conn = DatabaseConnection()
+    with conn:
+        return conn.execute(sql)
+
+def clear_reports():
+    sql = 'TRUNCATE report CASCADE;'
+    conn = DatabaseConnection()
+    with conn:
+        conn.execute(sql)
+    if conn.error:
+        return (False, {'error': conn.error_message})
+    return (True, {'message': "Successfully cleared reports"})

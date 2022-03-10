@@ -1,4 +1,4 @@
-from app.auth.routes import AuthResource
+from app.auth.auth import AuthResource
 from app.plan_of_action.plan_of_action import check_relationID
 from . import meetings
 from . import parsers
