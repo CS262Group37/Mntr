@@ -69,6 +69,10 @@ jobs:
           echo DB_HOST=database >> backend/.env
       - name: Build the docker compose stack
         run: docker compose up -d
+      - name: Wait / Sleep
+        uses: jakejarvis/wait-action@v0.1.1
+        with:
+          time: '60s'
       - name: Check running containers
         run: docker ps -a
       - name: Generate users
