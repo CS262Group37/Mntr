@@ -33,12 +33,12 @@ const MentorCard: React.FC<CardProps> = (props) => {
 
   // TODO connect to a mentor function
   const connectMentor = () => {
-    console.log(mentor.id)
+    console.log(mentor.id);
     axios
       .post("/api/relations/create-relation", { mentorID: mentor.id })
       .then((res: any) => {
         console.log(res);
-        navigate(`/dashboard-mentee?mentor=${mentor.id}`)
+        navigate(`/dashboard-mentee?mentor=${mentor.id}`);
       });
     return;
   };
@@ -102,7 +102,7 @@ function BrowseMentors() {
   // Get recommended mentors
   useEffect(() => {
     axios.get("/api/matching/relation-recommendations").then(async (res) => {
-      console.log(res.data)
+      console.log(res.data);
       var newMentors: UserData[] = [];
       var newTopics: string[][] = [];
       var newRatings: Rating[][] = [];
@@ -137,10 +137,7 @@ function BrowseMentors() {
         await axios
           .post("/api/users/get-user-topics", { userID: mentorID })
           .then((res) => {
-            const arr: string[] = [];
-            res.data.map((t: any) => {
-              arr.push(t.topic);
-            });
+            const arr = res.data.map((t: any) => t.topic);
             newTopics.push(arr);
           });
 
@@ -148,10 +145,13 @@ function BrowseMentors() {
         await axios
           .post("/api/users/get-user-ratings", { userID: mentorID })
           .then((res) => {
+            const arr = res.data;
             // Sort alphabetically by skill
-            res.data.sort((e1: any, e2: any) => {
-              return e2.skill < e1.skill;
+            arr.sort((e1: any, e2: any) => {
+              return e2.skill > e1.skill ? -1 : 1;;
             });
+
+            console.log(arr);
 
             newRatings.push(res.data);
           });
