@@ -55,7 +55,7 @@ function Workshops() {
   }, []);
 
   useEffect(() => {
-    if (user.id != -1 && user.role != "")
+    if (user.id !== -1 && user.role !== "")
       axios.get("/api/workshop/get-workshops", {params: { userID: user.id, role: user.role } }).then((res) => {
         console.log(res.data);
       });    
