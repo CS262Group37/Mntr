@@ -72,7 +72,22 @@ class ViewWorkshopAttendee(AuthResource):
             return result, 500
 
 
+class JoinWorkshop(AuthResource):
+    roles = ["mentee"]
+
+    @workshop_api.doc(security="apiKey")
+    @workshop_api.expect(parsers.join_workshop_parser)
+    def get(self):
+        data = parsers.join_workshop_parser.parse_args()
+        result = workshop.join_workshop(self.payload["userID"], data["workshopID"])
+        if result:
+            return result, 201
+        else:
+            return result, 500
+
+
 workshop_api.add_resource(CreateWorkshop, "/create-workshop")
 workshop_api.add_resource(CancelWorkshop, "/cancel-workshop")
 workshop_api.add_resource(GetWorkshops, "/get-workshops")
 workshop_api.add_resource(ViewWorkshopAttendee, "view-workshop-attendee")
+workshop_api.add_resource(JoinWorkshop, "/join-workshop")
