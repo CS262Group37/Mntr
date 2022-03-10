@@ -21,5 +21,4 @@ view_workshop_attendee_parser = reqparse.RequestParser()
 view_workshop_attendee_parser.add_argument("workshopID", required=True, type=int)
 
 join_workshop_parser = reqparse.RequestParser()
-join_workshop_parser.add_argument("menteeID", required=True, type=int)
 join_workshop_parser.add_argument("workshopID", required=True, type=int)
