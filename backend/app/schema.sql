@@ -17,6 +17,8 @@ DROP TABLE IF EXISTS workshop CASCADE;
 DROP TABLE IF EXISTS message_workshop_invite CASCADE;
 DROP TABLE IF EXISTS user_workshop CASCADE;
 DROP TABLE IF EXISTS workshop_demand CASCADE;
+DROP TABLE IF EXISTS message_report CASCADE;
+DROP TABLE IF EXISTS app_feedback CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
@@ -157,6 +159,12 @@ CREATE TABLE plan_of_action (
     creationDate TIMESTAMP NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
 );
+
+CREATE TABLE app_feedback(
+    feedbackID SERIAL PRIMARY KEY,
+    content VARCHAR NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+    );
 
 -------------------- Relation Trigger --------------------
 

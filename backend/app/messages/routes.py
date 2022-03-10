@@ -3,7 +3,7 @@ from . import messages_api
 from . import messages
 
 class GetMessages(AuthResource):
-    roles = ['mentee', 'mentor']
+    roles = ['mentee', 'mentor', 'admin']
 
     @messages_api.doc(security='apiKey')
     def get(self):
