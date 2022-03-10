@@ -28,6 +28,7 @@ interface UserData {
 
 interface MentorProps {
   mentorData: UserData;
+  nextMeeting: Date | null;
   handleNewMeeting: () => void;
 }
 
@@ -106,43 +107,48 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
   };
 
   const mentor: UserData = props.mentorData;
-  const [nextMeeting, setNextMeeting] = useState<Date>(new Date());
-  const [hasNextMeeting, setHasNextMeeting] = useState<Boolean>(false);
+  // const [nextMeeting, setNextMeeting] = useState<Date>(new Date());
+  // const [hasNextMeeting, setHasNextMeeting] = useState<Boolean>(false);
 
   const [title, setTitle] = useState<string>("");
   const [descrip, setDescrip] = useState<string>("");
   const [start, setStart] = useState<string>(currentDate());
   const [end, setEnd] = useState<string>(currentDate());
 
-  useEffect(() => {
-    console.log("here");
-    axios
-      .post("/api/meetings/get-next-meeting", { relationID: mentor.relationID })
-      .then(async (res: any) => {
-        // console.log(mentor.relationID)
-        // console.log(res.data);
-        if (!res.data.hasOwnProperty("error")) {
-          console.log(res.data.starttime)
-          setHasNextMeeting(true);
-          setNextMeeting(new Date(parseDate(res.data.starttime)));
-        }
-      });
-  }, [mentor]);
+  // useEffect(() => {
+  //   console.log("here");
+  //   axios
+  //     .post("/api/meetings/get-next-meeting", { relationID: mentor.relationID })
+  //     .then(async (res: any) => {
+  //       // console.log(mentor.relationID)
+  //       // console.log(res.data);
+  //       if (!res.data.hasOwnProperty("error")) {
+  //         console.log(res.data)
+  //         setHasNextMeeting(true);
+  //         setNextMeeting(new Date(parseDate(res.data.starttime)));
+  //       }
+  //     });
+  // }, [mentor]);
+  
 
   // Next meeting date formatting
   // TODO check formatting
-  const weekday = nextMeeting.toLocaleString("default", {
-    weekday: "long",
-  });
-  const month = nextMeeting.getMonth() + 1;
-  const date =
-    weekday +
-    ", " +
-    nextMeeting.getDate() +
-    "." +
-    month +
-    "." +
-    nextMeeting.getFullYear();
+  let date: string = "";
+
+  if (props.nextMeeting != null) {
+    const weekday = props.nextMeeting.toLocaleString("default", {
+      weekday: "long",
+    });
+    const month = props.nextMeeting.getMonth() + 1;
+    date =
+      weekday +
+      ", " +
+      props.nextMeeting.getDate() +
+      "." +
+      month +
+      "." +
+      props.nextMeeting.getFullYear();
+  }
 
   return (
     <div className="flex flex-col m-10 mb-6 text-firebrick font-display">
@@ -231,7 +237,7 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
 
       {/* Next meeting date */}
       {/* //! BROKEN */}
-      {hasNextMeeting && (
+      { props.nextMeeting != null && (
         <div className="flex flex-row text-lg font-body m-5 mt-10 mb-0">
           <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
           <p className="mt-auto mb-auto text-left">
