@@ -77,11 +77,9 @@ def send_message(message, custom_conn = None):
             break
 
     if not valid_message:
-        print("HERE")
         return False
 
     message_type = type(message).__name__
-    print(message_type)
     def run_sql(conn):
 
         def send(recipientID, senderID):
