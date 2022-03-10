@@ -43,7 +43,7 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
   );
 };
 
-const NavBar: React.FC<NavBarProps> = (props) => {
+const NavBarMentee: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
   const [user, setUser] = React.useState<UserData>({firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
   const [menu, setMenu] = React.useState<boolean>(false);
@@ -115,7 +115,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
             />
             <NavBarLink
               text="Workshops"
-              path="/workshops"
+              path="/workshops-mentee"
               activeStr={props.activeStr}
             />
             {/* Profile picture - display user menu on click */}
@@ -190,4 +190,4 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   );
 };
 
-export default NavBar;
+export default NavBarMentee;

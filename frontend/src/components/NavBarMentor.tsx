@@ -40,7 +40,7 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
   );
 };
 
-const NavBar: React.FC<NavBarProps> = (props) => {
+const NavBarMentor: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
   const [user, setUser] = React.useState<UserData>({firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
   const [menu, setMenu] = React.useState<boolean>(false);
@@ -50,6 +50,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   useEffect(() => {
     axios.get("/api/users/get-own-data").then((res) => {
       const newUser: UserData = {
+        id: res.data.userid,
         firstName: res.data.firstname,
         lastName: res.data.lastname,
         avatar: res.data.profilepicture,
@@ -105,13 +106,13 @@ const NavBar: React.FC<NavBarProps> = (props) => {
               activeStr={props.activeStr}
             />
             <NavBarLink
-              text="Browse mentors"
-              path="/dashboard-mentor"
+              text="Meetings"
+              path="/meetings"
               activeStr={props.activeStr}
             />
             <NavBarLink
               text="Workshops"
-              path="/dashboard-mentor"
+              path="/workshops-mentor"
               activeStr={props.activeStr}
             />
             {/* Profile picture - display user menu on click */}
@@ -140,7 +141,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 horizontal: "right",
               }}
             >
-              <UserMenu firstName={user.firstName} lastName={user.lastName} />
+              <UserMenu firstName={user.firstName} lastName={user.lastName} id={user.id} />
             </Popover>
           </div>
         </div>
@@ -185,4 +186,4 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   );
 };
 
-export default NavBar;
+export default NavBarMentor;

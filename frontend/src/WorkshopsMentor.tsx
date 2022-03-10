@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import NavBar from "./components/NavBarMentee";
+import NavBarMentor from "./components/NavBarMentor";
 import PlanOfAction from "./components/PlanOfAction";
 
 interface UserData {
@@ -21,7 +21,7 @@ interface Rating {
   rating: number;
 }
 
-function Workshops() {
+function WorkshopsMentor() {
   const [user, setUser] = React.useState<UserData>({firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
   const [workshops, setWorkshops] = React.useState([]);
 
@@ -63,7 +63,7 @@ function Workshops() {
 
   return(
     <div className="fixed h-full w-full">
-      <NavBar activeStr="Workshops" />
+      <NavBarMentor activeStr="Workshops" />
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display bg-cultured overflow-auto p-6 flex flex-col pb-40">
@@ -76,4 +76,4 @@ function Workshops() {
   );
 }
 
-export default Workshops;
+export default WorkshopsMentor;

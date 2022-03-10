@@ -7,10 +7,12 @@ import { Routes, Route } from "react-router-dom";
 import DashboardMentee from "./DashboardMentee";
 import DashboardMentor from "./DashboardMentor";
 import BrowseMentors from "./BrowseMentors";
-import Workshops from "./Workshops";
+import WorkshopsMentee from "./WorkshopsMentee";
+import WorkshopsMentor from "./WorkshopsMentor";
 import RegisterUser from "./RegisterUser"
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Profile from "./Profile";
+import Meetings from "./Meetings";
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -51,8 +53,10 @@ function App() {
           <Route path="/register" element={ <Register /> } />
           <Route path="/dashboard-mentee" element={ <DashboardMentee /> } />
           <Route path="/browse-mentors" element={ <BrowseMentors /> } />
-          <Route path="/workshops" element={ <Workshops /> } />
+          <Route path="/workshops-mentee" element={ <WorkshopsMentee /> } />
           <Route path="/dashboard-mentor" element={ <DashboardMentor /> } />
+          <Route path="/meetings" element={ <Meetings /> } />
+          <Route path="/workshops-mentor" element={ <WorkshopsMentor /> } />
           <Route path="/register-user" element={ <RegisterUser /> } />
           <Route path="/profile" element={ <Profile /> } />
         </Routes>
