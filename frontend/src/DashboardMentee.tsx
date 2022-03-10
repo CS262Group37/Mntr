@@ -118,7 +118,7 @@ function DashboardMentee() {
 
             for (const meeting of mentorMeetings) {
               switch (meeting.status) {
-                case "goingAhead":
+                case "going-ahead":
                   goingAheadMeetings.push(meeting);
                   break;
                 case "pending":
