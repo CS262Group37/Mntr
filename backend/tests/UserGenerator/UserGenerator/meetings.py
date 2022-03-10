@@ -13,65 +13,99 @@ from . import authentication
 from .database import get_data, update_data
 from .fake_data import fake
 
+
 def add_meeting(relationID, startTime, endTime, title, description):
 
-    response = requests.post(f'{hostname}/api/meetings/create-meeting',
+    response = requests.post(
+        f"{hostname}/api/meetings/create-meeting",
         data={
-            'relationID': relationID,
-            'startTime': startTime,
-            'endTime': endTime,
-            'title': title,
-            'description': description
-        }, timeout=10, cookies=authentication.active_cookie
-        )
-    
+            "relationID": relationID,
+            "startTime": startTime,
+            "endTime": endTime,
+            "title": title,
+            "description": description,
+        },
+        timeout=10,
+        cookies=authentication.active_cookie,
+    )
+
     data = json.loads(response.content)
 
-    if 'error' in data:
+    if "error" in data:
         return False
     return True
 
-def create_random_meetings(meeting_count = None):
+
+def create_random_meetings(meeting_count=None):
     if meeting_count is None:
-        meeting_count = IntPrompt.ask('Enter the number of random meetings to add')
+        meeting_count = IntPrompt.ask("Enter the number of random meetings to add")
         console.line()
     created_meetings = 0
     start = perf_counter()
 
     # Get all relations on the system
-    relations = get_data('SELECT * FROM relation')
+    relations = get_data("SELECT * FROM relation")
     with Progress() as progress:
-        meeting_progress = progress.add_task('[cyan]Adding random meetings...[/]', total=meeting_count)
-        
+        meeting_progress = progress.add_task(
+            "[cyan]Adding random meetings...[/]", total=meeting_count
+        )
+
         for i in range(meeting_count):
             relation = random.choice(relations)
             # Need to login as relation mentee
             sql = 'SELECT email, password FROM "user" NATURAL JOIN account WHERE "user".userID = %s'
-            data = (relation['menteeid'],)
+            data = (relation["menteeid"],)
             login_details = get_data(sql, data)
-            if not login_user(login_details[0]['email'], login_details[0]['password'], 'mentee'):
+            if not login_user(
+                login_details[0]["email"], login_details[0]["password"], "mentee"
+            ):
                 continue
-                        
-            random_time = fake.date_time_this_century(before_now = False, after_now = True)
+
+            random_time = fake.date_time_this_century(before_now=False, after_now=True)
             random_end_time = random_time + timedelta(minutes=random.randrange(120))
-            if add_meeting(relation, random_time.strftime('%d/%m/%y %H:%M'), random_end_time.strftime('%d/%m/%y %H:%M'), fake.sentences(nb=1), fake.paragraph(nb_sentences=5)):
+            if add_meeting(
+                relation,
+                random_time.strftime("%d/%m/%y %H:%M"),
+                random_end_time.strftime("%d/%m/%y %H:%M"),
+                fake.sentences(nb=1),
+                fake.paragraph(nb_sentences=5),
+            ):
                 created_meetings += 1
             progress.update(meeting_progress, advance=1)
-        
-        meetings = get_data('SELECT * FROM meeting')
-        meeting_status_progress = progress.add_task('[cyan]Giving meetings random statuses...[/]', total=len(meetings))
+
+        meetings = get_data("SELECT * FROM meeting")
+        meeting_status_progress = progress.add_task(
+            "[cyan]Giving meetings random statuses...[/]", total=len(meetings)
+        )
         for meeting in meetings:
             # 50% chance of changing status
             if random.randrange(2) == 0:
-                status = random.choice(['going-ahead', 'pending', 'cancelled', 'completed', 'missed', 'running'])
-                update_data('UPDATE meeting SET "status" = %s WHERE meetingID = %s;', (status, meeting['meetingid']))
-                if status == 'completed':
-                    update_data('UPDATE meeting SET feedback = %s WHERE meetingID = %s;', (fake.paragraph(nb_sentences=10), meeting['meetingid']))
+                status = random.choice(
+                    [
+                        "going-ahead",
+                        "pending",
+                        "cancelled",
+                        "completed",
+                        "missed",
+                        "running",
+                    ]
+                )
+                update_data(
+                    'UPDATE meeting SET "status" = %s WHERE meetingID = %s;',
+                    (status, meeting["meetingid"]),
+                )
+                if status == "completed":
+                    update_data(
+                        "UPDATE meeting SET feedback = %s WHERE meetingID = %s;",
+                        (fake.paragraph(nb_sentences=10), meeting["meetingid"]),
+                    )
             progress.update(meeting_status_progress, advance=1)
-            
 
     stop = perf_counter()
-    console.print(f'\n[green]Successfully created {created_meetings} meetings in {stop - start} seconds[/]')
+    console.print(
+        f"\n[green]Successfully created {created_meetings} meetings in {stop - start} seconds[/]"
+    )
+
 
 def add_options():
-    add_option('meetings', 'Add random meetings', create_random_meetings)
+    add_option("meetings", "Add random meetings", create_random_meetings)

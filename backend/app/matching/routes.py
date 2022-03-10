@@ -19,4 +19,5 @@ class RelationRecommendations(AuthResource):
             return result[1], 500
 
 
+# Prefix URLs with /api/matching/
 matching_api.add_resource(RelationRecommendations, "/relation-recommendations")
