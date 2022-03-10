@@ -65,13 +65,13 @@ jobs:
           echo POSTGRES_DB=mntr_db >> backend/.env
           echo FLASK_APP=app >> backend/.env
           echo FLASK_ENV=development >> backend/.env
-          echo HOSTNAME=http://backend:5000 >> backend/.env
+          echo HOSTNAME=http://localhost:5000 >> backend/.env
       - name: Build the docker compose stack
         run: docker compose up -d
       - name: Check running containers
         run: docker ps -a
       - name: Generate users
-        run: $({ echo "preset"; echo "exit"; } | docker exec -i mntr-backend-1 sh -c "cd tests/UserGenerator && python3 -m UserGenerator")
+        run: docker exec mntr-backend-1 sh -c "python3 tests/lightweight_usergen.py"
       - name: Run pytest
         run: pytest
       - name: Exit
