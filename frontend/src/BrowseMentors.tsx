@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import NavBar from "./components/NavBarMentee";
 import { Avatar, Rating, Typography } from "@mui/material";
 import { BiPlus } from "react-icons/bi";
@@ -28,6 +28,7 @@ interface CardProps {
 }
 
 const MentorCard: React.FC<CardProps> = (props) => {
+  const navigate = useNavigate();
   const mentor = props.mentorData;
 
   // TODO connect to a mentor function
@@ -37,6 +38,7 @@ const MentorCard: React.FC<CardProps> = (props) => {
       .post("/api/relations/create-relation", { mentorID: mentor.id })
       .then((res: any) => {
         console.log(res);
+        navigate(`/dashboard-mentee?mentor=${mentor.id}`)
       });
     return;
   };
@@ -100,6 +102,7 @@ function BrowseMentors() {
   // Get recommended mentors
   useEffect(() => {
     axios.get("/api/matching/relation-recommendations").then(async (res) => {
+      console.log(res.data)
       var newMentors: UserData[] = [];
       var newTopics: string[][] = [];
       var newRatings: Rating[][] = [];
