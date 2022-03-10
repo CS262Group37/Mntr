@@ -20,9 +20,13 @@ class DevConfig:
     SWAGGER_UI_REQUEST_DURATION = True
     SWAGGER_UI_DOC_EXPANSION = 'list'
     BUNDLE_ERRORS = True
+    SCHEDULER_API_ENABLED = True
+    SCHEDULER_TIMEZONE = "Europe/London"
 
 class ProdConfig:
     #SERVER_NAME = 'mydomain.com:5000'
     SECRET_KEY = 'dev' # TODO: Make this a crazy random string for actual deployment
     BUNDLE_ERRORS = True
+    SCHEDULER_API_ENABLED = True
+    SCHEDULER_TIMEZONE = "Europe/London"
     

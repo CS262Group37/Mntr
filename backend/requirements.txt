@@ -8,3 +8,5 @@ faker
 rich
 pytest
 pytest-cov
+Flask-APScheduler
+black
