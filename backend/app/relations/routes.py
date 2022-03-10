@@ -27,11 +27,7 @@ class GetRelations(AuthResource):
     @relations_api.doc(security="apiKey")
     def get(self):
 
-        result = relations.get_relations(self.payload["userID"], self.payload["role"])
-        if result[0]:
-            return result[1], 200
-        else:
-            return result[1], 404
+        return relations.get_relations(self.payload["userID"], self.payload["role"])
 
 
 class SendEmail(AuthResource):
