@@ -74,7 +74,6 @@ function DashboardMentor() {
 
   const getMentees = () => {
     axios.get("/api/relations/get-relations").then(async (res: any) => {
-      console.log(res.data);
       var newMentees: UserData[] = [];
 
       for (const relationship of res.data) {
@@ -117,11 +116,9 @@ function DashboardMentor() {
               return e2.startTime - e1.startTime;
             });
 
-            console.log(menteeMeetings);
-
             for (const meeting of menteeMeetings) {
               switch (meeting.status) {
-                case "goingAhead":
+                case "going-ahead":
                   goingAheadMeetings.push(meeting);
                   break;
                 case "pending":
@@ -142,8 +139,6 @@ function DashboardMentor() {
               }
             }
           });
-
-          console.log(goingAheadMeetings);
 
         // Get plan of action
         let goals: Goal[] = [];
@@ -231,8 +226,6 @@ function DashboardMentor() {
       currentMentee = mentees[i];
     }
   }
-
-  console.log(currentMentee.goingAheadMeetings);
 
   return (
     <div className="fixed h-full w-full">
