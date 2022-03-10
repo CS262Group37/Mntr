@@ -65,7 +65,8 @@ CREATE TABLE user_topic (
 CREATE TABLE user_rating (
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     skill VARCHAR NOT NULL CONSTRAINT valid_skill REFERENCES system_skill("name"),
-    rating INTEGER NOT NULL CONSTRAINT valid_rating CHECK (rating >= 0 AND rating <= 10),
+    rating NUMERIC NOT NULL CONSTRAINT valid_rating CHECK (rating >= 0 AND rating <= 10),
+    reviewCount INTEGER DEFAULT 1,
     PRIMARY KEY (userID, skill)
 );
 

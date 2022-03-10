@@ -5,7 +5,7 @@ from . import parsers
 
 
 class GetPlan(AuthResource):
-    routes = ["mentor", "mentee"]
+    roles = ["mentor", "mentee"]
 
     @plan_api.expect(parsers.relationID_parser)
     @plan_api.doc(security="apiKey")
@@ -19,7 +19,7 @@ class GetPlan(AuthResource):
 
 
 class MarkPlanComplete(AuthResource):
-    routes = ["mentee"]
+    roles = ["mentee"]
 
     @plan_api.expect(parsers.planID_parser)
     @plan_api.doc(security="apiKey")
@@ -39,7 +39,7 @@ class MarkPlanComplete(AuthResource):
 
 
 class MarkPlanIncomplete(AuthResource):
-    routes = ["mentee"]
+    roles = ["mentee"]
 
     @plan_api.expect(parsers.planID_parser)
     @plan_api.doc(security="apiKey")
@@ -59,7 +59,7 @@ class MarkPlanIncomplete(AuthResource):
 
 
 class RemovePlan(AuthResource):
-    routes = ["mentee"]
+    roles = ["mentee"]
 
     @plan_api.expect(parsers.planID_parser)
     @plan_api.doc(security="apiKey")
@@ -79,7 +79,7 @@ class RemovePlan(AuthResource):
 
 
 class AddPlan(AuthResource):
-    routes = ["mentee"]
+    roles = ["mentee"]
 
     @plan_api.expect(parsers.plan_parser)
     @plan_api.doc(security="apiKey")
