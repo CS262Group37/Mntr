@@ -275,6 +275,15 @@ function DashboardMentor() {
               {currentMentee.missedMeetings.map((meeting) => {
                 return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
               })}
+
+              {currentMentee.cancelledMeetings.length > 0 &&
+                (currentMentee.missedMeetings.length > 0 ||
+                  currentMentee.completedMeetings.length > 0) && (
+                  <Divider sx={{marginTop: 3, marginBottom: 3}} />
+                )}
+              {currentMentee.cancelledMeetings.map((meeting) => {
+                return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
+              })}
             </div>
           </div>
         </div>

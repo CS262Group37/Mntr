@@ -19,10 +19,6 @@ interface MeetingProps {
   handleNewMeeting: () => void;
 }
 
-function cancelMeeting() {
-  
-}
-
 const MeetingCard: React.FC<MeetingProps> = (props) => {
   const meeting: Meeting = props.meetingData;
 
@@ -59,6 +55,9 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
       break;
     case "missed":
       labelColour = "bg-imperialRed"
+      break;
+    case "cancelled":
+      labelColour = "bg-firebrick"
       break;
   }
 
