@@ -60,12 +60,10 @@ def create_random_meetings(meeting_count = None):
         
         meetings = get_data('SELECT * FROM meeting')
         meeting_status_progress = progress.add_task('[cyan]Giving meetings random statuses...[/]', total=len(meetings))
-        last_meeting = None
         for meeting in meetings:
             # 50% chance of changing status
             if random.randrange(2) == 0:
                 status = random.choice(['going-ahead', 'pending', 'cancelled', 'completed', 'missed', 'running'])
-                print("Setting id", meeting['meetingid'], "to", status)
                 update_data('UPDATE meeting SET "status" = %s WHERE meetingID = %s;', (status, meeting['meetingid']))
                 if status == 'completed':
                     update_data('UPDATE meeting SET feedback = %s WHERE meetingID = %s;', (fake.paragraph(nb_sentences=10), meeting['meetingid']))
