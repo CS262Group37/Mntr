@@ -1,3 +1,4 @@
+from app.meetings.meetings import str_to_datetime
 from app.auth.auth import AuthResource
 from . import workshop_api
 from . import parsers
@@ -5,17 +6,26 @@ from . import workshop
 
 
 class CreateWorkshop(AuthResource):
+    roles = ["mentor"]
+
     @workshop_api.doc(security="apiKey")
     @workshop_api.expect(parsers.create_workshop_parser)
     def post(self):
         data = parsers.create_workshop_parser.parse_args()
+
+        # First parse and check start and end times
+        start_time = str_to_datetime(data["startTime"])
+        end_time = str_to_datetime(data["endTime"])
+        if (not start_time or not end_time) or (end_time < start_time):
+            return {"error": "Invalid time provided"}, 400
+
         result = workshop.create_workshop(
             data["mentorID"],
             data["title"],
             data["topic"],
             data["desc"],
-            data["startTime"],
-            data["endTime"],
+            start_time,
+            end_time,
             data["location"],
         )
         if result[0]:
@@ -25,6 +35,8 @@ class CreateWorkshop(AuthResource):
 
 
 class CancelWorkshop(AuthResource):
+    roles = ["mentor"]
+
     @workshop_api.doc(security="apiKey")
     @workshop_api.expect(parsers.cancel_workshop_parser)
     def post(self):
@@ -37,6 +49,8 @@ class CancelWorkshop(AuthResource):
 
 
 class GetWorkshops(AuthResource):
+    roles = ["mentor", "mentee"]
+
     @workshop_api.doc(security="apiKey")
     @workshop_api.expect(parsers.get_workshops_parser)
     def get(self):
@@ -45,6 +59,8 @@ class GetWorkshops(AuthResource):
 
 
 class ViewWorkshopAttendee(AuthResource):
+    roles = ["mentor", "mentee"]
+
     @workshop_api.doc(security="apiKey")
     @workshop_api.expect(parsers.view_workshop_attendee_parser)
     def get(self):
