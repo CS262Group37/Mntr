@@ -6,8 +6,6 @@ jobs:
   container-job:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
-    container:
-      options: --user root
     # # Docker Hub image that `container-job` executes in
     # container: python
 
