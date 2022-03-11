@@ -2,7 +2,7 @@
 import { Divider } from "@mui/material";
 import axios from "axios";
 import React from "react";
-import { BiCalendarCheck, BiX, BiCheck } from "react-icons/bi";
+import { BiCalendarCheck, BiX, BiCheck, BiCalendarExclamation, BiCalendarEvent, BiCalendarX } from "react-icons/bi";
 
 interface Meeting {
   meetingID: number;
@@ -17,6 +17,23 @@ interface Meeting {
 interface MeetingProps {
   meetingData: Meeting;
   handleNewMeeting: () => void;
+}
+
+
+function parseDate(d: Date) {
+  const month = d.toLocaleString("default", { month: "long" });
+  const date =
+    month +
+    " " +
+    d.getDate() +
+    ", " +
+    d.getFullYear() +
+    ", " +
+    d.getHours() +
+    ":" +
+    d.getMinutes();
+
+  return date;
 }
 
 const MeetingCard: React.FC<MeetingProps> = (props) => {
@@ -36,13 +53,7 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
     });
   };
 
-  const month = meeting.startTime.toLocaleString("default", { month: "long" });
-  const date =
-    month +
-    " " +
-    meeting.startTime.getDate() +
-    ", " +
-    meeting.startTime.getFullYear();
+  const date: string = parseDate(meeting.startTime);
 
   let labelColour: string = "";
 
@@ -108,7 +119,10 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
           </div>
 
           <div className="flex flex-row flex-none text-left">
-            <BiCalendarCheck className="text-2xl m-auto ml-0 mr-1" />
+            {meeting.status === "completed" && <BiCalendarCheck className="text-2xl m-auto ml-0 mr-1" />}
+            {meeting.status === "missed" && <BiCalendarExclamation className="text-2xl m-auto ml-0 mr-1" />}
+            {meeting.status === "pending" && <BiCalendarEvent className="text-2xl m-auto ml-0 mr-1" />}
+            {meeting.status === "cancelled" && <BiCalendarX className="text-2xl m-auto ml-0 mr-1" />}
             <h1 className="text-lg">{date}</h1>
           </div>
         </div>
