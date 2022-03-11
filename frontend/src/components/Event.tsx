@@ -1,6 +1,7 @@
 import { Avatar, Divider } from "@mui/material";
 import React from "react";
 import { BiCalendarEvent, BiMap, BiChat } from "react-icons/bi";
+import { Link } from "react-router-dom";
 
 interface EventProps {
   event: Meeting | Workshop;
@@ -88,7 +89,7 @@ const Event: React.FC<EventProps> = (props) => {
           src={event.mentor.avatar}
           sx={{ width: 28, height: 28 }}
         />
-        <p className="m-auto ml-2">{event.mentor.firstName + " " + event.mentor.lastName}</p>
+        <Link to={"/profile?id=" + event.mentor.id} className="hover:font-semibold m-auto ml-2">{event.mentor.firstName + " " + event.mentor.lastName}</Link>
       </div>
       </>
       }
@@ -115,7 +116,9 @@ const Event: React.FC<EventProps> = (props) => {
       {type === "Workshop" && 
       <p className="p-2 pt-1 pb-1">
         <span className="font-semibold">Led by: </span>
-        {event.mentor.firstName + " " + event.mentor.lastName}
+        <Link to={"/profile?id=" + event.mentor.id} className="hover:font-semibold">
+          {event.mentor.firstName + " " + event.mentor.lastName}
+        </Link>
         {/* {props.mentors.map((mentor, i, { length }) => {
           if (i === length - 1) {
             return <span>{mentor}</span>;
