@@ -191,7 +191,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           .post("/api/users/get-user-data", { userID: userID })
           .then((res: any) => {
             menteeMentor = {
-              id: relationship.menteeid,
+              id: userID,
               firstName: res.data.firstname,
               lastName: res.data.lastname,
               avatar: res.data.profilepicture,
