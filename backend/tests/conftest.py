@@ -1,21 +1,21 @@
-import sys
+# import sys
 
-import pytest
+# import pytest
 
-import sys
-sys.path.append('../app')
-from app import create_app
+# import sys
+# sys.path.append('../app')
+# from app import create_app
 
-@pytest.fixture()
-def app():
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-    })
-    print("created app")
+# @pytest.fixture()
+# def app():
+#     app = create_app()
+#     app.config.update({
+#         "TESTING": True,
+#     })
+#     print("created app")
 
-    # other setup can go here
+#     # other setup can go here
 
-    yield app
+#     yield app
     
-    # clean up / reset resources here
+#     # clean up / reset resources here
