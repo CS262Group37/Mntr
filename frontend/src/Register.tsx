@@ -32,6 +32,8 @@ function Register() {
     
   };
 
+  const iconCss = "text-4xl m-2 mt-6 text-prussianBlue";
+
   return(
     <div className="fixed h-full w-full">
       {/* Main flexbox */}
@@ -60,7 +62,7 @@ function Register() {
                   setEmail(e.target.value);
                 }}
                 placeholder="E-mail address"
-                icon={<BiEnvelope className="text-4xl m-4 mr-0" />}
+                icon={<BiEnvelope className={iconCss} />}
               />
 
               {/* First name input */}
@@ -71,7 +73,7 @@ function Register() {
                   setFirstName(e.target.value);
                 }}
                 placeholder="First name"
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
+                icon={<BiUser className={iconCss} />}
               />
 
               {/* Last name input */}
@@ -82,7 +84,7 @@ function Register() {
                   setLastName(e.target.value);
                 }}
                 placeholder="Last name"
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
+                icon={<BiUser className={iconCss} />}
               />
 
               {/* Password input */}
@@ -93,7 +95,7 @@ function Register() {
                   setPsword(e.target.value);
                 }}
                 placeholder="Password"
-                icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+                icon={<BiLockAlt className={iconCss} />}
               />
 
               {/* Password confirmation */}
@@ -104,7 +106,7 @@ function Register() {
                   setPswordConf(e.target.value);
                 }}
                 placeholder="Password confirmation"
-                icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+                icon={<BiLockAlt className={iconCss} />}
               />
             </div>
 
