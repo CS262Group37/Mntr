@@ -51,7 +51,6 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-
 function parseDate(d: string) {
   const [date, time] = d.split(" ");
   const [day, month, year] = date.split("/");
@@ -254,28 +253,48 @@ function DashboardMentor() {
 
             <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
               {currentMentee.pendingMeetings.map((meeting) => {
-                return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
+                return (
+                  <MeetingCardMentor
+                    meetingData={meeting}
+                    handleNewMeeting={getMentees}
+                  />
+                );
               })}
 
               {currentMentee.pendingMeetings.length > 0 &&
                 (currentMentee.missedMeetings.length > 0 ||
                   currentMentee.completedMeetings.length > 0) && (
-                  <Divider sx={{marginTop: 3, marginBottom: 3}} />
+                  <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
                 )}
               {currentMentee.completedMeetings.map((meeting) => {
-                return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
+                return (
+                  <MeetingCardMentor
+                    meetingData={meeting}
+                    handleNewMeeting={getMentees}
+                  />
+                );
               })}
               {currentMentee.missedMeetings.map((meeting) => {
-                return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
+                return (
+                  <MeetingCardMentor
+                    meetingData={meeting}
+                    handleNewMeeting={getMentees}
+                  />
+                );
               })}
 
               {currentMentee.cancelledMeetings.length > 0 &&
                 (currentMentee.missedMeetings.length > 0 ||
                   currentMentee.completedMeetings.length > 0) && (
-                  <Divider sx={{marginTop: 3, marginBottom: 3}} />
+                  <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
                 )}
               {currentMentee.cancelledMeetings.map((meeting) => {
-                return <MeetingCardMentor meetingData={meeting} handleNewMeeting={getMentees} />;
+                return (
+                  <MeetingCardMentor
+                    meetingData={meeting}
+                    handleNewMeeting={getMentees}
+                  />
+                );
               })}
             </div>
           </div>

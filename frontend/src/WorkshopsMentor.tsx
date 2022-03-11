@@ -120,9 +120,11 @@ const WorkshopCard: React.FC<CardProps> = (props) => {
           {/* Start and end times */}
           <div className="flex flex-row flex-none text-right">
             <h1 className="text-lg m-auto overflow-auto text-clip">
-              <span className="font-semibold">Start: </span>{start}
+              <span className="font-semibold">Start: </span>
+              {start}
               <br></br>
-              <span className="font-semibold">End: </span>{end}
+              <span className="font-semibold">End: </span>
+              {end}
             </h1>
             {/* <BiCalendar className="text-5xl m-auto mr-2 ml-2" /> */}
           </div>
@@ -170,9 +172,44 @@ function WorkshopsMentor() {
         .get("/api/workshop/get-workshops", {
           params: { userID: user.id, role: user.role },
         })
-        .then((res: any) => {
+        .then(async (res: any) => {
           console.log(res.data);
 
+          // // New - requests attendees - doesn't work
+          // var newWorkshops: Workshop[] = [];
+          // for (const workshop of res.data) {
+          //   let attendees = [];
+
+          //   await axios
+          //     .get("/api/workshop/view-workshop-attendee", {
+          //       params: { workshopID: workshop.workshopid },
+          //     })
+          //     .then((res) => {
+          //       console.log(res.data);
+          //       attendees = res.data.map((a: any) => {
+          //         return {
+          //           goalID: a.planofactionid,
+          //           title: a.title,
+          //           description: a.description,
+          //           status: a.status,
+          //         };
+          //       });
+
+          //       newWorkshops.push({
+          //         workshopID: workshop.workshopid,
+          //         mentorID: workshop.mentorid,
+          //         title: workshop.title,
+          //         description: workshop.description,
+          //         topic: workshop.topic,
+          //         location: workshop.location,
+          //         status: workshop.status,
+          //         startTime: parseDateStr(workshop.starttime),
+          //         endTime: parseDateStr(workshop.endtime),
+          //       })
+          //     });
+          // }
+
+          // works but old version that doesn't show attendees
           const newWorkshops: Workshop[] = res.data.map((w: any) => {
             return {
               workshopID: w.workshopid,
