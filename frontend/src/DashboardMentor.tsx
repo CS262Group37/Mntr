@@ -266,9 +266,7 @@ function DashboardMentor() {
               handleNewMeeting={getMentees}
               nextMeeting={
                 currentMentee.goingAheadMeetings.length > 0
-                  ? currentMentee.goingAheadMeetings[
-                      currentMentee.goingAheadMeetings.length - 1
-                    ].startTime
+                  ? currentMentee.goingAheadMeetings[0].startTime
                   : null
               }
             />
