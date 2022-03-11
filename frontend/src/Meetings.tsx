@@ -4,7 +4,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import NavBarMentor from "./components/NavBarMentor";
 import PlanOfAction from "./components/PlanOfAction";
-import MeetingCardMentor from "./components/MeetingCardMentor";
+import MeetingElement from "./components/MeetingElement";
 import { Divider } from "@mui/material";
 
 interface UserData {
@@ -158,28 +158,37 @@ function Meetings() {
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display bg-cultured overflow-auto p-6 flex flex-col pb-40">
-        <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
+        <div className="w-[74%] flex flex-col mr-auto ml-auto">
+          {/* RUNNING MEETINGS */}
           {meetings.runningMeetings.map((meeting) => {
             return (
-              <MeetingCardMentor
+              <MeetingElement
                 meetingData={meeting}
                 handleNewMeeting={getMeetings}
               />
             );
           })}
 
+          {/* UPCOMING MEETINGS */}
           {meetings.goingAheadMeetings.map((meeting) => {
             return (
-              <MeetingCardMentor
+              <MeetingElement
                 meetingData={meeting}
                 handleNewMeeting={getMeetings}
               />
             );
           })}
 
+          {meetings.pendingMeetings.length > 0 &&
+            (meetings.goingAheadMeetings.length > 0 ||
+              meetings.runningMeetings.length > 0) && (
+              <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
+            )}
+
+          {/* PENDING MEETINGS */}
           {meetings.pendingMeetings.map((meeting) => {
             return (
-              <MeetingCardMentor
+              <MeetingElement
                 meetingData={meeting}
                 handleNewMeeting={getMeetings}
               />
@@ -192,17 +201,26 @@ function Meetings() {
               <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
             )}
 
+          {/* COMPLETED MEETINGS */}
           {meetings.completedMeetings.map((meeting) => {
             return (
-              <MeetingCardMentor
+              <MeetingElement
                 meetingData={meeting}
                 handleNewMeeting={getMeetings}
               />
             );
           })}
+
+          {meetings.completedMeetings.length > 0 &&
+            (meetings.missedMeetings.length > 0 ||
+              meetings.cancelledMeetings.length > 0) && (
+              <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
+            )}
+
+          {/* MISSED MEETINGS */}
           {meetings.missedMeetings.map((meeting) => {
             return (
-              <MeetingCardMentor
+              <MeetingElement
                 meetingData={meeting}
                 handleNewMeeting={getMeetings}
               />
@@ -214,9 +232,11 @@ function Meetings() {
               meetings.completedMeetings.length > 0) && (
               <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
             )}
+
+          {/* CANCELLED MEETINGS */}
           {meetings.cancelledMeetings.map((meeting) => {
             return (
-              <MeetingCardMentor
+              <MeetingElement
                 meetingData={meeting}
                 handleNewMeeting={getMeetings}
               />
