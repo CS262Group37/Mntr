@@ -138,6 +138,27 @@ function DashboardMentor() {
                   break;
               }
             }
+
+            // Sorting meetings - future from closest to most distant, past from most recent
+            runningMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+            goingAheadMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+            pendingMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+
+            completedMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
+            missedMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
+            cancelledMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
           });
 
         // Get plan of action

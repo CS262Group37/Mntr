@@ -132,6 +132,27 @@ function Meetings() {
                   break;
               }
             }
+
+            // Sorting meetings - future from closest to most distant, past from most recent
+            newRunningMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+            newGoingAheadMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+            newPendingMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+
+            newCompletedMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
+            newMissedMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
+            newCancelledMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
           });
       }
 
@@ -149,7 +170,6 @@ function Meetings() {
   // Get mentee-mentor relations and mentees' data
   useEffect(() => {
     getMeetings();
-    console.log(meetings);
   }, []);
 
   return (
