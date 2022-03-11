@@ -58,7 +58,7 @@ const Event: React.FC<EventProps> = (props) => {
   return (
     <div className="font-body text-base bg-gray-300 rounded-md p-2 mt-3 ml-2 bg-opacity-50 shadow-sm flex flex-col space-y-[5px]">
       <div className="flex flex-row justify-between mb-1 p-2 pb-1">
-        <p className="font-semibold text-firebrick">{event.title}</p>
+        <p className="font-semibold text-firebrick pr-5">{event.title}</p>
         <p
           className={
             "text-cultured rounded-full text-sm m-auto mr-1 mt-0 p-1 pl-3 pr-3 select-none " +
