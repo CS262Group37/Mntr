@@ -29,7 +29,7 @@ const theme = createTheme({
     // Light: imperial Red, Main: firebrick
     primary: {
       light: '#F02D3A',
-      main: '#BB0A21',
+      main: '#F02D3A',
     },
     // Light: Bright Navy Blue, Main: prussian blue
     secondary: {
