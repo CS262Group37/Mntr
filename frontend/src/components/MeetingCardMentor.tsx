@@ -1,5 +1,5 @@
 // Meeting component
-import { Divider } from "@mui/material";
+import { Divider, Tooltip } from "@mui/material";
 import axios from "axios";
 import React from "react";
 import { BiCalendarCheck, BiX, BiCheck, BiCalendarExclamation, BiCalendarEvent, BiCalendarX } from "react-icons/bi";
@@ -80,19 +80,23 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
             <h1 className="text-2xl font-semibold">Accept meeting?</h1>
 
             <div className="flex flex-row justify-center pr-[44%] pl-[44%]">
-              <button
-                className="bg-transparent border-2 border-green-500 text-green-500 text-xl p-1  rounded-full transition ease-in-out hover:bg-green-500 hover:text-cultured duration-200 m-3"
-                onClick={acceptMeeting}
-              >
-                <BiCheck className="h-10 w-10 p-1" />
-              </button>
+              <Tooltip title="Accept" arrow>
+                <button
+                  className="bg-transparent border-2 border-green-500 text-green-500 text-xl p-1  rounded-full transition ease-in-out hover:bg-green-500 hover:text-cultured duration-200 m-3"
+                  onClick={acceptMeeting}
+                >
+                  <BiCheck className="h-10 w-10 p-1" />
+                </button>
+              </Tooltip>
 
-              <button
-                className="bg-transparent border-2 border-imperialRed text-imperialRed text-xl p-1 rounded-full transition ease-in-out hover:bg-imperialRed hover:text-cultured duration-200 m-3"
-                onClick={cancelMeeting}
-              >
-                <BiX className="h-10 w-10 p-1" />
-              </button>
+              <Tooltip title="Decline" arrow>
+                <button
+                  className="bg-transparent border-2 border-imperialRed text-imperialRed text-xl p-1 rounded-full transition ease-in-out hover:bg-imperialRed hover:text-cultured duration-200 m-3"
+                  onClick={cancelMeeting}
+                >
+                  <BiX className="h-10 w-10 p-1" />
+                </button>
+              </Tooltip>
             </div>
           </div>
           <Divider />
