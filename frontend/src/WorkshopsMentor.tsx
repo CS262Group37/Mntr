@@ -175,6 +175,11 @@ function WorkshopsMentor() {
         .then(async (res: any) => {
           console.log(res.data);
 
+          var newRunningWorkshops: Workshop[] = [];
+          var newGoingAheadWorkshops: Workshop[] = [];
+          var newCompletedWorkshops: Workshop[] = [];
+          var newCancelledWorkshops: Workshop[] = [];
+
           // // New - requests attendees - doesn't work
           // var newWorkshops: Workshop[] = [];
           // for (const workshop of res.data) {
@@ -224,8 +229,42 @@ function WorkshopsMentor() {
             };
           });
 
+          for (const w of newWorkshops) {
+            switch (w.status) {
+              case "running":
+                newRunningWorkshops.push(w);
+                break;
+              case "going-ahead":
+                newGoingAheadWorkshops.push(w);
+                break;
+              case "completed":
+                newCompletedWorkshops.push(w);
+                break;
+              case "cancelled":
+                newCancelledWorkshops.push(w);
+                break;
+              default:
+                break;
+            };
+          }
+
+          // Sorting meetings - from closest to most distant
+          newRunningWorkshops.sort((e1: any, e2: any) => {
+            return e1.startTime - e2.startTime;
+          });
+          newGoingAheadWorkshops.sort((e1: any, e2: any) => {
+            return e1.startTime - e2.startTime;
+          });
+
+          newCompletedWorkshops.sort((e1: any, e2: any) => {
+            return e2.startTime - e1.startTime;
+          });
+          newCancelledWorkshops.sort((e1: any, e2: any) => {
+            return e2.startTime - e1.startTime;
+          });
+
           // console.log(newWorkshops);
-          setWorkshops(newWorkshops);
+          setWorkshops([ ...newRunningWorkshops, ...newGoingAheadWorkshops, ...newCompletedWorkshops, ...newCancelledWorkshops]);
         });
   }, [user]);
 

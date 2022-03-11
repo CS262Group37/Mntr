@@ -144,7 +144,7 @@ const NavBarMentee: React.FC<NavBarProps> = (props) => {
                 horizontal: "right",
               }}
             >
-              <UserMenu firstName={user.firstName} lastName={user.lastName} id={user.id} />
+              <UserMenu user={user} />
             </Popover>
           </div>
         </div>

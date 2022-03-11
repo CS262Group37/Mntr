@@ -10,10 +10,39 @@ import {
 } from "react-icons/bi";
 import { Link } from "react-router-dom";
 
-interface UserMenuProps {
+interface UserData {
+  id?: number;
   firstName: string;
   lastName: string;
-  id?: number;
+  avatar: string;
+  role: string;
+}
+
+interface Meeting {
+  meetingID: number;
+  title: string;
+  feedback: string;
+  status: string; // going-ahead, cancelled, running, completed, missed, pending
+  startTime: Date;
+  menteeMentor: UserData;
+}
+
+interface Workshop {
+  workshopID: number;
+  title: string;
+  topic: string;
+  location: string;
+  status: string; // going-ahead, cancelled, running, completed
+  startTime: Date;
+  mentor: UserData;
+}
+
+interface Event {
+  event: Meeting | Workshop;
+}
+
+interface UserMenuProps {
+  user: UserData;
 }
 
 interface EventProps {
@@ -97,13 +126,48 @@ const Notification: React.FC<NotifProps> = (props) => {
   );
 };
 
+function parseDateStr(d: string) {
+  const [date, time] = d.split(" ");
+  const [day, month, year] = date.split("/");
+  const [hour, min] = time.split(":");
+  const fullYear = "20" + year;
+
+  return new Date(
+    new Date(
+      parseInt(fullYear),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(min)
+    )
+  );
+}
+
+function parseDate(d: Date) {
+  const month = d.toLocaleString("default", { month: "long" });
+  const date =
+    month +
+    " " +
+    d.getDate() +
+    ", " +
+    d.getFullYear() +
+    ", " +
+    d.getHours() +
+    ":" +
+    d.getMinutes();
+
+  return date;
+}
+
 const UserMenu: React.FC<UserMenuProps> = (props) => {
   const [messages, setMessages] = useState<MessageProps[]>([]);
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [workshops, setWorkshops] = useState<Workshop[]>([]);
 
-  useEffect(() => {
+  const getMessages = () => {
     axios.get("api/messages/get-emails").then(async (res) => {
       console.log(res.data);
-      const newMessages : MessageProps[] = [];
+      const newMessages: MessageProps[] = [];
       for (const msg of res.data) {
         await axios
           .post("api/users/get-user-data", { userID: msg.senderid })
@@ -111,14 +175,160 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
             const newMsg = {
               sender: `${res.data.firstname} ${res.data.lastname}`,
               subject: msg.subject,
-              content: msg.content
-            }
-            newMessages.push(newMsg)
+              content: msg.content,
+            };
+            newMessages.push(newMsg);
           });
       }
       setMessages(newMessages);
     });
+  };
+
+  useEffect(() => {
+    getMessages();
   }, []);
+
+  const getMeetings = () => {
+    axios.get("/api/relations/get-relations").then(async (res: any) => {
+      var newRunningMeetings: Meeting[] = [];
+      var newGoingAheadMeetings: Meeting[] = [];
+
+      for (const relationship of res.data) {
+        // Get user data
+        let menteeMentor: UserData;
+        const userID = (props.user.role === "mentor" ? relationship.menteeid : relationship.mentorid);
+
+        await axios
+          .post("/api/users/get-user-data", { userID: userID })
+          .then((res: any) => {
+            menteeMentor = {
+              id: relationship.menteeid,
+              firstName: res.data.firstname,
+              lastName: res.data.lastname,
+              avatar: res.data.profilepicture,
+              role: res.data.role,
+            };
+          });
+
+        // Get meetings
+        let newMeetings: Meeting[];
+        await axios
+          .post("/api/meetings/get-meetings", {
+            relationID: relationship.relationid,
+          })
+          .then((res: any) => {
+            newMeetings = res.data.map((m: any) => {
+              return {
+                meetingID: m.meetingid,
+                title: m.title,
+                description: m.description,
+                feedback: m.feedback,
+                status: m.status,
+                startTime: parseDateStr(m.starttime),
+                endTime: parseDateStr(m.starttime),
+                user: menteeMentor,
+              };
+            });
+
+            newMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
+
+            for (const meeting of newMeetings) {
+              switch (meeting.status) {
+                case "running":
+                  newRunningMeetings.push(meeting);
+                  break;
+                case "going-ahead":
+                  newGoingAheadMeetings.push(meeting);
+                  break;
+                default:
+                  break;
+              }
+            }
+
+            // Sorting meetings - from closest to most distant
+            newRunningMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+            newGoingAheadMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+          });
+      }
+
+      setMeetings([ ...newRunningMeetings, ...newGoingAheadMeetings]);
+    });
+  };
+
+  const getWorkshops = () => {
+    axios
+      .get("/api/workshop/get-workshops", {
+        params: { userID: props.user.id, role: props.user.role },
+      })
+      .then(async (res: any) => {
+        var newRunningWorkshops: Workshop[] = [];
+        var newGoingAheadWorkshops: Workshop[] = [];
+
+        for (const workshop of res.data) {
+          let mentor: UserData = {firstName: "", lastName: "", avatar: "", role: ""};
+
+          await axios
+          .post("/api/users/get-user-data", { userID: workshop.mentorid })
+          .then((res: any) => {
+            mentor = {
+              id: workshop.mentorid,
+              firstName: res.data.firstname,
+              lastName: res.data.lastname,
+              avatar: res.data.profilepicture,
+              role: res.data.role,
+            };
+          });
+
+          const newWorkshop = {
+            workshopID: workshop.workshopid,
+            title: workshop.title,
+            topic: workshop.topic,
+            location: workshop.location,
+            status: workshop.status,
+            startTime: parseDateStr(workshop.starttime),
+            mentor: mentor,
+          }
+
+          switch (newWorkshop.status) {
+            case "running":
+              newRunningWorkshops.push(newWorkshop);
+              break;
+            case "going-ahead":
+              newGoingAheadWorkshops.push(newWorkshop);
+              break;
+            default:
+              break;
+          };
+        }
+
+        // Sorting meetings - from closest to most distant
+        newRunningWorkshops.sort((e1: any, e2: any) => {
+          return e1.startTime - e2.startTime;
+        });
+        newGoingAheadWorkshops.sort((e1: any, e2: any) => {
+          return e1.startTime - e2.startTime;
+        });
+
+        setWorkshops([ ...newRunningWorkshops, ...newGoingAheadWorkshops]);
+      });
+  };
+
+  useEffect(() => {
+    getMeetings();
+    getWorkshops();    
+  }, []);
+
+  useEffect(() => {
+    console.log(meetings);
+    console.log(workshops);
+  }, []);
+
   return (
     <div
       className={
@@ -126,11 +336,11 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
       }
     >
       <Link
-        to={"/profile?id=" + props.id}
+        to={"/profile?id=" + props.user.id}
         className="flex flex-row font-semibold text-2xl hover:font-bold pr-6 pl-6 pb-4 pt-4 border-b-[1px] border-gray-300"
       >
         <BiUserCircle className="text-3xl m-auto ml-0 mr-2" />
-        <h2>{props.firstName + " " + props.lastName}</h2>
+        <h2>{props.user.firstName + " " + props.user.lastName}</h2>
       </Link>
 
       {/* Notifications */}
@@ -173,6 +383,16 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           <BiCalendar className="text-2xl m-auto ml-0 mr-2" />
           <h2>Upcoming events</h2>
         </div>
+        {
+          meetings.map((m) => {
+            return <h1>{m.title}</h1>
+          })
+        }
+        {
+          workshops.map((w) => {
+            return <h1>{w.title}</h1>
+          })
+        }
 
         {/* sample events */}
         <div className="flex flex-col mt-1">
