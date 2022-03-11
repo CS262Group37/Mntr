@@ -13,6 +13,7 @@ import RegisterUser from "./RegisterUser"
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Profile from "./Profile";
 import Meetings from "./Meetings";
+import Settings from "./Settings";
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -59,6 +60,7 @@ function App() {
           <Route path="/workshops-mentor" element={ <WorkshopsMentor /> } />
           <Route path="/register-user" element={ <RegisterUser /> } />
           <Route path="/profile" element={ <Profile /> } />
+          <Route path="/settings" element={ <Settings /> } />
         </Routes>
       </ThemeProvider>
     </div>
