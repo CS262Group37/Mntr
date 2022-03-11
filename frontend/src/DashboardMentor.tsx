@@ -99,6 +99,7 @@ function DashboardMentor() {
             relationID: relationship.relationid,
           })
           .then((res: any) => {
+            console.log(res.data);
             menteeMeetings = res.data.map((m: any) => {
               return {
                 meetingID: m.meetingid,

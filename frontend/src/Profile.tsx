@@ -143,7 +143,6 @@ function Profile() {
 
   return (
     <div className="fixed h-full w-full">
-      {/* //! doesn't work as expected - FIX */}
       {loggedInRole === "mentee" && <NavBarMentee activeStr="Public profile" />}
       {loggedInRole === "mentor" && <NavBarMentor activeStr="Public profile" />}
 
