@@ -211,7 +211,7 @@ def login_as_admin():
     )
     data = json.loads(response.content)
     print(data)
-    if 'error' in data:
+    if "error" in data:
         return False
     return True
 
@@ -273,6 +273,7 @@ def test_auth_functions():
     assert admin.add_area('Trading') is True
     #D10
     assert admin.add_skill('Listening') is True
+
 
     #C2/D2
     #Create mentee user
@@ -353,4 +354,3 @@ def test_get_recommended_mentors():
     print("Testing getting recommended mentors")
 
     #
-

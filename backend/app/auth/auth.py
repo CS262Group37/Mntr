@@ -148,7 +148,10 @@ def register_user(accountID, user_data):
                 from app.workshop.workshop import update_demand
 
                 # Update workshop demand
-                update_demand(userID, user_data["role"], conn)
+                demand_result = update_demand(userID, user_data["role"], conn)
+                if not demand_result[0]:
+                    conn.error = True
+                    return demand_result[1]
             else:
                 # Give mentors a default rating of 5 for all skills
                 # TODO: Might want to change this to start at 0
