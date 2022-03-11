@@ -1,6 +1,8 @@
 // Meeting component
+import { Divider, Tooltip } from "@mui/material";
+import axios from "axios";
 import React from "react";
-import { BiCalendarEvent, BiCalendarCheck, BiCalendarExclamation, BiCalendarX } from "react-icons/bi";
+import { BiCalendarCheck, BiX, BiCheck, BiCalendarExclamation, BiCalendarEvent, BiCalendarX } from "react-icons/bi";
 
 interface Meeting {
   meetingID: number;
@@ -14,6 +16,7 @@ interface Meeting {
 
 interface MeetingProps {
   meetingData: Meeting;
+  handleNewMeeting: () => void;
 }
 
 
@@ -35,6 +38,21 @@ function parseDate(d: Date) {
 
 const MeetingCard: React.FC<MeetingProps> = (props) => {
   const meeting: Meeting = props.meetingData;
+
+  const acceptMeeting = () => {
+    axios.put("/api/meetings/accept-meeting", { meetingID: meeting.meetingID }).then((res) => {
+      console.log(res.status);
+      props.handleNewMeeting();
+    });
+  };
+
+  const cancelMeeting = () => {
+    axios.put("/api/meetings/cancel-meeting", { meetingID: meeting.meetingID }).then((res) => {
+      console.log(res.status);
+      props.handleNewMeeting();
+    });
+  };
+
   const date: string = parseDate(meeting.startTime);
 
   let labelColour: string = "";
@@ -49,12 +67,44 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
     case "missed":
       labelColour = "bg-imperialRed"
       break;
+    case "cancelled":
+      labelColour = "bg-firebrick"
+      break;
   }
 
   return (
-    <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-5 mr-6 ml-6 text-prussianBlue p-4 rounded-xl">
+    <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-5 mr-6 ml-6 text-prussianBlue p-4 pt-1 rounded-xl">
+      {meeting.status === "pending" &&
+        <div>
+          <div className="flex flex-col mt-3 mb-2 text-center">
+            <h1 className="text-2xl font-semibold">Accept meeting?</h1>
+
+            <div className="flex flex-row justify-center pr-[44%] pl-[44%]">
+              <Tooltip title="Accept" arrow>
+                <button
+                  className="bg-transparent border-2 border-green-500 text-green-500 text-xl p-1  rounded-full transition ease-in-out hover:bg-green-500 hover:text-cultured duration-200 m-3"
+                  onClick={acceptMeeting}
+                >
+                  <BiCheck className="h-10 w-10 p-1" />
+                </button>
+              </Tooltip>
+
+              <Tooltip title="Decline" arrow>
+                <button
+                  className="bg-transparent border-2 border-imperialRed text-imperialRed text-xl p-1 rounded-full transition ease-in-out hover:bg-imperialRed hover:text-cultured duration-200 m-3"
+                  onClick={cancelMeeting}
+                >
+                  <BiX className="h-10 w-10 p-1" />
+                </button>
+              </Tooltip>
+            </div>
+          </div>
+          <Divider />
+        </div>
+      }
+
       {/* Heading & date */}
-      <div className="flex flex-row text-2xl justify-between border-b-2 border-imperialRed">
+      <div className="flex flex-row text-2xl justify-between border-b-2 border-imperialRed mt-3">
         {/* Meeting title and date */}
         <div className="flex flex-col ml-3 mb-3 w-[100%]">
           {/* Title and label */}

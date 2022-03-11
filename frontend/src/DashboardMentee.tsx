@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
-import NavBar from "./components/NavBarMentee";
+import NavBarMentee from "./components/NavBarMentee";
 import PlanOfAction from "./components/PlanOfAction";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import MeetingCard from "./components/MeetingCard";
 import MentorDetails from "./components/MentorDetails";
+import { Divider } from "@mui/material";
 
 interface UserData {
   relationID: number;
@@ -70,7 +71,6 @@ function DashboardMentee() {
   const [mentors, setMentors] = React.useState<UserData[]>([]);
 
   // Get mentee-mentor relations and mentees' data
-
   const getMentors = () => {
     axios.get("/api/relations/get-relations").then(async (res: any) => {
       var newMentors: UserData[] = [];
@@ -118,7 +118,7 @@ function DashboardMentee() {
 
             for (const meeting of mentorMeetings) {
               switch (meeting.status) {
-                case "goingAhead":
+                case "going-ahead":
                   goingAheadMeetings.push(meeting);
                   break;
                 case "pending":
@@ -136,8 +136,29 @@ function DashboardMentee() {
                 case "running":
                   runningMeetings.push(meeting);
                   break;
-              };
-            };
+              }
+            }
+
+            // Sorting meetings - future from closest to most distant, past from most recent
+            runningMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+            goingAheadMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+            pendingMeetings.sort((e1: any, e2: any) => {
+              return e1.startTime - e2.startTime;
+            });
+
+            completedMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
+            missedMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
+            cancelledMeetings.sort((e1: any, e2: any) => {
+              return e2.startTime - e1.startTime;
+            });
           });
 
         // Get plan of action
@@ -218,7 +239,7 @@ function DashboardMentee() {
 
   for (let i = 0; i < mentors.length; i++) {
     if (
-      currentMentorId != null &&
+      currentMentorId !== null &&
       mentors[i].id === parseInt(currentMentorId)
     ) {
       currentMentorIdNum = parseInt(currentMentorId);
@@ -230,7 +251,7 @@ function DashboardMentee() {
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar
+      <NavBarMentee
         activeStr="My mentors"
         activeMentorId={currentMentorIdNum}
         mentors={mentors}
@@ -241,15 +262,26 @@ function DashboardMentee() {
         {/* White half */}
         <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
           <div className="flex flex-col w-[100%]">
-            <MentorDetails mentorData={currentMentor} handleNewMeeting={getMentors} nextMeeting={currentMentor.goingAheadMeetings.length > 0 ? currentMentor.goingAheadMeetings[currentMentor.goingAheadMeetings.length-1].startTime : null}/>
+            <MentorDetails
+              mentorData={currentMentor}
+              handleNewMeeting={getMentors}
+              nextMeeting={
+                currentMentor.goingAheadMeetings.length > 0
+                  ? currentMentor.goingAheadMeetings[0].startTime
+                  : null
+              }
+            />
 
             <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
               {currentMentor.pendingMeetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;
               })}
 
-              {(currentMentor.pendingMeetings.length > 0 && (currentMentor.missedMeetings.length > 0 || currentMentor.completedMeetings.length > 0)) &&
-                <h1 className="text-left pt-6 mt-6 pl-4 text-3xl text-firebrick border-t-[1.5px] border-gray-200"></h1>}
+              {currentMentor.pendingMeetings.length > 0 &&
+                (currentMentor.missedMeetings.length > 0 ||
+                  currentMentor.completedMeetings.length > 0) && (
+                  <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
+                )}
               {/* <hr className="border-[0.5px]"></hr> */}
               {currentMentor.completedMeetings.map((meeting) => {
                 return <MeetingCard meetingData={meeting} />;

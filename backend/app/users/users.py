@@ -34,4 +34,8 @@ def get_ratings(userID):
         data = (userID,)
         user_ratings = conn.execute(sql, data)
 
+    # Convert decimal objects to floats
+    for user_rating in user_ratings:
+        user_rating["rating"] = float(user_rating["rating"])
+
     return user_ratings

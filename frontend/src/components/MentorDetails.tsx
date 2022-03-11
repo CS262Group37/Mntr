@@ -10,10 +10,18 @@ import {
   DialogContentText,
   DialogTitle,
   Modal,
+  Rating,
   TextField,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 
-import { BiCalendarEvent } from "react-icons/bi";
+import {
+  BiCalendarEvent,
+  BiCalendarPlus,
+  BiPlus,
+  BiStar,
+} from "react-icons/bi";
 
 interface UserData {
   relationID: number;
@@ -32,10 +40,15 @@ interface MentorProps {
   handleNewMeeting: () => void;
 }
 
+interface SkillRating {
+  name: string;
+  rating: number;
+}
+
 function revParseDate(d: string) {
   const [date, time] = d.split("T");
-  const [year, month, day] = date.split("-")
-  return (`${parseInt(day)}/${parseInt(month)}/${year.slice(-2)} ${time}`)
+  const [year, month, day] = date.split("-");
+  return `${parseInt(day)}/${parseInt(month)}/${year.slice(-2)} ${time}`;
 }
 
 function parseDate(d: string) {
@@ -82,12 +95,26 @@ const currentDate = () => {
 
 // Mentor details component
 const MentorDetails: React.FC<MentorProps> = (props) => {
-  const [open, setOpen] = React.useState(false);
+  const [schedulerOpen, setSchedulerOpen] = useState(false);
+  const [raterOpen, setRaterOpen] = useState(false);
+  const [skills, setSkills] = useState<SkillRating[]>([]);
+
+  useEffect(() => {
+    axios.get("/api/admin/get-skills").then((res) => {
+      const newSkills = res.data.map((skill: any) => ({
+        name: skill.name,
+        rating: 0,
+      }));
+      setSkills(newSkills);
+    });
+  }, []);
 
   // TODO schedule a meeting function
   const schedule = () => {
     console.log(
-      `title: ${title}, descrip: ${descrip}, start: ${revParseDate(start)}, end: ${revParseDate(end)}`
+      `title: ${title}, descrip: ${descrip}, start: ${revParseDate(
+        start
+      )}, end: ${revParseDate(end)}`
     );
 
     axios
@@ -99,11 +126,27 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
         description: descrip,
       })
       .then((res: any) => {
-        props.handleNewMeeting()
-        
+        props.handleNewMeeting();
       });
-      setOpen(false)
+    setSchedulerOpen(false);
     return;
+  };
+
+  const rateMentor = () => {
+    console.log(skills);
+    axios.post("/api/relations/rate-mentor", {
+      mentorID: mentor.id,
+      skills: skills.map((skill) => skill.name),
+      ratings: skills.map((skill) => Math.round(skill.rating*2))
+    }).then((res) => {
+      console.log(res)
+    })
+  };
+
+  const updateRating = (value: number, index: number) => {
+    const newSkills = [...skills];
+    newSkills[index] = { name: skills[index].name, rating: value };
+    setSkills(newSkills);
   };
 
   const mentor: UserData = props.mentorData;
@@ -129,7 +172,6 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
   //       }
   //     });
   // }, [mentor]);
-  
 
   // Next meeting date formatting
   // TODO check formatting
@@ -181,63 +223,106 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
             </div>
           </div>
         </div>
+        <div className="flex m-auto mr-3 space-x-4">
+          {/* Schedule meeting button */}
+          <Tooltip title="Schedule Meeting" arrow>
+            <button
+              className="bg-prussianBlue text-cultured text-xl  p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
+              onClick={() => setSchedulerOpen(true)}
+            >
+              <BiCalendarPlus className="h-12 w-12 p-2" />
+            </button>
+          </Tooltip>
+          <Dialog
+            fullWidth
+            maxWidth="sm"
+            onClose={() => setSchedulerOpen(false)}
+            open={schedulerOpen}
+          >
+            <div>
+              <DialogTitle>Schedule Meeting</DialogTitle>
+              <DialogContent>
+                <div className="flex flex-col space-y-3 pt-2">
+                  <TextField
+                    label="Title"
+                    value={title}
+                    onChange={(e: any) => setTitle(e.target.value)}
+                  ></TextField>
+                  <TextField
+                    label="Description"
+                    value={descrip}
+                    multiline
+                    onChange={(e: any) => setDescrip(e.target.value)}
+                  ></TextField>
+                  <TextField
+                    label="Start time"
+                    type="datetime-local"
+                    value={start}
+                    defaultValue={currentDate()}
+                    onChange={(e: any) => setStart(e.target.value)}
+                  ></TextField>
+                  <TextField
+                    label="End time"
+                    type="datetime-local"
+                    value={end}
+                    defaultValue={currentDate()}
+                    onChange={(e: any) => setEnd(e.target.value)}
+                  ></TextField>
+                </div>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={schedule} sx={{ color: "#0E2A47" }}>
+                  Schedule
+                </Button>
+              </DialogActions>
+            </div>
+          </Dialog>
 
-        {/* Schedule meeting button */}
-        <button
-          className="bg-prussianBlue text-cultured text-xl min-w-100 flex-none w-64 p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
-          onClick={() => setOpen(true)}
-        >
-          Schedule a meeting
-        </button>
-        <Dialog
-          fullWidth
-          maxWidth="sm"
-          onClose={() => setOpen(false)}
-          open={open}
-        >
-          <div>
-            <DialogTitle>Schedule Meeting</DialogTitle>
-            <DialogContent>
-              <div className="flex flex-col space-y-3 pt-2">
-                <TextField
-                  label="Title"
-                  value={title}
-                  onChange={(e: any) => setTitle(e.target.value)}
-                ></TextField>
-                <TextField
-                  label="Description"
-                  value={descrip}
-                  multiline
-                  onChange={(e: any) => setDescrip(e.target.value)}
-                ></TextField>
-                <TextField
-                  label="Start time"
-                  type="datetime-local"
-                  value={start}
-                  defaultValue={currentDate()}
-                  onChange={(e: any) => setStart(e.target.value)}
-                ></TextField>
-                <TextField
-                  label="End time"
-                  type="datetime-local"
-                  value={end}
-                  defaultValue={currentDate()}
-                  onChange={(e: any) => setEnd(e.target.value)}
-                ></TextField>
-              </div>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={schedule} sx={{ color: "#0E2A47" }}>
-                Schedule
-              </Button>
-            </DialogActions>
-          </div>
-        </Dialog>
+          {/* Rate mentor button */}
+          <Tooltip title="Rate Mentor" arrow>
+            <button
+              className="bg-firebrick text-cultured text-xl  p-4 m-auto rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200 mr-0"
+              onClick={() => setRaterOpen(true)}
+            >
+              <BiStar className="h-12 w-12 p-2" />
+            </button>
+          </Tooltip>
+          <Dialog
+            fullWidth
+            maxWidth="xs"
+            onClose={() => setRaterOpen(false)}
+            open={raterOpen}
+          >
+            <div>
+              <DialogTitle>Rate Mentor</DialogTitle>
+              <DialogContent>
+                <div className="flex flex-col space-y-3 pt-2">
+                  {skills.map((skill, index) => (
+                    <div key={index}>
+                      <Typography component="legend">{skill.name}</Typography>
+                      <Rating
+                        precision={0.5}
+                        onChange={(e: any) => {
+                          updateRating(e.target.value, index);
+                        }}
+                      ></Rating>
+                    </div>
+                  ))}
+                </div>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={rateMentor} sx={{ color: "#0E2A47" }}>
+                  Rate
+                </Button>
+              </DialogActions>
+            </div>
+          </Dialog>
+        </div>
       </div>
 
       {/* Next meeting date */}
       {/* //! BROKEN */}
-      { props.nextMeeting != null && (
+      {props.nextMeeting != null && (
         <div className="flex flex-row text-lg font-body m-5 mt-10 mb-0">
           <BiCalendarEvent className="mt-auto mb-auto text-3xl mr-1" />
           <p className="mt-auto mb-auto text-left">

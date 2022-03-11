@@ -14,7 +14,20 @@ def create_workshop(mentorID, title, topic, desc, time, duration, location):
 
     conn = DatabaseConnection()
     with conn:
-        sql = 'INSERT INTO workshop (topic, mentorID, title, "description", startTime, endTime, "location",status) VALUES (%s, %s, %s, %s, %s,%s,%s,\'going-ahead\') RETURNING workshopID;'
+        # Check that the mentor can teach this topic
+        sql = (
+            "SELECT EXISTS (SELECT 1 FROM user_topic WHERE userID = %s AND topic = %s);"
+        )
+        data = (mentorID, topic)
+        exists = False
+        [(exists,)] = conn.execute(sql, data)
+        if not exists:
+            return (
+                False,
+                {"error": "Mentor does not specialise in the workshop's topic"},
+            )
+
+        sql = 'INSERT INTO workshop (topic, mentorID, title, "description", startTime, endTime, "location", status) VALUES (%s, %s, %s, %s, %s, %s, %s, \'going-ahead\') RETURNING workshopID;'
         data = (
             topic,
             mentorID,
@@ -70,7 +83,7 @@ def join_workshop(menteeID, workshopID):
         conn.execute(sql, data)
     if conn.error:
         return (False, {"error": conn.error_message})
-    return (True, {"Successfully joined workshop"})
+    return (True, {"message": "Successfully joined workshop"})
 
 
 def invite_mentors_to_create_workshop(topic):

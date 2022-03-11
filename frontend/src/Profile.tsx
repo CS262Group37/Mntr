@@ -1,13 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { BiEnvelope, BiMenu, BiMenuAltRight, BiUserCircle } from "react-icons/bi";
+import {
+  BiEnvelope,
+  BiMenu,
+  BiMenuAltRight,
+  BiUserCircle,
+} from "react-icons/bi";
 import { Link, useLocation } from "react-router-dom";
-import { Avatar, Popover, Rating, Typography } from "@mui/material";
-import NavBar from "./components/NavBarMentee";
+import {
+  Avatar,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Popover,
+  Rating,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import NavBarMentee from "./components/NavBarMentee";
+import NavBarMentor from "./components/NavBarMentor";
+import MentorDetails from "./components/MentorDetails";
 
 interface UserData {
   id?: number;
-  email: string;
   firstName: string;
   lastName: string;
   avatar: string;
@@ -29,20 +47,31 @@ function useQuery() {
 }
 
 function Profile() {
-  const [user, setUser] = React.useState<UserData>({
-    email: "",
+  const [open, setOpen] = useState(false);
+  const [subject, setSubject] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+
+  const [user, setUser] = useState<UserData>({
     firstName: "",
     lastName: "",
     avatar: "",
     role: "",
     businessArea: "",
   });
+  const [loggedInRole, setLoggedInRole] = useState<string>("");
 
   let query = useQuery();
   const userIdQuery = query.get("id");
   let userID: number = -1;
 
-  if (userIdQuery != null) userID = parseInt(userIdQuery);
+  if (userIdQuery !== null) userID = parseInt(userIdQuery);
+
+  // Get logged in user role
+  useEffect(() => {
+    axios.get("/api/users/get-own-data").then((res) => {
+      setLoggedInRole(res.data.role);
+    });
+  }, []);
 
   useEffect(() => {
     // Get user data
@@ -53,7 +82,6 @@ function Profile() {
         var newTopics: string[] = [];
         var newRatings: Rating[] = [];
         const newUser = {
-          email: res.data.email,
           firstName: res.data.firstname,
           lastName: res.data.lastname,
           avatar: res.data.profilepicture,
@@ -88,7 +116,6 @@ function Profile() {
         }
         setUser({
           id: userID,
-          email: newUser.email,
           firstName: newUser.firstName,
           lastName: newUser.lastName,
           avatar: newUser.avatar,
@@ -101,17 +128,27 @@ function Profile() {
   }, [userID]);
 
   // TODO connect to a mentor function
-  const connectMentor = () => {
+  const sendMessage = () => {
+    axios
+      .post("/api/relations/send-email", {
+        recipientID: userID,
+        subject: subject,
+        content: content,
+      })
+      .then((res) => {
+        console.log(res.data);
+      });
     return;
   };
 
   return (
     <div className="fixed h-full w-full">
-      <NavBar activeStr="Public profile" />
+      {loggedInRole === "mentee" && <NavBarMentee activeStr="Public profile" />}
+      {loggedInRole === "mentor" && <NavBarMentor activeStr="Public profile" />}
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display  bg-cultured overflow-auto p-6 flex flex-col pb-40">
-          <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-auto mt-5 mb-5 w-[70%] text-prussianBlue p-8 rounded-xl text-left">
+        <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-auto mt-5 mb-5 w-[70%] text-prussianBlue p-8 rounded-xl text-left">
           <div className="flex flex-row mb-6 justify-between">
             <Avatar
               className="m-2"
@@ -127,13 +164,41 @@ function Profile() {
 
               <h3 className="text-xl">{user.role.toUpperCase()}</h3>
             </div>
-            
-            <button
-              className="bg-firebrick text-cultured text-xl min-w-80 p-4 m-auto mt-2 mr-2 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
-              onClick={connectMentor}
-            >
-              <BiEnvelope className="h-12 w-12 p-2" />
-            </button>
+
+            <Tooltip title="Send message" arrow>
+              <button
+                className="bg-firebrick text-cultured text-xl min-w-80 p-4 m-auto mt-2 mr-2 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
+                onClick={() => setOpen(true)}
+              >
+                <BiEnvelope className="h-12 w-12 p-2" />
+              </button>
+            </Tooltip>
+
+            <Dialog onClose={() => setOpen(false)} open={open} fullWidth={true}>
+              <DialogTitle>Send message</DialogTitle>
+              <DialogContent>
+                <div className="flex flex-col space-y-3">
+                  <TextField
+                    label="Subject"
+                    onChange={(e: any) => {
+                      setSubject(e.target.value);
+                    }}
+                  ></TextField>
+                  <TextField
+                    label="Content"
+                    multiline
+                    onChange={(e: any) => {
+                      setContent(e.target.value);
+                    }}
+                  ></TextField>
+                </div>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={sendMessage} sx={{ color: "#0E2A47" }}>
+                  Send
+                </Button>
+              </DialogActions>
+            </Dialog>
           </div>
 
           {/* Topics and business area */}
@@ -146,7 +211,10 @@ function Profile() {
                 } else return <span>{topic + ", "}</span>;
               })}
             </p>
-            <p><span className="font-bold">BUSINESS AREA:</span> {user.businessArea}</p>
+            <p>
+              <span className="font-bold">BUSINESS AREA:</span>{" "}
+              {user.businessArea}
+            </p>
           </div>
 
           {/* Bio */}
@@ -159,9 +227,29 @@ function Profile() {
 
             <div className="mb-3 ml-3 mt-4 text-justify space-y-1">
               <p>My name is {user.firstName}.</p>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ornare in ut iaculis sapien, id orci, pulvinar dui. Dui pulvinar eget varius et, et elit vitae, blandit. Nam in risus laoreet tellus. Pellentesque id ultrices rhoncus viverra nullam pretium tristique quam.</p>
-              <p>Mattis imperdiet fringilla purus tortor, egestas interdum. Eget posuere vel semper maecenas aliquet vulputate mattis aliquet.</p>
-              <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
+                ornare in ut iaculis sapien, id orci, pulvinar dui. Dui pulvinar
+                eget varius et, et elit vitae, blandit. Nam in risus laoreet
+                tellus. Pellentesque id ultrices rhoncus viverra nullam pretium
+                tristique quam.
+              </p>
+              <p>
+                Mattis imperdiet fringilla purus tortor, egestas interdum. Eget
+                posuere vel semper maecenas aliquet vulputate mattis aliquet.
+              </p>
+              <p>
+                Ut enim ad minima veniam, quis nostrum exercitationem ullam
+                corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
+                consequatur? Quis autem vel eum iure reprehenderit qui in ea
+                voluptate velit esse quam nihil molestiae consequatur, vel illum
+                qui dolorem eum fugiat quo voluptas nulla pariatur?Ut enim ad
+                minima veniam, quis nostrum exercitationem ullam corporis
+                suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?
+                Quis autem vel eum iure reprehenderit qui in ea voluptate velit
+                esse quam nihil molestiae consequatur, vel illum qui dolorem eum
+                fugiat quo voluptas nulla pariatur?
+              </p>
             </div>
           </div>
 
