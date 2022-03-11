@@ -4,7 +4,8 @@ from app.auth.auth import AuthResource
 from . import admin_api
 from . import admin
 from . import parsers
-from app.messages.messages import send_message, Report
+from app.messages.messages import send_message
+from app.messages.parsers import Report
 
 # URLs for all routes can be found at the bottom of the page.
 
@@ -135,7 +136,6 @@ class ClearSkills(AuthResource):
         return result[1], 404
 
 
-
 class GetBusinessAreas(Resource):
     """Get all business areas on the system.
 
@@ -217,38 +217,45 @@ class RemoveUser(AuthResource):
             return result[1], 200
         return result[1], 404
 
+
 class GetAppFeedback(AuthResource):
-    roles = ['admin']
-    @admin_api.doc(security='apiKey')
+    roles = ["admin"]
+
+    @admin_api.doc(security="apiKey")
     def get(self):
         return admin.get_app_feedback(), 200
 
+
 class CreateAppFeedback(AuthResource):
-    roles = ['mentee', 'mentor']
+    roles = ["mentee", "mentor"]
+
     @admin_api.expect(parsers.feedback_content_parser)
-    @admin_api.doc(security='apiKey')
+    @admin_api.doc(security="apiKey")
     def post(self):
         data = parsers.feedback_content_parser.parse_args()
-        result = admin.create_app_feedback(data['content'])
+        result = admin.create_app_feedback(data["content"])
         if result[0]:
             return result[1], 201
         return result[1], 400
 
+
 class MarkAppFeedbackAsRead(AuthResource):
-    roles = ['admin']
+    roles = ["admin"]
+
     @admin_api.expect(parsers.feedbackID_parser)
-    @admin_api.doc(security='apiKey')
+    @admin_api.doc(security="apiKey")
     def put(self):
         data = parsers.feedbackID_parser.parse_args()
-        result = admin.mark_app_feedback_as_read(data['feedbackID'])
+        result = admin.mark_app_feedback_as_read(data["feedbackID"])
         if result[0]:
             return result[1], 200
         return result[1], 404
 
 
 class ClearAppFeedback(AuthResource):
-    roles = ['admin']
-    @admin_api.doc(security='apiKey')
+    roles = ["admin"]
+
+    @admin_api.doc(security="apiKey")
     def delete(self):
         result = admin.clear_feedback()
         if result[0]:
@@ -257,12 +264,13 @@ class ClearAppFeedback(AuthResource):
 
 
 class CreateReport(AuthResource):
-    roles = ['mentee', 'mentor']
-    @admin_api.doc(security='apiKey')
+    roles = ["mentee", "mentor"]
+
+    @admin_api.doc(security="apiKey")
     @admin_api.expect(parsers.create_report_parser)
     def post(self):
         data = parsers.create_report_parser.parse_args()
-        result = admin.create_report(self.payload['userID'], data['content'])
+        result = admin.create_report(self.payload["userID"], data["content"])
         if result[0]:
             return result[1], 201
         else:
@@ -270,37 +278,44 @@ class CreateReport(AuthResource):
 
 
 class MarkReportAsRead(AuthResource):
-    roles = ['admin']
+    roles = ["admin"]
+
     @admin_api.expect(parsers.reportID_parser)
-    @admin_api.doc(security='apiKey')
+    @admin_api.doc(security="apiKey")
     def put(self):
         data = parsers.reportID_parser.parse_args()
-        result = admin.mark_report_as_read(data['reportID'])
+        result = admin.mark_report_as_read(data["reportID"])
         if result[0]:
             return result[1], 200
         return result[1], 404
 
+
 class GetReports(AuthResource):
-    roles = ['admin']
-    @admin_api.doc(security='apiKey')
+    roles = ["admin"]
+
+    @admin_api.doc(security="apiKey")
     def get(self):
         return admin.get_reports(), 200
 
+
 class SendReport(AuthResource):
-    roles = ['mentor', 'mentee']
-    @admin_api.doc(security='apiKey')
+    roles = ["mentor", "mentee"]
+
+    @admin_api.doc(security="apiKey")
     @admin_api.expect(parsers.reportID_parser)
     def post(self):
         data = parsers.reportID_parser.parse_args()
 
-        message = Report(-1, self.payload['userID'], data['reportID'])
+        message = Report(-1, self.payload["userID"], data["reportID"])
         if send_message(message):
-            return {'message': 'Report sent successfully.'}, 200
-        return {'error': 'Failed to send report'}, 405
+            return {"message": "Report sent successfully."}, 200
+        return {"error": "Failed to send report"}, 405
+
 
 class ClearReports(AuthResource):
-    roles = ['admin']
-    @admin_api.doc(security='apiKey')
+    roles = ["admin"]
+
+    @admin_api.doc(security="apiKey")
     def delete(self):
         result = admin.clear_reports()
         if result[0]:
@@ -308,29 +323,27 @@ class ClearReports(AuthResource):
         return result[1], 404
 
 
-
-
-admin_api.add_resource(GetTopics, '/get-topics')
-admin_api.add_resource(AddTopic, '/add-topic')
-admin_api.add_resource(RemoveTopic, '/remove-topic')
-admin_api.add_resource(ClearTopics, '/clear-topics')
-admin_api.add_resource(GetReports, '/view-reports')
-admin_api.add_resource(RemoveUser, '/remove-user')
-admin_api.add_resource(GetSkills, '/get-skills')
-admin_api.add_resource(AddSkill, '/add-skill')
-admin_api.add_resource(RemoveSkill, '/remove-skill')
-admin_api.add_resource(ClearSkills, '/clear-skills')
-admin_api.add_resource(AddBusinessArea, '/add-business-area')
-admin_api.add_resource(RemoveBusinessArea, '/remove-business-area')
-admin_api.add_resource(ClearBusinessAreas, '/clear-business-area')
-admin_api.add_resource(GetBusinessAreas, '/get-business-area')
-admin_api.add_resource(GetAppFeedback, '/get-app-feedback')
-admin_api.add_resource(CreateAppFeedback, '/create-app-feedback')
-admin_api.add_resource(MarkAppFeedbackAsRead, '/mark-app-feeback-as-read')
-admin_api.add_resource(ClearAppFeedback, '/clear-app-feedback')
-admin_api.add_resource(MarkReportAsRead, '/mark-report-as-read')
-admin_api.add_resource(GetReports, '/view-reports')
-admin_api.add_resource(CreateReport, '/create-report')
-admin_api.add_resource(SendReport, '/send-report')
-admin_api.add_resource(ClearReports, '/clear-reports')
-
+# Prefix routes with /api/admin/
+admin_api.add_resource(GetTopics, "/get-topics")
+admin_api.add_resource(AddTopic, "/add-topic")
+admin_api.add_resource(RemoveTopic, "/remove-topic")
+admin_api.add_resource(ClearTopics, "/clear-topics")
+admin_api.add_resource(GetReports, "/view-reports")
+admin_api.add_resource(RemoveUser, "/remove-user")
+admin_api.add_resource(GetSkills, "/get-skills")
+admin_api.add_resource(AddSkill, "/add-skill")
+admin_api.add_resource(RemoveSkill, "/remove-skill")
+admin_api.add_resource(ClearSkills, "/clear-skills")
+admin_api.add_resource(AddBusinessArea, "/add-business-area")
+admin_api.add_resource(RemoveBusinessArea, "/remove-business-area")
+admin_api.add_resource(ClearBusinessAreas, "/clear-business-area")
+admin_api.add_resource(GetBusinessAreas, "/get-business-area")
+admin_api.add_resource(GetAppFeedback, "/get-app-feedback")
+admin_api.add_resource(CreateAppFeedback, "/create-app-feedback")
+admin_api.add_resource(MarkAppFeedbackAsRead, "/mark-app-feeback-as-read")
+admin_api.add_resource(ClearAppFeedback, "/clear-app-feedback")
+admin_api.add_resource(MarkReportAsRead, "/mark-report-as-read")
+admin_api.add_resource(GetReports, "/view-reports")
+admin_api.add_resource(CreateReport, "/create-report")
+admin_api.add_resource(SendReport, "/send-report")
+admin_api.add_resource(ClearReports, "/clear-reports")
