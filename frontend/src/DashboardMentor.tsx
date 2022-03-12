@@ -281,7 +281,16 @@ function DashboardMentor() {
                 );
               })}
 
-              {currentMentee.pendingMeetings.length > 0 &&
+{currentMentee.runningMeetings.map((meeting) => {
+                return (
+                  <MeetingCardMentor
+                    meetingData={meeting}
+                    handleNewMeeting={getMentees}
+                  />
+                );
+              })}
+
+{currentMentee.runningMeetings.length > 0 &&
                 (currentMentee.missedMeetings.length > 0 ||
                   currentMentee.completedMeetings.length > 0) && (
                   <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
