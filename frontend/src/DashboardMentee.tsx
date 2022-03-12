@@ -259,39 +259,47 @@ function DashboardMentee() {
 
       {/* Main flexbox */}
       <div className="flex flex-row items-stretch h-full font-display">
-        {/* White half */}
-        <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
-          <div className="flex flex-col w-[100%]">
-            <MentorDetails
-              mentorData={currentMentor}
-              handleNewMeeting={getMentors}
-              nextMeeting={
-                currentMentor.goingAheadMeetings.length > 0
-                  ? currentMentor.goingAheadMeetings[0].startTime
-                  : null
-              }
-            />
+        {mentors.length === 0 && (
+          <div className="bg-cultured h-full w-2/3 m-auto text-prussianBlue fixed left-0 overflow-auto text-center flex flex-col justify-center pb-[30%] space-y-10">
+            <h1 className="text-4xl font-semibold">You don't have any mentors yet</h1>
+            <Link to="/browse-mentors" className="text-2xl text-firebrick hover:font-semibold">Click here to browse mentors!</Link>
+          </div>
+        )}
 
-            <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
-              {currentMentor.pendingMeetings.map((meeting) => {
-                return <MeetingCard meetingData={meeting} />;
-              })}
+        {mentors.length > 0 && (
+          <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
+            <div className="flex flex-col w-[100%]">
+              <MentorDetails
+                mentorData={currentMentor}
+                handleNewMeeting={getMentors}
+                nextMeeting={
+                  currentMentor.goingAheadMeetings.length > 0
+                    ? currentMentor.goingAheadMeetings[0].startTime
+                    : null
+                }
+              />
 
-              {currentMentor.pendingMeetings.length > 0 &&
-                (currentMentor.missedMeetings.length > 0 ||
-                  currentMentor.completedMeetings.length > 0) && (
-                  <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
-                )}
-              {/* <hr className="border-[0.5px]"></hr> */}
-              {currentMentor.completedMeetings.map((meeting) => {
-                return <MeetingCard meetingData={meeting} />;
-              })}
-              {currentMentor.missedMeetings.map((meeting) => {
-                return <MeetingCard meetingData={meeting} />;
-              })}
+              <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
+                {currentMentor.pendingMeetings.map((meeting) => {
+                  return <MeetingCard meetingData={meeting} />;
+                })}
+
+                {currentMentor.pendingMeetings.length > 0 &&
+                  (currentMentor.missedMeetings.length > 0 ||
+                    currentMentor.completedMeetings.length > 0) && (
+                    <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
+                  )}
+                {/* <hr className="border-[0.5px]"></hr> */}
+                {currentMentor.completedMeetings.map((meeting) => {
+                  return <MeetingCard meetingData={meeting} />;
+                })}
+                {currentMentor.missedMeetings.map((meeting) => {
+                  return <MeetingCard meetingData={meeting} />;
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Plan of action */}
         <PlanOfAction
