@@ -11,10 +11,12 @@ import {
   Checkbox,
   Chip,
   Input,
+  InputLabel,
   ListItemText,
   MenuItem,
   OutlinedInput,
   Select,
+  TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -99,7 +101,7 @@ function RegisterUser() {
               ratings: skills.map((skill) => skill.rating),
             })
             .then((res: any) => {
-              navigate('/dashboard-mentee')
+              navigate("/dashboard-mentee");
             });
         } catch (e) {
           console.log(e);
@@ -116,7 +118,7 @@ function RegisterUser() {
   };
 
   const RegisterAdmin = (
-    <div>
+    <>
       <TextInput
         type="password"
         value={psword}
@@ -126,14 +128,15 @@ function RegisterUser() {
         placeholder="Admin Password"
         icon={<BiUser className="text-4xl m-4 mr-0" />}
       />
-    </div>
+    </>
   );
 
   const RegisterMentor = (
-    <div>
+    <>
       <Dropdown
         values={areas}
         labels={areas}
+        mainLabel="Business area"
         onChange={(e: any) => {
           setArea(e.target.value);
         }}
@@ -163,22 +166,26 @@ function RegisterUser() {
           </MenuItem>
         ))}
       </Select>
-    </div>
+    </>
   );
 
   const RegisterMentee = (
-    <div>
+    <>
       <Dropdown
         values={areas}
         labels={areas}
+        mainLabel="Business area"
         onChange={(e: any) => {
           setArea(e.target.value);
         }}
         icon={<BiBriefcase className="text-4xl m-4 mr-0" />}
       ></Dropdown>
+
+      <InputLabel id="select-topics-label">Select topics</InputLabel>
       <Select
-        labelId="demo-multiple-chip-label"
-        id="demo-multiple-chip"
+        labelId="select-topics-label"
+        id="select-topics"
+        variant="filled"
         multiple
         value={selectedTopics}
         onChange={(e: any) => {
@@ -200,22 +207,26 @@ function RegisterUser() {
           </MenuItem>
         ))}
       </Select>
-      {skills.map((skill, index) => (
-        <div>
-          <label>{skill.name}</label>
-          <input
-            key={index}
-            type="number"
-            min={0}
-            max={10}
-            value={skill.rating}
-            onChange={(e: any) => {
-              updateRating(e.target.value, index);
-            }}
-          ></input>
-        </div>
-      ))}
-    </div>
+
+      <div className="flex flex-col space-y-3">
+        {skills.map((skill, index) => (
+          <div className="flex flex-row">
+            <label className="text-xl m-auto ml-0 mr-3">{skill.name}: </label>
+            {/* <input
+              key={index}
+              type="number"
+              min={0}
+              max={10}
+              value={skill.rating}
+              onChange={(e: any) => {
+                updateRating(e.target.value, index);
+              }}
+            ></input> */}
+            <TextField inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} />
+          </div>
+        ))}
+      </div>
+    </>
   );
 
   var userFields = <div></div>;
@@ -250,6 +261,7 @@ function RegisterUser() {
               <Dropdown
                 values={["mentor", "mentee", "admin"]}
                 labels={["Mentor", "Mentee", "Admin"]}
+                mainLabel="Role"
                 onChange={(e: any) => {
                   setRole(e.target.value);
                 }}
@@ -258,7 +270,7 @@ function RegisterUser() {
               {userFields}
             </div>
 
-            <div className="pt-[32px]">
+            <div className="pt-[32px] m-auto">
               <div className="pt-[32px]">
                 <LoginButton value="Register" onClick={register} />
               </div>

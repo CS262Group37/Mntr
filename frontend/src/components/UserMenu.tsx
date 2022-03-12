@@ -402,7 +402,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
 
       <div className="flex flex-row justify-between bottom-0 sticky bg-inherit pb-2 border-t-[1px] border-gray-300">
         <Link
-          to="/dashboard-mentee"
+          to="/settings"
           className="flex flex-row hover:font-semibold pr-6 pl-6 pb-4 pt-4"
         >
           <BiCog className="text-2xl m-auto ml-0 mr-2" />
