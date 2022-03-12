@@ -60,7 +60,9 @@ function RegisterUser() {
   }, []);
 
   useEffect(() => {
-    setArea(areas[0]);
+    if (areas.length > 0) {
+      setArea(areas[0]);
+    }
   }, [areas]);
 
   const register = () => {
