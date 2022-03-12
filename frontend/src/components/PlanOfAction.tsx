@@ -92,7 +92,6 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
       props.handleNewGoal();
     });
     setOpen(false);
-    
   };
 
   return (
@@ -102,12 +101,14 @@ const PlanOfAction: React.FC<PlanProps> = (props) => {
           Plan of action
         </h1>
 
-        <button
-          className="bg-firebrick text-cultured text-xl p-2 m-auto mr-10 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
-          onClick={() => setOpen(true)}
-        >
-          <BiPlus className="h-10 w-10 p-2" />
-        </button>
+        <Tooltip title="Add goal" arrow>
+          <button
+            className="bg-firebrick text-cultured text-xl p-2 m-auto mr-10 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
+            onClick={() => setOpen(true)}
+          >
+            <BiPlus className="h-10 w-10 p-2" />
+          </button>
+        </Tooltip>
 
         <Dialog onClose={() => setOpen(false)} open={open} fullWidth={true}>
           <DialogTitle>Add a goal</DialogTitle>

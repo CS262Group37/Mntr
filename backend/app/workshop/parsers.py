@@ -1,3 +1,4 @@
+from ntpath import join
 from flask_restx import reqparse
 
 create_workshop_parser = reqparse.RequestParser(bundle_errors=True)
@@ -18,3 +19,6 @@ get_workshops_parser.add_argument("role", required=True, type=str)
 
 view_workshop_attendee_parser = reqparse.RequestParser()
 view_workshop_attendee_parser.add_argument("workshopID", required=True, type=int)
+
+join_workshop_parser = reqparse.RequestParser()
+join_workshop_parser.add_argument("workshopID", required=True, type=int)

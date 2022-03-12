@@ -1,3 +1,12 @@
+SMALL FEATURES THAT NEED TO BE IMPLEMENTED
+  - login credentials validation - error messages
+  - empty dashboard - display "You don't have any mentors yet" with a link to Brose mentors
+  - undo adding a mentor
+  - undo adding a goal/meeting?
+  - fix ordering of goals in plan of action
+  - add a way of rating mentors and end mentor-mentee relationship
+
+
 Login page
 
 Registration page

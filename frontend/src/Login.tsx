@@ -7,6 +7,14 @@ import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
 import LoginButton from "./components/LoginButton";
 import Dropdown from "./components/Dropdown";
+import {
+  Box,
+  FormControl,
+  Input,
+  InputAdornment,
+  InputLabel,
+  TextField,
+} from "@mui/material";
 
 // TODO print error message when user enters wrong credentials
 
@@ -14,22 +22,26 @@ function Login() {
   const [email, setEmail] = React.useState<string>("");
   const [psword, setPsword] = React.useState<string>("");
   const [role, setRole] = React.useState<string>("mentor");
+  const [error, setError] = React.useState<boolean>(false);
 
   const navigate = useNavigate();
 
   const login = async () => {
-
     try {
       const res = await axios.post("/api/auth/login", {
         email: email,
         password: psword,
         role: role,
       });
-      navigate("/dashboard-" + role)
+      navigate("/dashboard-" + role);
     } catch (error: any) {
       console.log(error.response);
+      // alert("Wrong credentials");
+      setError(true);
     }
   };
+
+  const iconCss = "text-4xl m-2 mt-6 text-prussianBlue";
 
   return (
     <div className="fixed h-full w-full">
@@ -40,7 +52,7 @@ function Login() {
         {/* White half */}
         <div className="bg-cultured h-full w-3/5 m-auto flex text-prussianBlue overflow-scroll overflow-x-auto">
           {/* Main center flexbox */}
-          <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
+          <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10 text-center">
             <h2 className="text-4xl pt-[0%]">
               Welcome to <span className="font-bold text-firebrick">Mntr</span>
             </h2>
@@ -49,7 +61,23 @@ function Login() {
             </p>
 
             {/* Inputs */}
+
             <div className="flex flex-col space-y-8 pt-[0%]">
+              {/* Role input */}
+              <FormControl variant="standard">
+                <Dropdown
+                  values={["mentor", "mentee", "admin"]}
+                  labels={["Mentor", "Mentee", "Admin"]}
+                  mainLabel="Role"
+                  defaultVal={role}
+                  onChange={(e: any) => {
+                    setRole(e.target.value);
+                  }}
+                  icon={
+                    <BiUser className="text-prussianBlue text-4xl m-auto ml-2 max-w-[33px]" />
+                  }
+                />
+              </FormControl>
 
               {/* E-mail address input */}
               <TextInput
@@ -59,7 +87,7 @@ function Login() {
                   setEmail(e.target.value);
                 }}
                 placeholder="E-mail address"
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
+                icon={<BiUser className={iconCss} />}
               />
 
               {/* Password input */}
@@ -70,25 +98,19 @@ function Login() {
                   setPsword(e.target.value);
                 }}
                 placeholder="Password"
-                icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+                icon={<BiLockAlt className={iconCss} />}
               />
 
-              {/* Role input */}
-              <Dropdown
-                values={["mentor", "mentee", "admin"]}
-                labels={["Mentor", "Mentee", "Admin"]}
-                onChange={(e: any) => {
-                  setRole(e.target.value);
-                }}
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
-              />
               {/* TODO Implement forget password feature. Might not be worth */}
               {/* <p className="text-right text-lg pt-1 underline">
                 Forgot password?
               </p> */}
             </div>
 
-            <LoginButton value="Login" onClick={login} />
+            <div>
+              <LoginButton value="Login" onClick={login} />
+              {error && <h2 className="text-imperialRed font-semibold mt-2">Wrong e-mail, password or role</h2>}
+            </div>
 
             {/* Registration link */}
             <p className="text-2xl m-auto pt-[5%]">

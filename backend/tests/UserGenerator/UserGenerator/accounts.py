@@ -9,7 +9,15 @@ from rich.progress import Progress
 from rich.prompt import IntPrompt
 from rich.table import Table
 
-from . import authentication, database, admin, relations, meetings, plan_of_action
+from . import (
+    authentication,
+    database,
+    admin,
+    relations,
+    meetings,
+    plan_of_action,
+    workshops,
+)
 from .console import add_option, console, hostname
 from .fake_data import fake
 
@@ -235,6 +243,9 @@ def load_preset():
     console.line()
     # Add plans of action
     plan_of_action.add_random_plans(preset["plansOfAction"])
+    console.line()
+    # Add workshops
+    workshops.create_random_workshops(preset["workshops"])
 
 
 def add_options():

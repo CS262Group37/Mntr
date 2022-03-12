@@ -7,7 +7,6 @@ import UserMenu from "./UserMenu";
 
 interface UserData {
   id?: number;
-  email: string;
   firstName: string;
   lastName: string;
   avatar: string;
@@ -41,9 +40,9 @@ const NavBarLink: React.FC<LinkProps> = (props) => {
   );
 };
 
-const NavBar: React.FC<NavBarProps> = (props) => {
+const NavBarMentor: React.FC<NavBarProps> = (props) => {
   // TODO get mentors from database
-  const [user, setUser] = React.useState<UserData>({email: "", firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
+  const [user, setUser] = React.useState<UserData>({firstName: "", lastName: "", avatar: "", role: "", businessArea: "", topics: []});
   const [menu, setMenu] = React.useState<boolean>(false);
   const [userMenu, setUserMenu] = React.useState<HTMLDivElement | null>(null);
 
@@ -51,7 +50,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   useEffect(() => {
     axios.get("/api/users/get-own-data").then((res) => {
       const newUser: UserData = {
-        email: res.data.email,
+        id: res.data.userid,
         firstName: res.data.firstname,
         lastName: res.data.lastname,
         avatar: res.data.profilepicture,
@@ -93,7 +92,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
         <div className="bg-blueBgWide h-20 bg-cover flex flex-row text-2xl">
           {/* Website name - dashboard link */}
           <Link
-            to="/dashboard-mentee"
+            to="/dashboard-mentor"
             className="text-5xl m-auto ml-8 font-bold"
           >
             Mntr
@@ -107,13 +106,13 @@ const NavBar: React.FC<NavBarProps> = (props) => {
               activeStr={props.activeStr}
             />
             <NavBarLink
-              text="Browse mentors"
-              path="/dashboard-mentor"
+              text="Meetings"
+              path="/meetings"
               activeStr={props.activeStr}
             />
             <NavBarLink
               text="Workshops"
-              path="/dashboard-mentor"
+              path="/workshops-mentor"
               activeStr={props.activeStr}
             />
             {/* Profile picture - display user menu on click */}
@@ -142,7 +141,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 horizontal: "right",
               }}
             >
-              <UserMenu firstName={user.firstName} lastName={user.lastName} />
+              <UserMenu user={user} />
             </Popover>
           </div>
         </div>
@@ -187,4 +186,4 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   );
 };
 
-export default NavBar;
+export default NavBarMentor;

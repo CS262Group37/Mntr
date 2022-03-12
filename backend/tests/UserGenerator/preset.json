@@ -1,9 +1,10 @@
 {
-    "accounts" : 100,
-    "topics" : 10,
-    "skills" : 10,
-    "businessAreas" : 10,
+    "accounts": 80,
+    "topics": 10,
+    "skills": 10,
+    "businessAreas": 10,
     "relations": 300,
     "meetings": 1200,
-    "plansOfAction": 1200
+    "plansOfAction": 1200,
+    "workshops": 200
 }
