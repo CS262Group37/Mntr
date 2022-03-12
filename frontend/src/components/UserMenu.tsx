@@ -335,9 +335,9 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
         </div>
 
         <div className="flex flex-col mt-1">
-          <Notification contents="Notification 1" />
-          <Notification contents="Notification 2" />
-          <Notification contents="Notification 3" />
+          <Notification contents={"You got a workshop invitation from Rachel Carlson"} />
+          <Notification contents="Meeting coming up today at 15:30" />
+          <Notification contents="Feedback for meeting from March 17, 2022, 14:00 now available" />
         </div>
       </div>
 
