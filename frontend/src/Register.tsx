@@ -7,7 +7,7 @@ import TextInput from "./components/TextInput";
 import { Link } from "react-router-dom";
 import LoginButton from "./components/LoginButton";
 import {useNavigate} from 'react-router-dom';
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 function Register() {
   const [email, setEmail] = useState<string>("");

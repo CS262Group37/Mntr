@@ -7,7 +7,7 @@ import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
 import LoginButton from "./components/LoginButton";
 import Dropdown from "./components/Dropdown";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import {
   Box,
   FormControl,
@@ -29,15 +29,15 @@ function Login() {
 
   const login = async () => {
     try {
-      const res = await axios.get("/api/auth/login2", {
-        email: email,
-        // password: psword,
-        // role: role,
-      });
+      await axios.get("/api/auth/login2", { params: { email: email } }).then((res) => {
+        console.log(res.data);
+        const [hash, salt] = res.data;
+        console.log(hash);
+        console.log(salt);
+      })
       navigate("/dashboard-" + role);
     } catch (error: any) {
       console.log(error.response);
-      // alert("Wrong credentials");
       setError(true);
     }
   };
