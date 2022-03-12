@@ -10,6 +10,7 @@ import {
 } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Event from "./Event";
+import { Divider } from "@mui/material";
 
 interface UserData {
   id?: number;
@@ -47,45 +48,12 @@ interface MessageProps {
   content: string;
   sender: string;
   senderID: number;
-  // date: Date;
+  date: Date;
 }
 
 interface NotifProps {
   contents: string;
 }
-
-// const Event: React.FC<EventProps> = (props) => {
-//   return (
-//     <div className="font-body text-base bg-gray-300 rounded-md p-3 mt-3 ml-2 bg-opacity-50 shadow-sm">
-//       <div className="flex flex-row justify-between">
-//         <p className="font-semibold text-firebrick">{props.title}</p>
-//         <p
-//           className={
-//             "text-cultured rounded-full text-sm m-auto mr-1 p-1 pl-3 pr-3 " +
-//             (props.type === "Workshop" ? "bg-imperialRed" : "bg-brightNavyBlue")
-//           }
-//         >
-//           {props.type}
-//         </p>
-//       </div>
-
-//       <p className="font-bold">
-//         {props.date.toLocaleDateString() +
-//           " at " +
-//           props.date.toLocaleTimeString()}
-//       </p>
-
-//       <p>
-//         <span className="font-semibold">Mentors: </span>
-//         {props.mentors.map((mentor, i, { length }) => {
-//           if (i === length - 1) {
-//             return <span>{mentor}</span>;
-//           } else return <span>{mentor + ", "}</span>;
-//         })}
-//       </p>
-//     </div>
-//   );
-// };
 
 const logout = async () => {
   try {
@@ -98,10 +66,20 @@ const logout = async () => {
 const Message: React.FC<MessageProps> = (props) => {
   return (
     <div className="font-body text-base bg-gray-300 rounded-md p-3 mt-3 ml-2 bg-opacity-50 shadow-sm">
-      <p className="font-semibold text-firebrick">
-        <span className="font-normal">From: </span>
-        <Link to={"/profile?id=" + props.senderID} className="hover:underline">{props.sender}</Link>
-      </p>
+      <div className="font-semibold text-firebrick flex flex-row justify-between">
+        <div>
+          <span className="font-normal">From: </span>
+          <Link
+            to={"/profile?id=" + props.senderID}
+            className="hover:underline"
+          >
+            {props.sender}
+          </Link>
+        </div>
+
+        <p className="text-prussianBlue font-normal">{parseDate(props.date)}</p>
+      </div>
+
       <p className="font-semibold">{props.subject}</p>
       <p>{props.content}</p>
     </div>
@@ -162,15 +140,22 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
         await axios
           .post("api/users/get-user-data", { userID: msg.senderid })
           .then((res) => {
+            console.log(res.data);
             const newMsg = {
               sender: `${res.data.firstname} ${res.data.lastname}`,
               senderID: res.data.userid,
               subject: msg.subject,
               content: msg.content,
+              date: parseDateStr(msg.senttime),
             };
             newMessages.push(newMsg);
           });
       }
+
+      newMessages.sort((e1: any, e2: any) => {
+        return e2.date - e1.date;
+      });
+
       setMessages(newMessages);
     });
   };
@@ -187,7 +172,10 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
       for (const relationship of res.data) {
         // Get user data
         let menteeMentor: UserData;
-        const userID = (props.user.role === "mentor" ? relationship.menteeid : relationship.mentorid);
+        const userID =
+          props.user.role === "mentor"
+            ? relationship.menteeid
+            : relationship.mentorid;
 
         await axios
           .post("/api/users/get-user-data", { userID: userID })
@@ -248,7 +236,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           });
       }
 
-      setMeetings([ ...newRunningMeetings, ...newGoingAheadMeetings]);
+      setMeetings([...newRunningMeetings, ...newGoingAheadMeetings]);
     });
   };
 
@@ -262,19 +250,24 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
         var newGoingAheadWorkshops: Workshop[] = [];
 
         for (const workshop of res.data) {
-          let mentor: UserData = {firstName: "", lastName: "", avatar: "", role: ""};
+          let mentor: UserData = {
+            firstName: "",
+            lastName: "",
+            avatar: "",
+            role: "",
+          };
 
           await axios
-          .post("/api/users/get-user-data", { userID: workshop.mentorid })
-          .then((res: any) => {
-            mentor = {
-              id: workshop.mentorid,
-              firstName: res.data.firstname,
-              lastName: res.data.lastname,
-              avatar: res.data.profilepicture,
-              role: res.data.role,
-            };
-          });
+            .post("/api/users/get-user-data", { userID: workshop.mentorid })
+            .then((res: any) => {
+              mentor = {
+                id: workshop.mentorid,
+                firstName: res.data.firstname,
+                lastName: res.data.lastname,
+                avatar: res.data.profilepicture,
+                role: res.data.role,
+              };
+            });
 
           const newWorkshop = {
             workshopID: workshop.workshopid,
@@ -284,7 +277,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
             status: workshop.status,
             startTime: parseDateStr(workshop.starttime),
             mentor: mentor,
-          }
+          };
 
           switch (newWorkshop.status) {
             case "running":
@@ -295,7 +288,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
               break;
             default:
               break;
-          };
+          }
         }
 
         // Sorting meetings - from closest to most distant
@@ -306,13 +299,13 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           return e1.startTime - e2.startTime;
         });
 
-        setWorkshops([ ...newRunningWorkshops, ...newGoingAheadWorkshops]);
+        setWorkshops([...newRunningWorkshops, ...newGoingAheadWorkshops]);
       });
   };
 
   useEffect(() => {
     getMeetings();
-    getWorkshops();    
+    getWorkshops();
   }, []);
 
   useEffect(() => {
@@ -363,6 +356,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
                 subject={msg.subject}
                 content={msg.content}
                 senderID={msg.senderID}
+                date={msg.date}
               />
             );
           })}
@@ -376,30 +370,13 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           <h2>Upcoming events</h2>
         </div>
 
-        {/* sample events */}
         <div className="flex flex-col mt-1">
-          {/* <Event
-            date={new Date("2022-02-25")}
-            title="Sample event 1"
-            type="Individual"
-            mentors={["John Doe"]}
-          />
-          <Event
-            date={new Date("2022-02-27")}
-            title="Sample event 2"
-            type="Workshop"
-            mentors={["John Doe", "Jane Doe"]}
-          /> */}
-          {
-          meetings.map((m) => {
-            return <Event event={m} />
-          })
-        }
-        {
-          workshops.map((w) => {
-            return <Event event={w} />
-          })
-        }
+          {meetings.map((m) => {
+            return <Event event={m} />;
+          })}
+          {workshops.map((w) => {
+            return <Event event={w} />;
+          })}
         </div>
       </div>
 
