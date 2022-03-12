@@ -58,7 +58,10 @@ function Profile() {
     role: "",
     businessArea: "",
   });
-  const [loggedInRole, setLoggedInRole] = useState<string>("");
+  const [loggedInData, setLoggedInData] = useState<{
+    role: string;
+    id: number;
+  }>({ role: "", id: -1 });
 
   let query = useQuery();
   const userIdQuery = query.get("id");
@@ -69,7 +72,7 @@ function Profile() {
   // Get logged in user role
   useEffect(() => {
     axios.get("/api/users/get-own-data").then((res) => {
-      setLoggedInRole(res.data.role);
+      setLoggedInData({ role: res.data.role, id: res.data.userid });
     });
   }, []);
 
@@ -129,6 +132,8 @@ function Profile() {
 
   // TODO connect to a mentor function
   const sendMessage = () => {
+    setOpen(false);
+
     axios
       .post("/api/relations/send-email", {
         recipientID: userID,
@@ -143,8 +148,8 @@ function Profile() {
 
   return (
     <div className="fixed h-full w-full">
-      {loggedInRole === "mentee" && <NavBarMentee activeStr="Public profile" />}
-      {loggedInRole === "mentor" && <NavBarMentor activeStr="Public profile" />}
+      {loggedInData.role === "mentee" && <NavBarMentee activeStr="Public profile" />}
+      {loggedInData.role === "mentor" && <NavBarMentor activeStr="Public profile" />}
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display  bg-cultured overflow-auto p-6 flex flex-col pb-40">
@@ -165,14 +170,16 @@ function Profile() {
               <h3 className="text-xl">{user.role.toUpperCase()}</h3>
             </div>
 
-            <Tooltip title="Send message" arrow>
-              <button
-                className="bg-firebrick text-cultured text-xl min-w-80 p-4 m-auto mt-2 mr-2 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
-                onClick={() => setOpen(true)}
-              >
-                <BiEnvelope className="h-12 w-12 p-2" />
-              </button>
-            </Tooltip>
+            {loggedInData.id !== user.id && (
+              <Tooltip title="Send message" arrow>
+                <button
+                  className="bg-firebrick text-cultured text-xl min-w-80 p-4 m-auto mt-2 mr-2 ml-5 rounded-full shadow-md transition ease-in-out hover:bg-imperialRed duration-200"
+                  onClick={() => setOpen(true)}
+                >
+                  <BiEnvelope className="h-12 w-12 p-2" />
+                </button>
+              </Tooltip>
+            )}
 
             <Dialog onClose={() => setOpen(false)} open={open} fullWidth={true}>
               <DialogTitle>Send message</DialogTitle>

@@ -1,8 +1,16 @@
 // Meeting component
-import { Divider, Tooltip } from "@mui/material";
+import { Button, Divider, TextField, Tooltip } from "@mui/material";
 import axios from "axios";
-import React from "react";
-import { BiCalendarCheck, BiX, BiCheck, BiCalendarExclamation, BiCalendarEvent, BiCalendarX } from "react-icons/bi";
+import React, { useState } from "react";
+import {
+  BiCalendarCheck,
+  BiX,
+  BiCheck,
+  BiCalendarExclamation,
+  BiCalendarEvent,
+  BiCalendarX,
+  BiCommentAdd,
+} from "react-icons/bi";
 
 interface Meeting {
   meetingID: number;
@@ -18,7 +26,6 @@ interface MeetingProps {
   meetingData: Meeting;
   handleNewMeeting: () => void;
 }
-
 
 function parseDate(d: Date) {
   const month = d.toLocaleString("default", { month: "long" });
@@ -39,18 +46,34 @@ function parseDate(d: Date) {
 const MeetingCard: React.FC<MeetingProps> = (props) => {
   const meeting: Meeting = props.meetingData;
 
+  const [feedback, setFeedback] = useState<string>("");
+
   const acceptMeeting = () => {
-    axios.put("/api/meetings/accept-meeting", { meetingID: meeting.meetingID }).then((res) => {
-      console.log(res.status);
-      props.handleNewMeeting();
-    });
+    axios
+      .put("/api/meetings/accept-meeting", { meetingID: meeting.meetingID })
+      .then((res) => {
+        props.handleNewMeeting();
+      });
   };
 
   const cancelMeeting = () => {
-    axios.put("/api/meetings/cancel-meeting", { meetingID: meeting.meetingID }).then((res) => {
-      console.log(res.status);
-      props.handleNewMeeting();
-    });
+    axios
+      .put("/api/meetings/cancel-meeting", { meetingID: meeting.meetingID })
+      .then((res) => {
+        props.handleNewMeeting();
+      });
+  };
+
+  const completeMeeting = () => {
+    axios
+      .put("/api/meetings/complete-meeting", {
+        meetingID: meeting.meetingID,
+        feedback: feedback,
+      })
+      .then((res) => {
+        console.log(res);
+        props.handleNewMeeting();
+      });
   };
 
   const date: string = parseDate(meeting.startTime);
@@ -58,23 +81,26 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
   let labelColour: string = "";
 
   switch (meeting.status) {
+    case "running":
+      labelColour = "bg-yellow-500";
+      break;
     case "pending":
-      labelColour = "bg-brightNavyBlue"
+      labelColour = "bg-brightNavyBlue";
       break;
     case "completed":
-      labelColour = "bg-prussianBlue"
+      labelColour = "bg-prussianBlue";
       break;
     case "missed":
-      labelColour = "bg-imperialRed"
+      labelColour = "bg-imperialRed";
       break;
     case "cancelled":
-      labelColour = "bg-firebrick"
+      labelColour = "bg-firebrick";
       break;
   }
 
   return (
     <div className="flex flex-col bg-gray-300 bg-opacity-50 shadow-md m-5 mr-6 ml-6 text-prussianBlue p-4 pt-1 rounded-xl">
-      {meeting.status === "pending" &&
+      {meeting.status === "pending" && (
         <div>
           <div className="flex flex-col mt-3 mb-2 text-center">
             <h1 className="text-2xl font-semibold">Accept meeting?</h1>
@@ -101,7 +127,7 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
           </div>
           <Divider />
         </div>
-      }
+      )}
 
       {/* Heading & date */}
       <div className="flex flex-row text-2xl justify-between border-b-2 border-imperialRed mt-3">
@@ -115,7 +141,8 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
 
             <p
               className={
-                "text-cultured rounded-full font-body text-sm m-auto mr-2 p-1 pl-3 pr-3 " + labelColour
+                "text-cultured rounded-full font-body text-sm m-auto mr-2 p-1 pl-3 pr-3 " +
+                labelColour
               }
             >
               {meeting.status.toUpperCase()}
@@ -123,10 +150,18 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
           </div>
 
           <div className="flex flex-row flex-none text-left">
-            {meeting.status === "completed" && <BiCalendarCheck className="text-2xl m-auto ml-0 mr-1" />}
-            {meeting.status === "missed" && <BiCalendarExclamation className="text-2xl m-auto ml-0 mr-1" />}
-            {meeting.status === "pending" && <BiCalendarEvent className="text-2xl m-auto ml-0 mr-1" />}
-            {meeting.status === "cancelled" && <BiCalendarX className="text-2xl m-auto ml-0 mr-1" />}
+            {meeting.status === "completed" && (
+              <BiCalendarCheck className="text-2xl m-auto ml-0 mr-1" />
+            )}
+            {meeting.status === "missed" && (
+              <BiCalendarExclamation className="text-2xl m-auto ml-0 mr-1" />
+            )}
+            {meeting.status === "pending" && (
+              <BiCalendarEvent className="text-2xl m-auto ml-0 mr-1" />
+            )}
+            {meeting.status === "cancelled" && (
+              <BiCalendarX className="text-2xl m-auto ml-0 mr-1" />
+            )}
             <h1 className="text-lg">{date}</h1>
           </div>
         </div>
@@ -150,6 +185,40 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
 
           <div className="m-3 text-justify space-y-1">
             <p>{meeting.feedback}</p>
+          </div>
+        </div>
+      )}
+      {meeting.status === "running" && (
+        // <div className="font-body text-md text-justify p-3 pb-1 border-t-2 border-imperialRed">
+        //   <p>{meeting.feedback}</p>
+        // </div>
+        <div className="bg-cultured rounded-lg p-4 pb-2 font-body m-4">
+          <div className="flex flex-row text-2xl justify-between">
+            <h1 className="font-bold mt-2 mb-0 ml-3 mr-2 text-left font-display text-lg">
+              FEEDBACK
+            </h1>
+          </div>
+
+          <div className="flex mr-2 space-x-5 ml-2 py-2">
+            <TextField
+              value={feedback}
+              onChange={(e: any) => setFeedback(e.target.value)}
+              multiline
+              fullWidth
+              sx={{
+                textarea: {
+                  color: "#0E2A47",
+                },
+              }}
+            ></TextField>
+            <Tooltip title="Submit feedback" arrow>
+              <button
+                className="bg-prussianBlue text-cultured text-xl p-3 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
+                onClick={completeMeeting}
+              >
+                <BiCommentAdd className="h-8 w-8 p-1" />
+              </button>
+            </Tooltip>
           </div>
         </div>
       )}

@@ -15,22 +15,31 @@ function Register() {
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
 
+  const [error1, setError1] = useState<boolean>(false);
+  const [error2, setError2] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
   const register = async () => {
-    if (psword === pswordConf) {
+    if (psword === pswordConf && email.includes("@")) {
       const res = await axios.post("/api/auth/register-account", {
         email: email, 
         password: psword,
         firstName: firstName,
         lastName: lastName
       });
-      navigate("/register-user")
+      navigate("/register-user");
+    } else if (psword !== pswordConf) {
+      console.log(`1: ${psword}, 2: ${pswordConf}`);
+      setError1(true);
     } else {
-      console.log(`1: ${psword}, 2: ${pswordConf}`)
+      console.log(email);
+      setError2(true);
     }
     
   };
+
+  const iconCss = "text-4xl m-2 mt-6 text-prussianBlue";
 
   return(
     <div className="fixed h-full w-full">
@@ -39,7 +48,7 @@ function Register() {
         <LeftPanel />
 
         {/* White half */}
-        <div className="bg-cultured h-full w-3/5 m-auto pt-[5%] pb-[5%] flex text-prussianBlue overflow-auto">
+        <div className="bg-cultured h-full w-3/5 m-auto pt-[5%] pb-[5%] flex text-prussianBlue overflow-auto text-center">
           {/* Main center flexbox */}
           <div className="w-3/5 m-auto flex flex-col text-prussianBlue justify-center space-y-10">
             <h2 className="text-4xl">
@@ -60,7 +69,7 @@ function Register() {
                   setEmail(e.target.value);
                 }}
                 placeholder="E-mail address"
-                icon={<BiEnvelope className="text-4xl m-4 mr-0" />}
+                icon={<BiEnvelope className={iconCss} />}
               />
 
               {/* First name input */}
@@ -71,7 +80,7 @@ function Register() {
                   setFirstName(e.target.value);
                 }}
                 placeholder="First name"
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
+                icon={<BiUser className={iconCss} />}
               />
 
               {/* Last name input */}
@@ -82,7 +91,7 @@ function Register() {
                   setLastName(e.target.value);
                 }}
                 placeholder="Last name"
-                icon={<BiUser className="text-4xl m-4 mr-0" />}
+                icon={<BiUser className={iconCss} />}
               />
 
               {/* Password input */}
@@ -93,7 +102,7 @@ function Register() {
                   setPsword(e.target.value);
                 }}
                 placeholder="Password"
-                icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+                icon={<BiLockAlt className={iconCss} />}
               />
 
               {/* Password confirmation */}
@@ -104,15 +113,14 @@ function Register() {
                   setPswordConf(e.target.value);
                 }}
                 placeholder="Password confirmation"
-                icon={<BiLockAlt className="text-4xl m-4 mr-0" />}
+                icon={<BiLockAlt className={iconCss} />}
               />
             </div>
 
-            <div className="pt-[32px] m-auto">
-              <LoginButton 
-                value="Register"
-                onClick={register}
-              />
+            <div>
+              <LoginButton value="Register" onClick={register} />
+              {error1 && <h2 className="text-imperialRed font-semibold mt-2">Passwords do not match</h2>}
+              {error2 && <h2 className="text-imperialRed font-semibold mt-2">Invalid e-mail address</h2>}
             </div>
 
             {/* Registration link */}
