@@ -6,6 +6,7 @@ register_account_parser.add_argument("password", required=True, type=str)
 register_account_parser.add_argument("firstName", required=True, type=str)
 register_account_parser.add_argument("lastName", required=True, type=str)
 register_account_parser.add_argument("profilePicture", required=False, type=str)
+register_account_parser.add_argument("salt", required=True, type=str)
 
 register_user_parser = reqparse.RequestParser()
 register_user_parser.add_argument(
@@ -34,3 +35,6 @@ login_parser.add_argument("role", choices=("admin", "mentor", "mentee"), require
 
 role_parser = reqparse.RequestParser()
 role_parser.add_argument("role", choices=("admin", "mentor", "mentee"), required=True)
+
+email_parser = reqparse.RequestParser()
+email_parser.add_argument("email", required=True, type=str)

@@ -63,12 +63,12 @@ class AuthResource(Resource):
     method_decorators = [authenticate]
 
 
-def register_account(email, password, first_name, last_name, profile_pic):
+def register_account(email, password, first_name, last_name, profile_pic, salt):
     """Adds account to database. Returns tuple (status, message or error)."""
     conn = DatabaseConnection()
     with conn:
-        sql = 'INSERT INTO account (email, "password", firstName, lastName, profilePicture) VALUES (%s, %s, %s, %s, %s) RETURNING accountID;'
-        data = (email, password, first_name, last_name, profile_pic)
+        sql = 'INSERT INTO account (email, "password", firstName, lastName, profilePicture, salt) VALUES (%s, %s, %s, %s, %s, %s) RETURNING accountID;'
+        data = (email, password, first_name, last_name, profile_pic, salt)
         [(accountID,)] = conn.execute(sql, data)
 
     if conn.error:
@@ -210,6 +210,14 @@ def check_password(email, password):
     if password == db_password:
         return True
     return False
+
+def get_password_and_salt(email):
+    conn = DatabaseConnection()
+    db_password = None
+    with conn:
+        sql = "SELECT password, salt FROM account WHERE email = %s;"
+        result = conn.execute(sql, (email,))
+    return result
 
 
 def encode_token(email, role=None):
