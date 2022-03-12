@@ -11,6 +11,14 @@ DROP TABLE IF EXISTS report CASCADE;
 DROP TABLE IF EXISTS plan_of_action CASCADE;
 DROP TABLE IF EXISTS meeting CASCADE;
 DROP TABLE IF EXISTS message_meeting CASCADE;
+DROP TABLE IF EXISTS message_email CASCADE;
+DROP TABLE IF EXISTS message_report CASCADE;
+DROP TABLE IF EXISTS workshop CASCADE;
+DROP TABLE IF EXISTS message_workshop_invite CASCADE;
+DROP TABLE IF EXISTS user_workshop CASCADE;
+DROP TABLE IF EXISTS workshop_demand CASCADE;
+DROP TABLE IF EXISTS message_report CASCADE;
+DROP TABLE IF EXISTS app_feedback CASCADE;
 
 -- Constraint functions --
 DROP FUNCTION IF EXISTS relation_constraints;
@@ -36,7 +44,8 @@ CREATE TABLE account (
     email VARCHAR NOT NULL CONSTRAINT unique_email UNIQUE,
     "password" VARCHAR NOT NULL,
     firstName VARCHAR NOT NULL,
-    lastName VARCHAR NOT NULL
+    lastName VARCHAR NOT NULL,
+    profilePicture VARCHAR
 );
 
 CREATE TABLE "user" (
@@ -85,15 +94,21 @@ CREATE TABLE "message" (
     messageID SERIAL PRIMARY KEY,
     recipientID INTEGER NOT NULL REFERENCES "user"(userID),
     senderID INTEGER NOT NULL REFERENCES "user"(userID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage')),
+    messageType VARCHAR NOT NULL CONSTRAINT valid_message_type CHECK (messageType IN ('MeetingMessage', 'Email', 'WorkshopInvite', 'Report')),
     sentTime TIMESTAMP NOT NULL,
     CONSTRAINT distinct_recipient_and_sender CHECK (recipientID <> senderID)
 );
 
 CREATE TABLE message_meeting(
     messageID INTEGER REFERENCES "message"(messageID),
-    messageType VARCHAR NOT NULL CONSTRAINT valid_meeting_message_type CHECK (messageType IN ('request', 'complete')),
+    meetingMessageType VARCHAR NOT NULL CONSTRAINT valid_meeting_message_type CHECK (meetingMessageType IN ('request', 'complete')),
     meetingID INTEGER REFERENCES meeting(meetingID)
+);
+
+CREATE TABLE message_email(
+    messageID INTEGER REFERENCES "message"(messageID),
+    "subject" VARCHAR NOT NULL,
+    content VARCHAR NOT NULL
 );
 
 CREATE TABLE report (
@@ -101,6 +116,39 @@ CREATE TABLE report (
     userID INTEGER NOT NULL REFERENCES "user"(userID),
     content VARCHAR NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+);
+
+CREATE TABLE message_report(
+    messageID INTEGER REFERENCES "message"(messageID),
+    reportID INTEGER REFERENCES report(reportID)
+);
+
+CREATE TABLE workshop (
+    workshopID SERIAL PRIMARY KEY,
+    topic VARCHAR NOT NULL CONSTRAINT valid_topic REFERENCES system_topic("name"),
+    mentorID INTEGER NOT NULL REFERENCES "user"(userID),
+    title VARCHAR NOT NULL,
+    "description" VARCHAR NOT NULL,
+    startTime TIMESTAMP NOT NULL,
+    endTime TIMESTAMP NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('going-ahead', 'cancelled', 'running', 'completed')),
+    "location" VARCHAR NOT NULL
+);
+
+CREATE TABLE user_workshop (
+    menteeID INTEGER NOT NULL REFERENCES "user"(userID),
+    workshopID INTEGER NOT NULL REFERENCES workshop
+);
+
+CREATE TABLE message_workshop_invite (
+    messageID INTEGER NOT NULL REFERENCES "message"(messageID),
+    content VARCHAR NOT NULL,
+    workshopID INTEGER REFERENCES workshop
+);
+
+CREATE TABLE workshop_demand (
+    topic VARCHAR PRIMARY KEY REFERENCES system_topic("name"),
+    demand NUMERIC NOT NULL
 );
 
 CREATE TABLE plan_of_action (
@@ -111,6 +159,12 @@ CREATE TABLE plan_of_action (
     creationDate TIMESTAMP NOT NULL,
     "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('complete', 'incomplete'))
 );
+
+CREATE TABLE app_feedback(
+    feedbackID SERIAL PRIMARY KEY,
+    content VARCHAR NOT NULL,
+    "status" VARCHAR NOT NULL CONSTRAINT valid_status CHECK ("status" IN ('read', 'unread'))
+    );
 
 -------------------- Relation Trigger --------------------
 

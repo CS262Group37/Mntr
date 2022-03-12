@@ -1,12 +1,19 @@
-from app.auth.routes import AuthResource
+from app.auth.auth import AuthResource
 from . import messages_api
 from . import messages
 
+
 class GetMessages(AuthResource):
-    roles = ['mentee', 'mentor']
+    """Get all types of messages for the logged in user.
 
-    @messages_api.doc(security='apiKey')
+    Must be logged in as a mentor or mentee.
+    """
+
+    roles = ["mentee", "mentor", "admin"]
+
+    @messages_api.doc(security="apiKey")
     def get(self):
-        return messages.get_messages(self.payload['userID'])
+        return messages.get_messages(self.payload["userID"])
 
-messages_api.add_resource(GetMessages, '/get_messages')
+
+messages_api.add_resource(GetMessages, "/get_messages")
