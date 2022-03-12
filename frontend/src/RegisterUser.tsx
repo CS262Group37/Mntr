@@ -256,19 +256,10 @@ function RegisterUser() {
       </FormControl>
 
       <div className="flex flex-col space-y-4">
+        <h2 className="text-2xl text-left text-firebrick font-semibold mt-3 mb-2">Rate how important these skills are in your mentor:</h2>
         {skills.map((skill, index) => (
           <div className="flex flex-col">
             <label className="text-xl m-auto ml-0 mr-3">{skill.name}: </label>
-            {/* <input
-              key={index}
-              type="number"
-              min={0}
-              max={10}
-              value={skill.rating}
-              onChange={(e: any) => {
-                updateRating(e.target.value, index);
-              }}
-            ></input> */}
             <Slider
               defaultValue={0}
               // getAriaValueText={valuetext}
@@ -280,7 +271,12 @@ function RegisterUser() {
               onChange={(e: any) => {
                 updateRating(e.target.value, index);
               }}
-              className="m-1 ml-3 mr-3"
+              sx={{
+                width: "85%",
+                // marginBot: 8,
+                mb: 2,
+              }}
+              className="m-auto"
             />
             {/* <TextField
               inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
@@ -342,8 +338,8 @@ function RegisterUser() {
               {userFields}
             </div>
 
-            <div className="pt-[32px] m-auto">
-              <div className="pt-[32px]">
+            <div className="pt-[10px] m-auto">
+              <div>
                 <LoginButton value="Register" onClick={register} />
               </div>
             </div>
