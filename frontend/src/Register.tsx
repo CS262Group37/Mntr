@@ -15,19 +15,26 @@ function Register() {
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
 
+  const [error1, setError1] = useState<boolean>(false);
+  const [error2, setError2] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
   const register = async () => {
-    if (psword === pswordConf) {
+    if (psword === pswordConf && email.includes("@")) {
       const res = await axios.post("/api/auth/register-account", {
         email: email, 
         password: psword,
         firstName: firstName,
         lastName: lastName
       });
-      navigate("/register-user")
+      navigate("/register-user");
+    } else if (psword !== pswordConf) {
+      console.log(`1: ${psword}, 2: ${pswordConf}`);
+      setError1(true);
     } else {
-      console.log(`1: ${psword}, 2: ${pswordConf}`)
+      console.log(email);
+      setError2(true);
     }
     
   };
@@ -110,11 +117,10 @@ function Register() {
               />
             </div>
 
-            <div className="pt-[32px] m-auto">
-              <LoginButton 
-                value="Register"
-                onClick={register}
-              />
+            <div>
+              <LoginButton value="Register" onClick={register} />
+              {error1 && <h2 className="text-imperialRed font-semibold mt-2">Passwords do not match</h2>}
+              {error2 && <h2 className="text-imperialRed font-semibold mt-2">Invalid e-mail address</h2>}
             </div>
 
             {/* Registration link */}
