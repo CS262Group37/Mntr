@@ -199,12 +199,17 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
             </h1>
           </div>
 
-          <div className="flex justify-end mr-2 space-x-5 ml-2 py-2">
+          <div className="flex mr-2 space-x-5 ml-2 py-2">
             <TextField
               value={feedback}
               onChange={(e: any) => setFeedback(e.target.value)}
               multiline
               fullWidth
+              sx={{
+                textarea: {
+                  color: "#0E2A47",
+                },
+              }}
             ></TextField>
             <Tooltip title="Submit feedback" arrow>
               <button
