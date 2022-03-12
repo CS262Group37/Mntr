@@ -199,19 +199,21 @@ const MeetingCard: React.FC<MeetingProps> = (props) => {
             </h1>
           </div>
 
-          <div className="flex justify-end mr-2 space-x-2 ml-2 py-2">
+          <div className="flex justify-end mr-2 space-x-5 ml-2 py-2">
             <TextField
               value={feedback}
               onChange={(e: any) => setFeedback(e.target.value)}
               multiline
               fullWidth
             ></TextField>
-            <button
-              className="bg-prussianBlue text-cultured text-xl  p-3 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
-              onClick={completeMeeting}
-            >
-              <BiCommentAdd className="h-8 w-8 p-1" />
-            </button>
+            <Tooltip title="Submit feedback" arrow>
+              <button
+                className="bg-prussianBlue text-cultured text-xl p-3 m-auto rounded-full shadow-md transition ease-in-out hover:bg-brightNavyBlue duration-200 mr-0"
+                onClick={completeMeeting}
+              >
+                <BiCommentAdd className="h-8 w-8 p-1" />
+              </button>
+            </Tooltip>
           </div>
         </div>
       )}
