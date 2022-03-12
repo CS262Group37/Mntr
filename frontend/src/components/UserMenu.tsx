@@ -46,6 +46,7 @@ interface MessageProps {
   subject: string;
   content: string;
   sender: string;
+  senderID: number;
   // date: Date;
 }
 
@@ -99,7 +100,7 @@ const Message: React.FC<MessageProps> = (props) => {
     <div className="font-body text-base bg-gray-300 rounded-md p-3 mt-3 ml-2 bg-opacity-50 shadow-sm">
       <p className="font-semibold text-firebrick">
         <span className="font-normal">From: </span>
-        {props.sender}
+        <Link to={"/profile?id=" + props.senderID} className="hover:underline">{props.sender}</Link>
       </p>
       <p className="font-semibold">{props.subject}</p>
       <p>{props.content}</p>
@@ -163,6 +164,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           .then((res) => {
             const newMsg = {
               sender: `${res.data.firstname} ${res.data.lastname}`,
+              senderID: res.data.userid,
               subject: msg.subject,
               content: msg.content,
             };
@@ -360,6 +362,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
                 sender={msg.sender}
                 subject={msg.subject}
                 content={msg.content}
+                senderID={msg.senderID}
               />
             );
           })}
