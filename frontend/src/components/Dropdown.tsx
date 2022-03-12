@@ -5,7 +5,7 @@ interface DropdwonProps {
   values: string[];
   labels: string[];
   mainLabel: string;
-  defaultVal?: string;
+  defaultVal: string;
   icon: JSX.Element;
 }
 
@@ -39,6 +39,7 @@ const Dropdown = (props: DropdwonProps) => {
     <>
       {/* <InputLabel id={props.mainLabel}>{props.mainLabel}</InputLabel> */}
       <Select
+        required
         labelId={props.mainLabel}
         label={props.mainLabel}
         id="demo-simple-select"
@@ -51,9 +52,6 @@ const Dropdown = (props: DropdwonProps) => {
           padding: 1,
           paddingLeft: 0,
           textAlign: "left",
-          // '& .ChildSelector': {
-          //   bgcolor: 'cultured',
-          // },
         }}
       >
         {props.values.map((v, i) => {
