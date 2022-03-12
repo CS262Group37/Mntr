@@ -22,11 +22,13 @@ function Settings() {
 
   const submitFeedback = () => {
     axios
-      .put("/api/admin/create-app-feedback", { content: feedback })
+      .post("/api/admin/create-app-feedback", { content: feedback })
       .then((res) => {
         console.log(res);
         alert("Thank you for your feedback!");
       });
+    
+    setFeedback("");
   };
 
   return (
@@ -49,6 +51,7 @@ function Settings() {
               value={newPasswd}
               onChange={(e: any) => setNewPasswd(e.target.value)}
               size="small"
+              type="password"
               sx={{
                 width: "30%",
                 textarea: {
@@ -63,6 +66,7 @@ function Settings() {
               value={newPasswdConf}
               onChange={(e: any) => setNewPasswdConf(e.target.value)}
               size="small"
+              type="password"
               sx={{
                 width: "30%",
                 textarea: {
