@@ -34,6 +34,7 @@ function Login() {
         const [hash, salt] = res.data;
         console.log(hash);
         console.log(salt);
+        //if bcrypt.hashSync(psword, salt) == hash then go to next page
       })
       navigate("/dashboard-" + role);
     } catch (error: any) {
