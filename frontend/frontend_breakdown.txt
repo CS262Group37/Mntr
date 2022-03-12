@@ -3,7 +3,6 @@ SMALL FEATURES THAT NEED TO BE IMPLEMENTED
   - empty dashboard - display "You don't have any mentors yet" with a link to Brose mentors
   - undo adding a mentor
   - undo adding a goal/meeting?
-  - remove e-mail button from user's own profile
   - fix ordering of goals in plan of action
   - add a way of rating mentors and end mentor-mentee relationship
 

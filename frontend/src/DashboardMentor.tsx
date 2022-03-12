@@ -5,7 +5,7 @@ import NavBarMentor from "./components/NavBarMentor";
 import PlanOfAction from "./components/PlanOfAction";
 import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
 import { Avatar, Divider } from "@mui/material";
-import { Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import MeetingCardMentor from "./components/MeetingCardMentor";
 import MenteeDetails from "./components/MenteeDetails";
 
@@ -258,76 +258,86 @@ function DashboardMentor() {
 
       {/* Main flexbox */}
       <div className="flex flex-row items-stretch h-full font-display">
-        {/* White half */}
-        <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
-          <div className="flex flex-col w-[100%]">
-            <MenteeDetails
-              menteeData={currentMentee}
-              handleNewMeeting={getMentees}
-              nextMeeting={
-                currentMentee.goingAheadMeetings.length > 0
-                  ? currentMentee.goingAheadMeetings[0].startTime
-                  : null
-              }
-            />
+        {mentees.length === 0 && (
+          <div className="bg-cultured h-full w-2/3 m-auto text-prussianBlue fixed left-0 overflow-auto text-center flex flex-col justify-center pb-[30%] space-y-10">
+            <h1 className="text-4xl font-semibold">
+              You don't have any mentees yet
+            </h1>
+            <h2 className="text-2xl text-firebrick">Wait for someone to reach out!</h2>
+          </div>
+        )}
 
-            <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
-              {currentMentee.pendingMeetings.map((meeting) => {
-                return (
-                  <MeetingCardMentor
-                    meetingData={meeting}
-                    handleNewMeeting={getMentees}
-                  />
-                );
-              })}
+        {mentees.length > 0 && (
+          <div className="bg-cultured h-full w-2/3 m-auto flex text-prussianBlue fixed left-0 overflow-auto">
+            <div className="flex flex-col w-[100%]">
+              <MenteeDetails
+                menteeData={currentMentee}
+                handleNewMeeting={getMentees}
+                nextMeeting={
+                  currentMentee.goingAheadMeetings.length > 0
+                    ? currentMentee.goingAheadMeetings[0].startTime
+                    : null
+                }
+              />
 
-{currentMentee.runningMeetings.map((meeting) => {
-                return (
-                  <MeetingCardMentor
-                    meetingData={meeting}
-                    handleNewMeeting={getMentees}
-                  />
-                );
-              })}
+              <div className="w-[94%] flex flex-col mr-auto ml-auto pb-44">
+                {currentMentee.pendingMeetings.map((meeting) => {
+                  return (
+                    <MeetingCardMentor
+                      meetingData={meeting}
+                      handleNewMeeting={getMentees}
+                    />
+                  );
+                })}
 
-{currentMentee.runningMeetings.length > 0 &&
-                (currentMentee.missedMeetings.length > 0 ||
-                  currentMentee.completedMeetings.length > 0) && (
-                  <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
-                )}
-              {currentMentee.completedMeetings.map((meeting) => {
-                return (
-                  <MeetingCardMentor
-                    meetingData={meeting}
-                    handleNewMeeting={getMentees}
-                  />
-                );
-              })}
-              {currentMentee.missedMeetings.map((meeting) => {
-                return (
-                  <MeetingCardMentor
-                    meetingData={meeting}
-                    handleNewMeeting={getMentees}
-                  />
-                );
-              })}
+                {currentMentee.runningMeetings.map((meeting) => {
+                  return (
+                    <MeetingCardMentor
+                      meetingData={meeting}
+                      handleNewMeeting={getMentees}
+                    />
+                  );
+                })}
 
-              {currentMentee.cancelledMeetings.length > 0 &&
-                (currentMentee.missedMeetings.length > 0 ||
-                  currentMentee.completedMeetings.length > 0) && (
-                  <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
-                )}
-              {currentMentee.cancelledMeetings.map((meeting) => {
-                return (
-                  <MeetingCardMentor
-                    meetingData={meeting}
-                    handleNewMeeting={getMentees}
-                  />
-                );
-              })}
+                {currentMentee.runningMeetings.length > 0 &&
+                  (currentMentee.missedMeetings.length > 0 ||
+                    currentMentee.completedMeetings.length > 0) && (
+                    <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
+                  )}
+                {currentMentee.completedMeetings.map((meeting) => {
+                  return (
+                    <MeetingCardMentor
+                      meetingData={meeting}
+                      handleNewMeeting={getMentees}
+                    />
+                  );
+                })}
+                {currentMentee.missedMeetings.map((meeting) => {
+                  return (
+                    <MeetingCardMentor
+                      meetingData={meeting}
+                      handleNewMeeting={getMentees}
+                    />
+                  );
+                })}
+
+                {currentMentee.cancelledMeetings.length > 0 &&
+                  (currentMentee.missedMeetings.length > 0 ||
+                    currentMentee.completedMeetings.length > 0) && (
+                    <Divider sx={{ marginTop: 3, marginBottom: 3 }} />
+                  )}
+                {currentMentee.cancelledMeetings.map((meeting) => {
+                  return (
+                    <MeetingCardMentor
+                      meetingData={meeting}
+                      handleNewMeeting={getMentees}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Plan of action */}
         <PlanOfAction
