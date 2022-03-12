@@ -31,12 +31,16 @@ function Login() {
     try {
       await axios.get("/api/auth/login2", { params: { email: email } }).then((res) => {
         console.log(res.data);
-        const [hash, salt] = res.data;
+        const [[hash, salt]] = res.data;
         console.log(hash);
         console.log(salt);
         //if bcrypt.hashSync(psword, salt) == hash then go to next page
+
+        if (bcrypt.hashSync(psword, salt) === hash) {
+          console.log("yayy");
+          navigate("/dashboard-" + role);
+        }
       })
-      navigate("/dashboard-" + role);
     } catch (error: any) {
       console.log(error.response);
       setError(true);
