@@ -21,7 +21,7 @@ class RegisterAccount(Resource):
             data["firstName"],
             data["lastName"],
             data["profilePicture"],
-            data["salt"]
+            data["salt"],
         )
 
         if result[0]:
@@ -120,13 +120,6 @@ class ChangeRole(auth.AuthResource):
 
         return response
 
-class GetPasswordAndSalt(auth.AuthResource):
-    @auth_api.doc(security="apiKey")
-    @auth_api.expect(parsers.email_parser)
-    def get(self):
-        data = parsers.email_parser.parse_args()
-        return auth.get_password_and_salt(data["email"]), 200
-
 
 # Prefix URLs with /api/auth/
 auth_api.add_resource(RegisterAccount, "/register-account")
@@ -134,4 +127,3 @@ auth_api.add_resource(RegisterUser, "/register-user")
 auth_api.add_resource(Login, "/login")
 auth_api.add_resource(Logout, "/logout")
 auth_api.add_resource(ChangeRole, "/change-role")
-auth_api.add_resource(GetPasswordAndSalt, "/login2")
