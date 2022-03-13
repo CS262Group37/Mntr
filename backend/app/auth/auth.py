@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from functools import wraps
+import secrets
+import hashlib
 
 import jwt
 from flask import request, make_response, current_app as app
@@ -63,10 +65,16 @@ class AuthResource(Resource):
     method_decorators = [authenticate]
 
 
-def register_account(email, password, first_name, last_name, profile_pic, salt):
-    """Adds account to database. Returns tuple (status, message or error)."""
+def register_account(email, password, first_name, last_name, profile_pic):
+    """Hashes password and adds account to database. Returns tuple (status, message or error)."""
     conn = DatabaseConnection()
     with conn:
+        # Generate a random salt and a hash
+        salt = secrets.token_hex(8)
+        hash = hashlib.sha256(hashlib.sha256(password) + salt).hexdigest()
+
+        print(f"Generated hash is {hash} with salt {salt}")
+
         sql = 'INSERT INTO account (email, "password", firstName, lastName, profilePicture, salt) VALUES (%s, %s, %s, %s, %s, %s) RETURNING accountID;'
         data = (email, password, first_name, last_name, profile_pic, salt)
         [(accountID,)] = conn.execute(sql, data)
@@ -202,22 +210,24 @@ def check_password(email, password):
     """Check if password is correct. Returns True or False."""
     if password is None:
         return False
+
     conn = DatabaseConnection()
-    db_password = None
     with conn:
-        sql = "SELECT password FROM account WHERE email = %s;"
-        [(db_password,)] = conn.execute(sql, (email,))
-    if password == db_password:
+        db_hash = None
+        salt = None
+        # Get existing password and salt
+        sql = "SELECT password, salt FROM account WHERE email = %s;"
+        [(db_hash, salt)] = conn.execute(sql, (email,))
+
+        if db_hash is None or salt is None:
+            return False
+
+    # Generate hash
+    hash = hashlib.sha256(hashlib.sha256(password) + salt).hexdigest()
+
+    if hash == db_hash:
         return True
     return False
-
-def get_password_and_salt(email):
-    conn = DatabaseConnection()
-    db_password = None
-    with conn:
-        sql = "SELECT password, salt FROM account WHERE email = %s;"
-        result = conn.execute(sql, (email,))
-    return result
 
 
 def encode_token(email, role=None):
