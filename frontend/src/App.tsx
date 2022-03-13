@@ -14,6 +14,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Profile from "./Profile";
 import Meetings from "./Meetings";
 import Settings from "./Settings";
+import DashboardAdmin from "./DashboardAdmin";
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -61,6 +62,7 @@ function App() {
           <Route path="/register-user" element={ <RegisterUser /> } />
           <Route path="/profile" element={ <Profile /> } />
           <Route path="/settings" element={ <Settings /> } />
+          <Route path="/dashboard-admin" element={ <DashboardAdmin /> } />
         </Routes>
       </ThemeProvider>
     </div>
