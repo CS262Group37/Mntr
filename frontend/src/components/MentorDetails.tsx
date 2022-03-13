@@ -139,7 +139,8 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
       skills: skills.map((skill) => skill.name),
       ratings: skills.map((skill) => Math.round(skill.rating*2))
     }).then((res) => {
-      console.log(res)
+      console.log(res);
+      setRaterOpen(false);
     })
   };
 
@@ -150,28 +151,11 @@ const MentorDetails: React.FC<MentorProps> = (props) => {
   };
 
   const mentor: UserData = props.mentorData;
-  // const [nextMeeting, setNextMeeting] = useState<Date>(new Date());
-  // const [hasNextMeeting, setHasNextMeeting] = useState<Boolean>(false);
 
   const [title, setTitle] = useState<string>("");
   const [descrip, setDescrip] = useState<string>("");
   const [start, setStart] = useState<string>(currentDate());
   const [end, setEnd] = useState<string>(currentDate());
-
-  // useEffect(() => {
-  //   console.log("here");
-  //   axios
-  //     .post("/api/meetings/get-next-meeting", { relationID: mentor.relationID })
-  //     .then(async (res: any) => {
-  //       // console.log(mentor.relationID)
-  //       // console.log(res.data);
-  //       if (!res.data.hasOwnProperty("error")) {
-  //         console.log(res.data)
-  //         setHasNextMeeting(true);
-  //         setNextMeeting(new Date(parseDate(res.data.starttime)));
-  //       }
-  //     });
-  // }, [mentor]);
 
   // Next meeting date formatting
   // TODO check formatting
