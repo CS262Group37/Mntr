@@ -11,6 +11,7 @@ from app.database import DatabaseConnection
 
 # How long before auth tokens expire
 token_lifetime = timedelta(minutes=999)
+hash_passwords = True
 
 
 def authenticate(func):
@@ -67,16 +68,19 @@ class AuthResource(Resource):
 
 def register_account(email, password, first_name, last_name, profile_pic):
     """Hashes password and adds account to database. Returns tuple (status, message or error)."""
+
     conn = DatabaseConnection()
     with conn:
         # Generate a random salt and a hash
         salt = secrets.token_hex(8)
-        hash = hashlib.sha256(hashlib.sha256(password) + salt).hexdigest()
-
-        print(f"Generated hash is {hash} with salt {salt}")
+        hash = hashlib.sha256(
+            (hashlib.sha256(password.encode("utf-8")).hexdigest() + salt).encode(
+                "utf-8"
+            )
+        ).hexdigest()
 
         sql = 'INSERT INTO account (email, "password", firstName, lastName, profilePicture, salt) VALUES (%s, %s, %s, %s, %s, %s) RETURNING accountID;'
-        data = (email, password, first_name, last_name, profile_pic, salt)
+        data = (email, hash, first_name, last_name, profile_pic, salt)
         [(accountID,)] = conn.execute(sql, data)
 
     if conn.error:
@@ -223,7 +227,9 @@ def check_password(email, password):
             return False
 
     # Generate hash
-    hash = hashlib.sha256(hashlib.sha256(password) + salt).hexdigest()
+    hash = hashlib.sha256(
+        (hashlib.sha256(password.encode("utf-8")).hexdigest() + salt).encode("utf-8")
+    ).hexdigest()
 
     if hash == db_hash:
         return True
@@ -286,6 +292,7 @@ def decode_token(token):
         # Check if user with this data currently exists on the system
         conn = DatabaseConnection()
         with conn:
+
             sql = "SELECT EXISTS (SELECT 1 FROM account WHERE accountID = %s AND email = %s);"
             data = (payload["accountID"], payload["email"])
             [(exists,)] = conn.execute(sql, data)
