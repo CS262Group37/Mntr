@@ -29,8 +29,23 @@ def create_meeting(relationID, start_time, end_time, title, description):
 
     conn = DatabaseConnection()
     with conn:
-        # Insert meeting
-        sql = 'INSERT INTO meeting (relationID, startTime, endtime, title, "description", "status") VALUES (%s, %s, %s, %s, %s, \'pending\') RETURNING meetingID;'
+        # Add to database
+        # Check no records where time overlaps
+        sql = 'SELECT mentorid FROM relation where relationID = %s'
+        data = (relationID)
+        [(mentorID)] = conn.execute(sql, data)
+        # Cases: 
+        # starts before start and ends after start
+        # Starts before end and ends before end
+        # starts between start and finish
+        sql = 'SELECT * FROM meeting natural join relation  where ((endtime > %s and endtime <= %s) or (startTime >= %s and startTime < %s) or (startTime < %s and endtime >= %s)) and mentorID = %s'
+        data = (start_time,end_time,start_time,end_time,start_time,end_time,mentorID)
+        arr = conn.execute(sql, data)
+        if arr != []:
+            conn.error = True
+            return (False, {'error': 'Time cannot overlap'})
+        sql = 'INSERT INTO meeting (relationID, startTime, endtime, title, "description", "status") VALUES (%s, %s, %s, %s, %s, \'pending\') RETURNING meetingID'
+
         data = (relationID, start_time, end_time, title, description)
         [(meetingID,)] = conn.execute(sql, data)
 
