@@ -9,67 +9,9 @@ from UserGenerator.UserGenerator import workshops
 from datetime import datetime
 import json
 import requests
-import os
 
-def create_app_feedback(feedback):
-    response = requests.post('http://localhost:5000/api/admin/create-app-feedback',
-        data = {
-            'content': feedback
-        }, 
-        timeout = 10,
-        cookies=authentication.active_cookie
-    )
-    data = json.loads(response.content)
-    print(data)
-    if 'error' in data:
-        return False
-    return True
-
-def get_app_feedback():
-    response = requests.get('http://localhost:5000/api/admin/get-app-feedback',
-    timeout = 10,
-    cookies=authentication.active_cookie
-    )
-    data = json.loads(response.content)
-    print(data)
-    if 'error' in data:
-        return False
-    return True
-
-def login_as_admin():
-    response = requests.post('http://localhost:5000/api/auth/login',
-        data = {
-            'email': 'admin@admin.com',
-            'password': 'admin'
-        },
-        timeout = 10
-    )
-    data = json.loads(response.content)
-    print(data)
-    if "error" in data:
-        return False
-    return True
-
-def get_own_data():
-    response = requests.post('http://localhost:5000/api/users/get-own-data',
-        data = {
-            'email': 'admin@admin.com',
-            'password': 'admin'
-        },
-        timeout = 10
-    )
-    data = json.loads(response.content)
-    print(data)
-    return data
-
-def simple_admin_login():
-    # Register an admin account and user then login
-    accounts.create_account("admin", "admin", "admin@admin.com", "admin")
-    accounts.create_user("admin", adminPassword="admin")
-    if not login_user("admin@admin.com", "admin", "admin"):
-        console.console.print("[red]Admin login failed for an unknown reason[/]")
-        return False
-    return True
+#These are functions used in the tests
+#Tests themselves are written further down
 
 def login_user(email, password, role):
     response = requests.post('http://localhost:5000/api/auth/login',
@@ -82,6 +24,29 @@ def login_user(email, password, role):
     data = json.loads(response.content)
     if "error" in data:
         return False
+    return True
+
+def create_app_feedback(feedback):
+    response = requests.post(
+        "http://localhost:5000/api/admin/create-app-feedback",
+        data={"content": feedback},
+        timeout=10,
+        cookies=authentication.active_cookie,
+    )
+    data = json.loads(response.content)
+    print(data)
+    if "error" in data:
+        return False
+    return True
+
+def get_app_feedback():
+    response = requests.get(
+        "http://localhost:5000/api/admin/get-app-feedback",
+        timeout=10,
+        cookies=authentication.active_cookie,
+    )
+    data = json.loads(response.content)
+    print(data)
     return True
 
 def add_topic(topic_name):
@@ -209,11 +174,11 @@ def join_workshop(workshop_id):
 
 
 
+
 # Where backend tests will be written
 
 mentee_id = 2
 mentor_id = 3
-
 
 def test_adminFunctions():
     #Login as admin
@@ -313,4 +278,3 @@ def test_gettingAppFeedback():
     login_user('admin@admin.com','admin','admin')
     #D11
     assert get_app_feedback() is True
-    
