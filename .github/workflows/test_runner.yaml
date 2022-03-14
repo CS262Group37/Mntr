@@ -66,9 +66,24 @@ jobs:
           echo FLASK_APP=app >> backend/.env
           echo FLASK_ENV=development >> backend/.env
           echo HOSTNAME=http://localhost:5000 >> backend/.env
+          echo DB_HOST=database >> backend/.env
       - name: Build the docker compose stack
         run: docker compose up -d
+      - name: Wait / Sleep
+        uses: jakejarvis/wait-action@v0.1.1
+        with:
+          time: '20s'
       - name: Check running containers
-        run: docker ps -a
+        run: docker ps -a      
+      - name: Run pytest
+        run: docker exec mntr-backend-1 sh -c "pytest --no-header -v"
+#       - name: Create user preset file
+#         run: |
+          
+#       - name: Generate users
+#         run: |
+#           docker exec mntr-backend-1 sh -c "touch preset.json"
+#           docker exec mntr-backend-1 sh -c 'echo {\"accounts\" : 100,\"topics\" : 10,\"skills\" : 10,\"businessAreas\" : 10,\"relations\": 200,\"meetings\": 300,\"plansOfAction\": 300} >> preset.json'
+
       - name: Exit
         run: docker compose down

@@ -45,7 +45,7 @@ def clear_topics():
     """Remove all topics from database. Return tuple (success, error or message)."""
     conn = DatabaseConnection()
     with conn:
-        sql = "TRUNCATE system_topic;"
+        sql = "TRUNCATE system_topic CASCADE;"
         conn.execute(sql)
     if conn.error:
         return (False, {"error": conn.error_message})

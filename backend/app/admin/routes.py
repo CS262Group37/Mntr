@@ -208,7 +208,7 @@ class RemoveUser(AuthResource):
 
     roles = ["admin"]
 
-    @admin_api.expect(parsers.topics_parser)
+    @admin_api.expect(parsers.user_parser)
     @admin_api.doc(security="apiKey")
     def delete(self):
         data = parsers.user_parser.parse_args()
