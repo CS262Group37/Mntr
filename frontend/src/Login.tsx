@@ -29,17 +29,8 @@ function Login() {
 
   const login = async () => {
     try {
-      await axios.get("/api/auth/login2", { params: { email: email } }).then((res) => {
-        console.log(res.data);
-        const [[hash, salt]] = res.data;
-        console.log(hash);
-        console.log(salt);
-        //if bcrypt.hashSync(psword, salt) == hash then go to next page
-
-        if (bcrypt.hashSync(psword, salt) === hash) {
-          console.log("yayy");
+      await axios.post("/api/auth/login", { email: email, password: psword, role: role } ).then((res) => {
           navigate("/dashboard-" + role);
-        }
       })
     } catch (error: any) {
       console.log(error.response);

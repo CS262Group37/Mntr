@@ -20,17 +20,15 @@ function Register() {
   const [error2, setError2] = useState<boolean>(false);
 
   const navigate = useNavigate();
-  const salt = bcrypt.genSaltSync(10)
-  const hashedPassword = bcrypt.hashSync(psword, salt)
 
   const register = async () => {
+
     if (psword === pswordConf && email.includes("@")) {
       const res = await axios.post("/api/auth/register-account", {
         email: email, 
-        password: hashedPassword,
+        password: psword,
         firstName: firstName,
         lastName: lastName,
-        salt: salt,
       });
       navigate("/register-user");
     } else if (psword !== pswordConf) {

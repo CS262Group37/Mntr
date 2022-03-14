@@ -49,7 +49,7 @@ class RegisterUser(auth.AuthResource):
         result = auth.register_user(self.payload["accountID"], data)
         if result[0]:
             # Login as the registered user
-            token = auth.encode_token(self.payload["email"], self.payload["role"])
+            token = auth.encode_token(self.payload["email"], data["role"])
             if not token[0]:
                 return token[1], 403
 
