@@ -34,3 +34,6 @@ login_parser.add_argument("role", choices=("admin", "mentor", "mentee"), require
 
 role_parser = reqparse.RequestParser()
 role_parser.add_argument("role", choices=("admin", "mentor", "mentee"), required=True)
+
+email_parser = reqparse.RequestParser()
+email_parser.add_argument("email", required=True, type=str)

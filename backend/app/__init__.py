@@ -47,7 +47,7 @@ def create_app():
             "update_workshop_demand",
             workshop.workshop.update_time_demand,
             trigger="interval",
-            minutes=5,
+            minutes=60,
             max_instances=1,
         )
 
