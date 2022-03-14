@@ -74,15 +74,16 @@ jobs:
         with:
           time: '20s'
       - name: Check running containers
-        run: docker ps -a
-      - name: Create user preset file
-        run: |
-          
-      - name: Generate users
-        run: |
-          docker exec mntr-backend-1 sh -c "touch preset.json"
-          docker exec mntr-backend-1 sh -c 'echo {\"accounts\" : 100,\"topics\" : 10,\"skills\" : 10,\"businessAreas\" : 10,\"relations\": 200,\"meetings\": 300,\"plansOfAction\": 300} >> preset.json'
+        run: docker ps -a      
       - name: Run pytest
         run: docker exec mntr-backend-1 sh -c "pytest"
+#       - name: Create user preset file
+#         run: |
+          
+#       - name: Generate users
+#         run: |
+#           docker exec mntr-backend-1 sh -c "touch preset.json"
+#           docker exec mntr-backend-1 sh -c 'echo {\"accounts\" : 100,\"topics\" : 10,\"skills\" : 10,\"businessAreas\" : 10,\"relations\": 200,\"meetings\": 300,\"plansOfAction\": 300} >> preset.json'
+
       - name: Exit
         run: docker compose down
