@@ -76,7 +76,7 @@ jobs:
       - name: Check running containers
         run: docker ps -a      
       - name: Run pytest
-        run: docker exec mntr-backend-1 sh -c "pytest"
+        run: docker exec mntr-backend-1 sh -c "pytest --no-header -v"
 #       - name: Create user preset file
 #         run: |
           
