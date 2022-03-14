@@ -6,54 +6,7 @@ jobs:
   container-job:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
-    # # Docker Hub image that `container-job` executes in
-    # container: python
 
-    # # Service containers to run with `container-job`
-    # services:
-    #   # Label used to access the service container
-    #   postgres:
-    #     # Docker Hub image
-    #     image: postgres
-    #     # Provide the password for postgres
-    #     env:
-    #       POSTGRES_DB: postgres_db
-    #       POSTGRES_PASSWORD: postgres_password
-    #       POSTGRES_PORT: 5432
-    #       POSTGRES_USER: postgres_user
-    #     ports:
-    #       # maps tcp port 5432 on service container to the host
-    #       - 5432:5432
-    #     # Set health checks to wait until postgres has started
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
-    
-    # steps:
-    #   - uses: actions/checkout@v2
-    #   - name: Create .env file
-    #     run: |
-    #       touch backend/.env
-    #       echo FLASK_APP=app >> backend/.env
-    #       echo FLASK_ENV=development >> backend/.env
-    #       echo DB_USER=postgres_user >> backend/.env
-    #       echo DB_HOST=postgres >> backend/.env
-    #       echo DB_NAME=postgres_db >> backend/.env
-    #       echo DB_PASSWORD=postgres_password >> backend/.env
-    #       echo HOSTNAME=http://localhost:5000 >> backend/.env
-    #       cat backend/.env
-    #   - name: Install dependencies
-    #     run: |
-    #       python -m pip install --upgrade pip
-    #       pip install -r backend/requirements.txt
-    #   - name: Run flask server
-    #     run: |
-    #       cd backend
-    #       flask run &
-    #   - name: Run tests
-    #     run: pytest
     steps:
       - uses: actions/checkout@v2
       - name: Create .env file
@@ -66,9 +19,24 @@ jobs:
           echo FLASK_APP=app >> backend/.env
           echo FLASK_ENV=development >> backend/.env
           echo HOSTNAME=http://localhost:5000 >> backend/.env
+          echo DB_HOST=database >> backend/.env
       - name: Build the docker compose stack
         run: docker compose up -d
+      - name: Wait / Sleep
+        uses: jakejarvis/wait-action@v0.1.1
+        with:
+          time: '20s'
       - name: Check running containers
-        run: docker ps -a
+        run: docker ps -a      
+      - name: Run pytest
+        run: docker exec mntr-backend-1 sh -c "pytest --no-header -v"
+#       - name: Create user preset file
+#         run: |
+          
+#       - name: Generate users
+#         run: |
+#           docker exec mntr-backend-1 sh -c "touch preset.json"
+#           docker exec mntr-backend-1 sh -c 'echo {\"accounts\" : 100,\"topics\" : 10,\"skills\" : 10,\"businessAreas\" : 10,\"relations\": 200,\"meetings\": 300,\"plansOfAction\": 300} >> preset.json'
+
       - name: Exit
         run: docker compose down
