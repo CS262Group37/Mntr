@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import NavBarMentee from "./components/NavBarMentee";
-import PlanOfAction from "./components/PlanOfAction";
 import { BiMap, BiWrench } from "react-icons/bi";
 
 interface UserData {
@@ -247,7 +245,7 @@ function WorkshopsMentee() {
                 break;
               default:
                 break;
-            };
+            }
           }
 
           // Sorting meetings - from closest to most distant
@@ -266,7 +264,12 @@ function WorkshopsMentee() {
           });
 
           // console.log(newWorkshops);
-          setWorkshops([ ...newRunningWorkshops, ...newGoingAheadWorkshops, ...newCompletedWorkshops, ...newCancelledWorkshops]);
+          setWorkshops([
+            ...newRunningWorkshops,
+            ...newGoingAheadWorkshops,
+            ...newCompletedWorkshops,
+            ...newCancelledWorkshops,
+          ]);
         });
   }, [user]);
 

@@ -3,9 +3,8 @@ import "./App.css";
 import axios from "axios";
 import NavBarMentor from "./components/NavBarMentor";
 import PlanOfAction from "./components/PlanOfAction";
-import { BiCalendarCheck, BiCalendarEvent } from "react-icons/bi";
-import { Avatar, Divider } from "@mui/material";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Divider } from "@mui/material";
+import { Navigate, useLocation } from "react-router-dom";
 import MeetingCardMentor from "./components/MeetingCardMentor";
 import MenteeDetails from "./components/MenteeDetails";
 

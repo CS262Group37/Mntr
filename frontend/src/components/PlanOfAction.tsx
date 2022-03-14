@@ -1,15 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import axios from "axios";
 import { BiPlus } from "react-icons/bi";
 import {
-  Avatar,
   Button,
   Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
   Tooltip,

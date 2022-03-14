@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import NavBarMentor from "./components/NavBarMentor";
-import { BiCalendar, BiMap, BiWrench } from "react-icons/bi";
+import { BiMap, BiWrench } from "react-icons/bi";
 
 interface UserData {
   id?: number;
@@ -245,7 +245,7 @@ function WorkshopsMentor() {
                 break;
               default:
                 break;
-            };
+            }
           }
 
           // Sorting meetings - from closest to most distant
@@ -264,7 +264,12 @@ function WorkshopsMentor() {
           });
 
           // console.log(newWorkshops);
-          setWorkshops([ ...newRunningWorkshops, ...newGoingAheadWorkshops, ...newCompletedWorkshops, ...newCancelledWorkshops]);
+          setWorkshops([
+            ...newRunningWorkshops,
+            ...newGoingAheadWorkshops,
+            ...newCompletedWorkshops,
+            ...newCancelledWorkshops,
+          ]);
         });
   }, [user]);
 

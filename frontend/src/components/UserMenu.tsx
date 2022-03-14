@@ -10,7 +10,6 @@ import {
 } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Event from "./Event";
-import { Divider } from "@mui/material";
 
 interface UserData {
   id?: number;

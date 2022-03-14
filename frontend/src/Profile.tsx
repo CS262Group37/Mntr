@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  BiEnvelope,
-  BiMenu,
-  BiMenuAltRight,
-  BiUserCircle,
-} from "react-icons/bi";
-import { Link, useLocation } from "react-router-dom";
+import { BiEnvelope } from "react-icons/bi";
+import { useLocation } from "react-router-dom";
 import {
   Avatar,
   Button,
@@ -14,7 +9,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Popover,
   Rating,
   TextField,
   Tooltip,
@@ -22,7 +16,6 @@ import {
 } from "@mui/material";
 import NavBarMentee from "./components/NavBarMentee";
 import NavBarMentor from "./components/NavBarMentor";
-import MentorDetails from "./components/MentorDetails";
 
 interface UserData {
   id?: number;
@@ -148,8 +141,12 @@ function Profile() {
 
   return (
     <div className="fixed h-full w-full">
-      {loggedInData.role === "mentee" && <NavBarMentee activeStr="Public profile" />}
-      {loggedInData.role === "mentor" && <NavBarMentor activeStr="Public profile" />}
+      {loggedInData.role === "mentee" && (
+        <NavBarMentee activeStr="Public profile" />
+      )}
+      {loggedInData.role === "mentor" && (
+        <NavBarMentor activeStr="Public profile" />
+      )}
 
       {/* Main flexbox */}
       <div className="h-full w-full font-display  bg-cultured overflow-auto p-6 flex flex-col pb-40">

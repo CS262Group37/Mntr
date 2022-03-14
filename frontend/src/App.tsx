@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
 import "./App.css";
 import Login from "./Login";
 import Register from "./Register";

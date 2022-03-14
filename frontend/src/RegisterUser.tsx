@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./App.css";
-import { BiBriefcase, BiUser, BiClipboard } from "react-icons/bi";
+import { BiBriefcase, BiUser } from "react-icons/bi";
 import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
 import Dropdown from "./components/Dropdown";
@@ -15,10 +15,8 @@ import {
   InputLabel,
   ListItemText,
   MenuItem,
-  OutlinedInput,
   Select,
   Slider,
-  TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -256,7 +254,9 @@ function RegisterUser() {
       </FormControl>
 
       <div className="flex flex-col space-y-4">
-        <h2 className="text-2xl text-left text-firebrick font-semibold mt-3 mb-2">Rate how important these skills are in your mentor:</h2>
+        <h2 className="text-2xl text-left text-firebrick font-semibold mt-3 mb-2">
+          Rate how important these skills are in your mentor:
+        </h2>
         {skills.map((skill, index) => (
           <div className="flex flex-col">
             <label className="text-xl m-auto ml-0 mr-3">{skill.name}: </label>

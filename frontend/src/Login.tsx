@@ -7,14 +7,7 @@ import LeftPanel from "./components/LeftPanel";
 import TextInput from "./components/TextInput";
 import LoginButton from "./components/LoginButton";
 import Dropdown from "./components/Dropdown";
-import {
-  Box,
-  FormControl,
-  Input,
-  InputAdornment,
-  InputLabel,
-  TextField,
-} from "@mui/material";
+import { FormControl } from "@mui/material";
 
 // TODO print error message when user enters wrong credentials
 
@@ -109,7 +102,11 @@ function Login() {
 
             <div>
               <LoginButton value="Login" onClick={login} />
-              {error && <h2 className="text-imperialRed font-semibold mt-2">Wrong e-mail, password or role</h2>}
+              {error && (
+                <h2 className="text-imperialRed font-semibold mt-2">
+                  Wrong e-mail, password or role
+                </h2>
+              )}
             </div>
 
             {/* Registration link */}
