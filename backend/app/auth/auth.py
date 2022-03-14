@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from functools import wraps
+import secrets
+import hashlib
 
 import jwt
 from flask import request, make_response, current_app as app
@@ -9,6 +11,7 @@ from app.database import DatabaseConnection
 
 # How long before auth tokens expire
 token_lifetime = timedelta(minutes=999)
+hash_passwords = True
 
 
 def authenticate(func):
@@ -64,11 +67,20 @@ class AuthResource(Resource):
 
 
 def register_account(email, password, first_name, last_name, profile_pic):
-    """Adds account to database. Returns tuple (status, message or error)."""
+    """Hashes password and adds account to database. Returns tuple (status, message or error)."""
+
     conn = DatabaseConnection()
     with conn:
-        sql = 'INSERT INTO account (email, "password", firstName, lastName, profilePicture) VALUES (%s, %s, %s, %s, %s) RETURNING accountID;'
-        data = (email, password, first_name, last_name, profile_pic)
+        # Generate a random salt and a hash
+        salt = secrets.token_hex(8)
+        hash = hashlib.sha256(
+            (hashlib.sha256(password.encode("utf-8")).hexdigest() + salt).encode(
+                "utf-8"
+            )
+        ).hexdigest()
+
+        sql = 'INSERT INTO account (email, "password", firstName, lastName, profilePicture, salt) VALUES (%s, %s, %s, %s, %s, %s) RETURNING accountID;'
+        data = (email, hash, first_name, last_name, profile_pic, salt)
         [(accountID,)] = conn.execute(sql, data)
 
     if conn.error:
@@ -202,12 +214,24 @@ def check_password(email, password):
     """Check if password is correct. Returns True or False."""
     if password is None:
         return False
+
     conn = DatabaseConnection()
-    db_password = None
     with conn:
-        sql = "SELECT password FROM account WHERE email = %s;"
-        [(db_password,)] = conn.execute(sql, (email,))
-    if password == db_password:
+        db_hash = None
+        salt = None
+        # Get existing password and salt
+        sql = "SELECT password, salt FROM account WHERE email = %s;"
+        [(db_hash, salt)] = conn.execute(sql, (email,))
+
+        if db_hash is None or salt is None:
+            return False
+
+    # Generate hash
+    hash = hashlib.sha256(
+        (hashlib.sha256(password.encode("utf-8")).hexdigest() + salt).encode("utf-8")
+    ).hexdigest()
+
+    if hash == db_hash:
         return True
     return False
 
@@ -268,6 +292,7 @@ def decode_token(token):
         # Check if user with this data currently exists on the system
         conn = DatabaseConnection()
         with conn:
+
             sql = "SELECT EXISTS (SELECT 1 FROM account WHERE accountID = %s AND email = %s);"
             data = (payload["accountID"], payload["email"])
             [(exists,)] = conn.execute(sql, data)

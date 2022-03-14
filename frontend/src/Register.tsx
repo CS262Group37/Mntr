@@ -7,6 +7,7 @@ import TextInput from "./components/TextInput";
 import { Link } from "react-router-dom";
 import LoginButton from "./components/LoginButton";
 import {useNavigate} from 'react-router-dom';
+import bcrypt from "bcryptjs";
 
 function Register() {
   const [email, setEmail] = useState<string>("");
@@ -21,12 +22,13 @@ function Register() {
   const navigate = useNavigate();
 
   const register = async () => {
+
     if (psword === pswordConf && email.includes("@")) {
       const res = await axios.post("/api/auth/register-account", {
         email: email, 
         password: psword,
         firstName: firstName,
-        lastName: lastName
+        lastName: lastName,
       });
       navigate("/register-user");
     } else if (psword !== pswordConf) {

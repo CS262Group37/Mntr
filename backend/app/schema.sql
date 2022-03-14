@@ -44,7 +44,8 @@ CREATE TABLE account (
     "password" VARCHAR NOT NULL,
     firstName VARCHAR NOT NULL,
     lastName VARCHAR NOT NULL,
-    profilePicture VARCHAR
+    profilePicture VARCHAR,
+    salt VARCHAR NOT NULL
 );
 
 CREATE TABLE "user" (

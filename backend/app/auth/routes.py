@@ -71,7 +71,7 @@ class Login(Resource):
     @auth_api.expect(parsers.login_parser)
     def post(self):
         data = parsers.login_parser.parse_args()
-
+        print(f"Trying to login as {data['email']} with password {data['password']}.")
         if not auth.check_email(data["email"]):
             return {"error": "Invalid email or password"}, 401
 
